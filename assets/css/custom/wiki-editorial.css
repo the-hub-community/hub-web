@@ -596,22 +596,6 @@
   font-size: 0.9rem;
 }
 
-/* Lightbox */
-.md-image-lightbox {
-  position: fixed; inset: 0; z-index: 99999;
-  background: rgba(4, 23, 72, 0.9); backdrop-filter: blur(8px);
-  display: none; align-items: center; justify-content: center;
-}
-.md-image-lightbox.is-open { display: flex; }
-.md-image-lightbox__img { max-width: 90vw; max-height: 90vh; border-radius: 8px; object-fit: contain; }
-.md-image-lightbox__close {
-  position: absolute; top: 24px; right: 24px;
-  background: rgba(255,255,255,0.2); border: none; color: white;
-  width: 44px; height: 44px; border-radius: 50%; font-size: 1.5rem;
-  cursor: pointer; display: grid; place-items: center;
-}
-.md-image-lightbox__close:hover { background: rgba(255,255,255,0.3); }
-
 /* ── Global Lightbox ─────────────────────────────────────── */
 .global-lightbox {
   position: fixed;
