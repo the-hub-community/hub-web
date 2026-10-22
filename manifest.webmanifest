@@ -11,13 +11,13 @@
   "categories": ["community", "social", "productivity"],
   "icons": [
     {
-      "src": "/assets/images/logos/the-hub-community-mark.svg",
+      "src": "/assets/images/logos/the-hub-community-mark.png",
       "sizes": "any",
       "type": "image/svg+xml",
       "purpose": "any"
     },
     {
-      "src": "/assets/images/logos/the-hub-community-mark.svg",
+      "src": "/assets/images/logos/the-hub-community-mark.png",
       "sizes": "any",
       "type": "image/svg+xml",
       "purpose": "maskable"

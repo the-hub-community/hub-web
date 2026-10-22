@@ -243,3 +243,37 @@ body.mobile-sheet-open { overflow: hidden; }
     max-width: none;
   }
 }
+
+/* ── Add to Home Screen Banner ───────────────────────────── */
+.a2hs-banner {
+  position: fixed;
+  bottom: calc(72px + env(safe-area-inset-bottom)); /* Above mobile tabbar */
+  left: 16px;
+  right: 16px;
+  z-index: 999;
+  background: var(--surface-container-lowest);
+  border: 1px solid var(--border-subtle);
+  border-radius: 16px;
+  padding: 16px;
+  box-shadow: 0 8px 32px rgba(4, 23, 72, 0.15);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+.a2hs-content { display: flex; align-items: center; gap: 12px; flex: 1; }
+.a2hs-logo { width: 40px; height: 40px; border-radius: 8px; }
+.a2hs-text { display: flex; flex-direction: column; }
+.a2hs-text strong { font-family: var(--font-display); font-size: 0.9rem; }
+.a2hs-text span { font-size: 0.75rem; color: var(--on-surface-variant); line-height: 1.3; }
+.a2hs-actions { display: flex; align-items: center; gap: 8px; }
+.a2hs-btn-primary { background: var(--primary); color: white; border: none; padding: 8px 16px; border-radius: 8px; font-weight: 600; cursor: pointer; }
+.a2hs-btn-close { background: transparent; border: none; font-size: 1.2rem; color: var(--outline); cursor: pointer; }
+
+@media (min-width: 769px) {
+  .a2hs-banner { display: none !important; } /* Hide on desktop */
+}

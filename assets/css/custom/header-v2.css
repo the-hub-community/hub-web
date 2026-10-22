@@ -34,18 +34,17 @@
 
 .header-brand {
   display: flex;
-  align-items: center;
-  gap: 8px;
+  align-items: center; 
+  gap: 10px;
   text-decoration: none;
-  color: var(--on-surface);
 }
 
-/* ── Header brand mark ─────────────────────────────────────── */
 .header-brand-mark {
   width: 32px;
   height: 32px;
   flex-shrink: 0;
   display: block;
+  transform: translateY(-2px); 
 }
 
 .header-brand-name {

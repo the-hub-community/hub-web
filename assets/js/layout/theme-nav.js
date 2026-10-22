@@ -453,6 +453,7 @@ export function initThemeNav() {
   initAlertDrawerLanguageContent();
   initMarkdownImageLightbox();
   initGlobalLightbox();
+  initAddToHomeScreen();
 }
 function initGlobalLightbox() {
   // Create the lightbox HTML dynamically
@@ -500,4 +501,55 @@ function initGlobalLightbox() {
       document.body.style.overflow = "hidden"; // Prevent background scrolling
     });
   }
+}
+function initAddToHomeScreen() {
+  const banner = document.getElementById("a2hs-banner");
+  const installBtn = document.getElementById("a2hs-install-btn");
+  const closeBtn = document.getElementById("a2hs-close-btn");
+  const message = document.getElementById("a2hs-message");
+
+  if (!banner) return;
+
+  // Don't show if user already dismissed it
+  if (localStorage.getItem("a2hs-dismissed") === "true") return;
+
+  // Don't show if already installed (standalone mode)
+  if (
+    window.matchMedia("(display-mode: standalone)").matches ||
+    window.navigator.standalone
+  )
+    return;
+
+  let deferredPrompt;
+
+  // Android / Chrome support
+  window.addEventListener("beforeinstallprompt", (e) => {
+    e.preventDefault();
+    deferredPrompt = e;
+    banner.style.display = "flex";
+    installBtn.style.display = "inline-block";
+  });
+
+  installBtn.addEventListener("click", async () => {
+    if (!deferredPrompt) return;
+    deferredPrompt.prompt();
+    const { outcome } = await deferredPrompt.userChoice;
+    if (outcome === "accepted") banner.style.display = "none";
+    deferredPrompt = null;
+  });
+
+  // iOS / Safari support (No native prompt, must show instructions)
+  const isIOS =
+    /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+  if (isIOS) {
+    banner.style.display = "flex";
+    message.innerHTML =
+      "Tap the <strong>Share</strong> icon below, then <strong>Add to Home Screen</strong>.";
+    installBtn.style.display = "none";
+  }
+
+  closeBtn.addEventListener("click", () => {
+    banner.style.display = "none";
+    localStorage.setItem("a2hs-dismissed", "true");
+  });
 }
