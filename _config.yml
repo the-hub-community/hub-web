@@ -2,7 +2,7 @@
 title: The Hub Community
 description: Community knowledge, notices, and marketplace listings for connected local hubs.
 baseurl: ""
-url: "https://lab-community.pages.dev"
+url: "https://hub-web.dekumar-ca.workers.dev"
 logo: "/assets/images/logos/resihub-logo-horizontal.svg"
 default_social_image: "/assets/images/logos/resihub-logo-horizontal.svg"
 
