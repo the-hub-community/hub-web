@@ -23,13 +23,6 @@ layout: default
 
 {% assign raw_contact = page.contact | default: "" | strip %}
 {% assign contact_lower = raw_contact | downcase %}
-{% assign tel_sanitized = raw_contact | replace: ' ', '' | replace: '-', '' | replace: '(', '' | replace: ')', '' %}
-{% assign contact_has_space = false %}
-{% if contact_lower contains ' ' %}
-  {% assign contact_has_space = true %}
-{% endif %}
-{% assign raw_contact = page.contact | default: "" | strip %}
-{% assign contact_lower = raw_contact | downcase %}
 {% assign tel_sanitized = raw_contact | replace: ' ', '' | replace: '-', '' | replace: '(', '' | replace: ')', '' | replace: '.', '' %}
 {% assign cta_href = "" %}
 {% assign cta_label = "Contact Seller" %}
@@ -151,17 +144,15 @@ layout: default
       </div>
       {% endif %}
 
-      <div class="detail-seller-card">
-        <div class="detail-seller-card__avatar">{{ raw_contact | default: "?" | slice: 0 | upcase }}</div>
-        <div class="detail-seller-card__body">
-          <p class="detail-seller-card__name">
-            {{ raw_contact | default: "Verified neighbor" }}
-            <i class="fa-solid fa-circle-check"></i>
-          </p>
-          <span class="detail-seller-card__meta">Resident · Verified neighbor</span>
-        </div>
-        
+     <div class="detail-seller-card">
+      <div class="detail-seller-card__avatar">{{ raw_contact | default: "?" | slice: 0 | upcase }}</div>
+      <div class="detail-seller-card__body">
+        <p class="detail-seller-card__name">
+          {{ raw_contact | default: "Community Member" }}
+        </p>
+        <span class="detail-seller-card__meta">Resident</span>
       </div>
+    </div>
 
 
 
