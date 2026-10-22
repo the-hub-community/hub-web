@@ -22,7 +22,7 @@
 
   function replaceWithFallback(img) {
     const box = img.closest(
-      ".ad-image-box, .listing-gallery-stage, .review-preview-card__media, .lh-image-container",
+      ".ad-image-box, .listing-gallery-stage, .review-preview-card__media, .lh-image-container, .detail-gallery__hero",
     );
     if (!box || box.dataset.fallbackApplied) return;
     const category =
