@@ -3,8 +3,7 @@
 
   // Override at runtime by setting window.RESIHUB_API_BASE before this script.
   var baseUrl = String(
-    window.RESIHUB_API_BASE ||
-      "https://hub-community-apis.dekumar-ca.workers.dev",
+    window.RESIHUB_API_BASE || "https://hub-worker-api.dekumar-ca.workers.dev",
   )
     .trim()
     .replace(/\/+$/, "");

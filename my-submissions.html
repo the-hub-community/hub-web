@@ -38,10 +38,11 @@ document.addEventListener("DOMContentLoaded", () => {
   
   list.style.display = "block";
   list.innerHTML = `<ul class="ed-error__list-items">` + subs.map(id => `
-    <li style="margin-bottom: 12px;">
-      <a href="/status.html?submission_id=${id}" style="color: var(--primary); text-decoration: underline; font-family: var(--font-mono);">
+    <li style="margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center;">
+      <a href="/status.html?submission_id=${id}" style="color: var(--primary); text-decoration: underline; font-family: var(--font-mono); font-size: 0.9rem;">
         ${id}
       </a>
+      <a href="/status.html?submission_id=${id}" class="btn btn--secondary btn--sm">Track</a>
     </li>
   `).join("") + `</ul>`;
 });
