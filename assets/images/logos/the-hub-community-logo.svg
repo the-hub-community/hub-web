@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 120" width="100%" height="100%">
+  <defs>
+    <linearGradient id="hubGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#2563EB" />
+      <stop offset="100%" stop-color="#06B6D4" />
+    </linearGradient>
+    <filter id="dropShadow" x="-10%" y="-10%" width="130%" height="130%">
+      <feDropShadow dx="1" dy="3" stdDeviation="2" flood-opacity="0.15" />
+    </filter>
+  </defs>
+
+  <style>
+    .brand-text { font-family: 'Inter', 'Montserrat', 'Segoe UI', sans-serif; font-size: 34px; }
+    .bold-text { font-weight: 800; fill: #1E293B; }
+    .light-text { font-weight: 400; fill: #0284C7; }
+    .sub-text {
+      font-family: 'Inter', 'Segoe UI', sans-serif;
+      font-size: 11px; font-weight: 600;
+      fill: #64748B; letter-spacing: 6px;
+    }
+  </style>
+
+  <g transform="translate(15, 10)">
+    <path d="M 50 35 L 75 75 L 25 75 Z"
+      fill="none" stroke="url(#hubGradient)" stroke-width="6"
+      stroke-linejoin="round" opacity="0.4" />
+    <path d="M 50 35 L 50 58 L 75 75 M 50 58 L 25 75"
+      fill="none" stroke="url(#hubGradient)"
+      stroke-width="4" stroke-dasharray="2 2" opacity="0.6" />
+    <circle cx="50" cy="58" r="10" fill="url(#hubGradient)" filter="url(#dropShadow)" />
+    <circle cx="50" cy="35" r="13" fill="url(#hubGradient)" filter="url(#dropShadow)" />
+    <circle cx="50" cy="35" r="5" fill="#FFFFFF" />
+    <circle cx="75" cy="75" r="13" fill="url(#hubGradient)" filter="url(#dropShadow)" />
+    <circle cx="75" cy="75" r="5" fill="#FFFFFF" />
+    <circle cx="25" cy="75" r="13" fill="url(#hubGradient)" filter="url(#dropShadow)" />
+    <circle cx="25" cy="75" r="5" fill="#FFFFFF" />
+  </g>
+
+  <text x="125" y="62" class="brand-text">
+    <tspan class="bold-text">TheHub</tspan>
+    <tspan class="light-text">Community</tspan>
+  </text>
+
+  <text x="127" y="82" class="sub-text">CONNECT • COLLABORATE • GROW</text>
+</svg>

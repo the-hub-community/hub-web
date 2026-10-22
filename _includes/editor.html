@@ -1,0 +1,430 @@
+<link rel="stylesheet" href="{{ '/assets/css/custom/ai-assistant.css' | relative_url }}">
+<script src="{{ '/assets/js/editor/ai-assistant.js' | relative_url }}" defer></script>
+<input type="hidden" name="type" id="type" value="update">
+<div id="editor-panel" class="editor-drawer">
+    <div class="drawer-inner">
+        <div class="drawer-header">
+            <!-- Mobile Close/Cancel -->
+            <button type="button" class="btn-cancel-header" onclick="togglePanel()" aria-label="Cancel editing">
+                <span data-i18n="common.cancel">Cancel</span>
+            </button>
+
+            <!-- Title -->
+            <h2 id="drawerTitle" data-i18n="editor.update_information">Update Information</h2>
+
+            <!-- Desktop: View Switcher & Close -->
+            <div class="drawer-header-actions">
+                <div class="drawer-view-switcher" role="tablist" aria-label="Editor mode toggle">
+                    <button type="button" id="drawer-edit-view-btn" class="drawer-view-btn active" data-view="edit" data-i18n="common.editor">Editor</button>
+                    <button type="button" id="drawer-preview-view-btn" class="drawer-view-btn" data-view="preview" data-i18n="common.preview">Preview</button>
+                </div>
+                <button type="button" onclick="togglePanel()" class="drawer-close" aria-label="Close">&times;</button>
+            </div>
+        </div>
+
+        <form id="drawer-form">
+            <details class="editor-accordion editor-meta-panel" open>
+                <summary class="editor-accordion__summary">
+                    <span data-i18n="common.page_details">Page Details</span>
+                </summary>
+                <div class="editor-accordion__content">
+                    <div class="field-row">
+                        <div class="floating-group">
+                            <input type="text" class="floating-input" id="condo" name="condo" placeholder=" " required>
+                            <label class="floating-label" data-i18n="common.community_hub">Community Hub</label>
+                        </div>
+                        <div class="floating-group">
+                            <input type="text" class="floating-input" id="title" name="title" placeholder=" " required data-char-limit="140">
+                            <label class="floating-label" data-i18n="common.page_title">Page Title</label>
+                        </div>
+                    </div>
+                </div>
+            </details>
+
+            <div id="drawer-edit-view">
+                <div class="editor-container-box">
+                    <div id="drawer-sections-container"></div>
+<div class="form-actions">
+                    <button type="button" onclick="addNewSection()" class="btn-add-sec btn-secondary">
+                        <span data-i18n="common.add_new_section">+ Add New Section</span>
+                    </button></div>
+                </div>
+            </div>
+
+            <div id="drawer-preview-view" class="drawer-preview-hidden">
+                <div class="drawer-preview-canvas">
+                    <div id="drawer-live-preview-content" class="lh-content-body"></div>
+                </div>
+            </div>
+
+            <div class="drawer-footer">
+                <button type="button" onclick="togglePanel()" class="btn-cancel" data-i18n="common.cancel">Cancel</button>
+                <button type="submit" id="sync-btn" class="btn-sync" data-i18n="common.update">Update</button>
+            </div>
+            <p id="drawerSubmissionError" class="submission-error-inline" style="display: none;"></p>
+        </form>
+    </div>
+</div>
+
+<template id="drawer-section-template">
+    <div class="drawer-section-card content-section">
+        <!-- AI Suggestion (Keep as is) -->
+        <details class="ai-section-inline hidden">
+            <summary class="ai-section-inline__summary">
+                <span class="ai-section-inline__title">AI Suggestion</span>
+                <span class="ai-section-inline__meta">Collapsed</span>
+            </summary>
+            <div class="suggestions-list ai-section-inline__list"></div>
+        </details>
+
+        <div class="section-header">
+            <div style="display: flex; align-items: center; gap: 8px;">
+                <span class="sec-label" data-i18n="common.section">Section</span>
+                <div class="section-controls" style="display: flex; gap: 2px;">
+                    <button type="button" class="btn-move" data-dir="up" aria-label="Move section up"><i class="fa-solid fa-arrow-up"></i></button>
+                    <button type="button" class="btn-move" data-dir="down" aria-label="Move section down"><i class="fa-solid fa-arrow-down"></i></button>
+                </div>
+            </div>
+            <button type="button" class="btn-remove-sec" aria-label="Remove Section">
+                <i class="fa-solid fa-trash-can"></i>
+            </button>
+        </div>
+
+        <!-- Sticky Formatting Toolbar -->
+        <div class="rich-toolbar-shell">
+            <div class="rich-toolbar" role="toolbar" aria-label="Formatting tools">
+                <div class="rich-toolbar__group">
+                    <button type="button" data-cmd="bold" title="Bold"><i class="fa-solid fa-bold" aria-hidden="true"></i></button>
+                    <button type="button" data-cmd="italic" title="Italic"><i class="fa-solid fa-italic" aria-hidden="true"></i></button>
+                    <button type="button" data-cmd="underline" title="Underline"><i class="fa-solid fa-underline" aria-hidden="true"></i></button>
+                    <button type="button" data-cmd="insertUnorderedList" title="Bulleted List"><i class="fa-solid fa-list-ul" aria-hidden="true"></i></button>
+                </div>
+                <div class="v-sep" aria-hidden="true"></div>
+                <div class="rich-toolbar__group rich-toolbar__group--history">
+                    <button type="button" data-cmd="undo" title="Undo"><i class="fa-solid fa-rotate-left" aria-hidden="true"></i></button>
+                    <button type="button" data-cmd="redo" title="Redo"><i class="fa-solid fa-rotate-right" aria-hidden="true"></i></button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Text Editor -->
+        <div class="section-body">
+            <div class="section-text">
+                <div class="editor-area" contenteditable="true" data-char-limit="8000" data-placeholder="Start writing..."></div>
+            </div>
+
+            <!-- Exposed Media Section -->
+            <div class="section-media">
+                <div class="media-actions">
+                    <div class="image-picker" data-role="image-picker"></div>
+                    
+                    <div class="video-input-wrapper">
+                        <i class="fa-brands fa-youtube"></i>
+                        <input type="text" class="video-input" placeholder="Paste a YouTube URL here (optional)">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>
+<script>
+   document.addEventListener('DOMContentLoaded', () => {
+        // Set defaultParagraphSeparator for all editors (for mobile)
+        document.querySelectorAll('.editor-area').forEach((el) => {
+            try {
+                document.execCommand('defaultParagraphSeparator', false, 'p');
+            } catch (e) {}
+        });
+
+        // Fix Enter/Return on mobile for editor-area
+        document.addEventListener('keydown', function(e) {
+            if (!e.target.classList || !e.target.classList.contains('editor-area')) return;
+            if (e.key === 'Enter' && !e.shiftKey) {
+                setTimeout(() => {
+                    const sel = window.getSelection();
+                    if (sel && sel.rangeCount > 0) {
+                        const range = sel.getRangeAt(0);
+                        if (range.startContainer === e.target || (range.startContainer.nodeType === 3 && range.startContainer.parentNode === e.target)) {
+                            document.execCommand('insertHTML', false, '<br>');
+                        }
+                    }
+                }, 0);
+            }
+        });
+
+    function getDrawerSectionPreview(sec) {
+        const editor = sec.querySelector('.editor-area');
+        const rawText = editor ? editor.innerHTML : '';
+        const cleanedText = typeof normalizeEditorHtml === 'function' ? normalizeEditorHtml(rawText) : rawText;
+        const align = sec.querySelector('.align-select')?.value || 'center';
+        const videoUrl = sec.querySelector('.video-input')?.value || '';
+
+        const fileInput = sec.querySelector('.file-input');
+        const existingPath = sec.querySelector('.existing-image-path');
+        const imageUrl = fileInput?.files?.[0]
+            ? URL.createObjectURL(fileInput.files[0])
+            : (existingPath?.value || '');
+
+        let videoHtml = '';
+        if (videoUrl.includes('youtube.com') || videoUrl.includes('youtu.be')) {
+            const id = videoUrl.split('v=')[1]?.split('&')[0] || videoUrl.split('/').pop();
+            if (id) {
+                videoHtml = `<div class="lh-video-container"><iframe src="https://www.youtube.com/embed/${id}" frameborder="0" allowfullscreen></iframe></div>`;
+            }
+        }
+
+        let mediaHtml = '';
+        if (imageUrl) {
+            mediaHtml = `
+                <div class="lh-align-${align}">
+                    <figure class="lh-image-container">
+                        <img src="${imageUrl}" alt="Preview image" class="lh-fluid-img">
+                    </figure>
+                </div>`;
+        }
+
+        return `
+            <div class="lh-section">
+                ${videoHtml}
+                ${mediaHtml}
+                <div class="lh-text">${cleanedText}</div>
+                <div class="lh-clear"></div>
+            </div>`;
+    }
+
+    function generateDrawerPreview() {
+        const title = document.getElementById('title')?.value || (typeof window.t === 'function' ? window.t('messages.untitled_page', 'Untitled Page') : 'Untitled Page');
+        const condo = document.getElementById('condo')?.value || (typeof window.t === 'function' ? window.t('messages.community', 'Community') : 'Community');
+        const previewRoot = document.getElementById('drawer-live-preview-content');
+
+        if (!previewRoot) {
+            return;
+        }
+
+        let html = `<h1>${title}</h1><p class="preview-subtitle">${condo}</p><hr class="preview-hr">`;
+        const sections = document.querySelectorAll('#drawer-sections-container .drawer-section-card');
+
+        sections.forEach((sec) => {
+            html += getDrawerSectionPreview(sec);
+        });
+
+        previewRoot.innerHTML = html;
+    }
+
+    function switchDrawerView(view) {
+        const isPreview = view === 'preview';
+        const editView = document.getElementById('drawer-edit-view');
+        const previewView = document.getElementById('drawer-preview-view');
+        const editBtn = document.getElementById('drawer-edit-view-btn');
+        const previewBtn = document.getElementById('drawer-preview-view-btn');
+
+        if (isPreview) {
+            generateDrawerPreview();
+        }
+
+        if (editView) editView.classList.toggle('drawer-preview-hidden', isPreview);
+        if (previewView) previewView.classList.toggle('drawer-preview-hidden', !isPreview);
+        if (editBtn) editBtn.classList.toggle('active', !isPreview);
+        if (previewBtn) previewBtn.classList.toggle('active', isPreview);
+    }
+
+    function updateDrawerToolbarState(editor) {
+        const toolbar = editor?.closest('.drawer-section-card')?.querySelector('.rich-toolbar');
+        if (!toolbar) return;
+
+        ['bold', 'italic', 'underline'].forEach((command) => {
+            const button = toolbar.querySelector(`button[data-cmd="${command}"]`);
+            if (!button) return;
+
+            let isActive = false;
+            try {
+                isActive = document.queryCommandState(command);
+            } catch (_) {
+                isActive = false;
+            }
+
+            button.classList.toggle('is-active', isActive);
+            button.setAttribute('aria-pressed', isActive ? 'true' : 'false');
+        });
+    }
+
+
+    // Live word count for each editor area
+    function updateWordCount(editor) {
+    if (!editor) return;
+    const text = (editor.innerText || '').trim();
+    const words = text ? text.split(/\s+/).filter(Boolean).length : 0;
+    const count = text ? `${words} word${words === 1 ? '' : 's'}` : '';
+    editor.setAttribute('data-wordcount', count);
+    }
+
+    // Bind on all editors (existing + dynamically added)
+    document.addEventListener('input', (e) => {
+    if (e.target.classList?.contains('editor-area')) {
+        updateWordCount(e.target);
+    }
+    });
+
+    // Initial pass
+    document.querySelectorAll('.editor-area').forEach(updateWordCount);
+
+    // Re-run when new sections are added
+    const sectionContainer = document.getElementById('drawer-sections-container');
+    if (sectionContainer) {
+    const observer = new MutationObserver(() => {
+        document.querySelectorAll('.editor-area').forEach((el) => {
+        if (!el.dataset.wcBound) {
+            el.dataset.wcBound = 'true';
+            updateWordCount(el);
+        }
+        });
+    });
+    observer.observe(sectionContainer, { childList: true, subtree: true });
+    }
+
+    // Auto-update section status pills based on content length
+    function updateSectionStatus(card) {
+    if (!card) return;
+    const editor = card.querySelector('.editor-area');
+    const text = (editor?.innerText || '').trim();
+    const words = text ? text.split(/\s+/).filter(Boolean).length : 0;
+
+    if (words >= 30) {
+        card.dataset.status = 'complete';
+        const label = card.querySelector('.sec-label');
+        if (label) label.dataset.status = 'Ready';
+    } else if (words > 0) {
+        card.dataset.status = 'draft';
+        const label = card.querySelector('.sec-label');
+        if (label) label.dataset.status = 'Draft';
+    } else {
+        delete card.dataset.status;
+    }
+    }
+
+    document.addEventListener('input', (e) => {
+    if (e.target.classList?.contains('editor-area')) {
+        const card = e.target.closest('.drawer-section-card');
+        if (card) updateSectionStatus(card);
+    }
+    });
+
+    // Initial pass
+    document.querySelectorAll('.drawer-section-card').forEach(updateSectionStatus);
+
+    const drawerViewButtons = document.querySelectorAll('.drawer-view-btn');
+    drawerViewButtons.forEach((btn) => {
+        btn.addEventListener('click', () => {
+            switchDrawerView(btn.dataset.view);
+        });
+    });
+
+    const drawerForm = document.getElementById('drawer-form');
+    if (drawerForm) {
+        const livePreviewRefresh = () => {
+            if (document.getElementById('drawer-preview-view-btn')?.classList.contains('active')) {
+                generateDrawerPreview();
+            }
+        };
+
+        drawerForm.addEventListener('input', livePreviewRefresh);
+        drawerForm.addEventListener('change', livePreviewRefresh);
+    }
+
+    if (typeof window.applyTranslations === 'function') {
+        window.applyTranslations(document);
+    }
+
+    // 1. Handle Toolbar Button Clicks
+    // Using event delegation on the container that holds the buttons
+    document.addEventListener('click', (e) => {
+        const btn = e.target.closest('button[data-cmd]');
+        if (!btn) return;
+
+        e.preventDefault();
+        const command = btn.getAttribute('data-cmd');
+        const value = btn.getAttribute('data-value') || null;
+        
+        // Execute the command (bold, italic, etc.)
+        document.execCommand(command, false, value);
+        
+        // Return focus to the editor so user can keep typing
+        const card = btn.closest('.drawer-section-card');
+        const editor = card.querySelector('.editor-area');
+        if (editor) {
+            editor.focus();
+            updateDrawerToolbarState(editor);
+        }
+    });
+
+    // 2. Prevent buttons from taking focus away from text selection
+    document.addEventListener('mousedown', (e) => {
+        if (e.target.closest('button[data-cmd]')) {
+            e.preventDefault();
+        }
+    });
+
+    document.addEventListener('toggle', (e) => {
+        const panel = e.target;
+        if (!panel.classList || !panel.classList.contains('section-settings-panel') || !panel.open) {
+            return;
+        }
+
+        document.querySelectorAll('.section-settings-panel[open]').forEach((item) => {
+            if (item !== panel) {
+                item.open = false;
+            }
+        });
+    }, true);
+
+    document.addEventListener('selectionchange', () => {
+        const activeEditor = document.activeElement;
+        if (!activeEditor || !activeEditor.classList || !activeEditor.classList.contains('editor-area')) {
+            return;
+        }
+        updateDrawerToolbarState(activeEditor);
+    });
+
+    document.addEventListener('focusin', (e) => {
+        if (!e.target.classList || !e.target.classList.contains('editor-area')) {
+            return;
+        }
+        updateDrawerToolbarState(e.target);
+    });
+
+    document.addEventListener('keyup', (e) => {
+        if (!e.target.classList || !e.target.classList.contains('editor-area')) {
+            return;
+        }
+        updateDrawerToolbarState(e.target);
+    }, true);
+
+    // 3. Handle Keystrokes (Ctrl+B, Ctrl+I, etc.)
+    document.addEventListener('keydown', (e) => {
+        // Only trigger if we are inside an editor-area
+        if (!e.target.classList.contains('editor-area')) return;
+
+        // Check for Ctrl (or Cmd on Mac)
+        const isMeta = e.ctrlKey || e.metaKey;
+
+        if (isMeta) {
+            switch(e.key.toLowerCase()) {
+                case 'b':
+                    e.preventDefault();
+                    document.execCommand('bold', false, null);
+                    break;
+                case 'i':
+                    e.preventDefault();
+                    document.execCommand('italic', false, null);
+                    break;
+                case 'u':
+                    e.preventDefault();
+                    document.execCommand('underline', false, null);
+                    break;
+            }
+        }
+
+        
+    });
+});
+</script>

@@ -1,0 +1,220 @@
+---
+layout: default
+title: Daily Updates
+---
+
+<style>
+  /* Fallback styles: keeps widget usable if custom/news.css is not emitted in _site */
+  .news-widget { margin-top: 2rem; }
+  .news-widget__header { display: flex; align-items: baseline; gap: .75rem; flex-wrap: wrap; margin-bottom: 1.25rem; }
+  .news-widget__header h3 { margin: 0; font-size: 1.15rem; color: var(--text-main); }
+  .news-widget__subtitle { margin: 0; font-size: .82rem; color: var(--text-muted); }
+
+  .news-filter-bar {
+    background: var(--glass-card);
+    border: 1px solid var(--border);
+    border-radius: var(--border-radius-md);
+    padding: 1rem 1.25rem;
+    box-shadow: var(--shadow);
+    display: flex;
+    flex-direction: column;
+    gap: .85rem;
+    margin-bottom: 1rem;
+  }
+  .news-filter-row { display: flex; align-items: center; gap: .65rem; flex-wrap: wrap; }
+  .news-filter-label { font-size: .72rem; font-weight: 600; color: var(--text-muted); min-width: 3.5rem; }
+
+  .news-country-select,
+  .news-search-input {
+    border: 1px solid var(--border);
+    border-radius: var(--border-radius-sm);
+    padding: .55rem .75rem;
+    font-size: .95rem;
+    background: rgba(255, 255, 255, .78);
+    color: var(--text-main);
+  }
+  .news-country-select { min-width: 240px; }
+
+  .news-topic-pills { display: flex; flex-wrap: wrap; gap: .45rem; }
+  .news-topic-pill {
+    appearance: none;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    background: rgba(255, 255, 255, .65);
+    color: var(--text-muted);
+    font-size: .8rem;
+    padding: .35rem .82rem;
+    cursor: pointer;
+  }
+  .news-topic-pill:hover { border-color: var(--primary); color: var(--primary); background: var(--primary-light); }
+  .news-topic-pill.active { background: var(--primary); border-color: var(--primary); color: #fff; }
+
+  .news-search-wrap { display: flex; gap: .55rem; flex: 1; min-width: 220px; }
+  .news-search-input { flex: 1; }
+  .news-search-btn,
+  .news-clear-btn,
+  .news-load-more,
+  .news-empty-state__retry {
+    appearance: none;
+    border-radius: var(--border-radius-sm);
+    cursor: pointer;
+    font-size: .86rem;
+    padding: .5rem .85rem;
+  }
+  .news-search-btn {
+    border: 1px solid var(--primary);
+    background: var(--primary);
+    color: #fff;
+  }
+  .news-clear-btn {
+    border: 1px solid var(--border);
+    background: rgba(255, 255, 255, .55);
+    color: var(--text-main);
+  }
+
+  .news-status-bar { min-height: 1.4em; color: var(--text-muted); margin-bottom: .75rem; }
+  .news-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
+  .news-card {
+    background: var(--glass-card);
+    border: 1px solid var(--border);
+    border-radius: var(--border-radius-md);
+    box-shadow: var(--shadow);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+  .news-card__img-wrap {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    max-height: 240px;
+    overflow: hidden;
+    background: var(--primary-light);
+    flex-shrink: 0;
+  }
+  .news-card__img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    display: block;
+  }
+  .news-card__img-placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--primary);
+    font-size: 1.5rem;
+  }
+  .news-card__body {
+    padding: .9rem 1rem 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: .45rem;
+    flex: 1;
+  }
+  .news-card__meta {
+    display: flex;
+    align-items: center;
+    gap: .45rem;
+    color: var(--text-muted);
+    font-size: .74rem;
+  }
+  .news-card__source { color: var(--primary); font-weight: 700; }
+  .news-card__title {
+    margin: 0;
+    color: var(--text-main);
+    font-size: .92rem;
+    line-height: 1.35;
+    display: -webkit-box;
+    line-clamp: 3;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .news-card__desc {
+    margin: 0;
+    color: var(--text-muted);
+    line-height: 1.45;
+    font-size: .82rem;
+    display: -webkit-box;
+    line-clamp: 2;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .news-card__link {
+    margin-top: .3rem;
+    text-decoration: none;
+    color: var(--primary);
+    font-weight: 600;
+    font-size: .8rem;
+    align-self: flex-start;
+  }
+  .news-card__link:hover { color: var(--primary-hover); }
+  @media (max-width: 900px) { .news-grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 580px) {
+    .news-grid { grid-template-columns: 1fr; }
+    .news-search-wrap { min-width: 100%; }
+    .news-card__img-wrap { max-height: 220px; }
+  }
+</style>
+
+<section class="news-widget" id="dailyNewsWidget" aria-live="polite">
+  <header class="news-widget__header">
+    <h3>Daily Pulse Newsroom</h3>
+    <p class="news-widget__subtitle">Global top headlines with smart filters for country, topic, and keyword.</p>
+  </header>
+
+  <div class="news-filter-bar" role="region" aria-label="News filters">
+    <div class="news-filter-row">
+      <label class="news-filter-label" for="newsCountrySelect">Country</label>
+      <select class="news-country-select" id="newsCountrySelect" aria-label="Select country">
+        <option value="us">United States</option>
+        <option value="in">India</option>
+        <option value="ca" selected>Canada</option>
+        <option value="gb">United Kingdom</option>
+        <option value="au">Australia</option>
+        <option value="fr">France</option>
+      </select>
+    </div>
+
+    <div class="news-filter-row">
+      <span class="news-filter-label">Topic</span>
+      <div class="news-topic-pills" id="newsTopicPills" role="group" aria-label="Select topic">
+        <button class="news-topic-pill active" data-topic="" type="button" aria-pressed="true">All</button>
+        <button class="news-topic-pill" data-topic="technology" type="button" aria-pressed="false">Technology</button>
+        <button class="news-topic-pill" data-topic="business" type="button" aria-pressed="false">Business</button>
+        <button class="news-topic-pill" data-topic="health" type="button" aria-pressed="false">Health</button>
+        <button class="news-topic-pill" data-topic="science" type="button" aria-pressed="false">Science</button>
+        <button class="news-topic-pill" data-topic="sports" type="button" aria-pressed="false">Sports</button>
+      </div>
+    </div>
+
+    <div class="news-filter-row">
+      <span class="news-filter-label">Search</span>
+      <div class="news-search-wrap">
+        <input
+          id="newsSearchInput"
+          class="news-search-input"
+          type="search"
+          placeholder="Try AI, housing, transit..."
+          aria-label="Search keyword"
+        >
+        <button id="newsSearchBtn" class="news-search-btn" type="button">Search</button>
+        <button id="newsClearBtn" class="news-clear-btn" type="button">Clear</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="news-status-bar" id="newsStatusBar"></div>
+
+  <div class="news-grid" id="newsGrid" aria-live="polite"></div>
+
+  <div class="news-footer">
+    <button class="news-load-more" id="newsLoadMore" type="button" hidden>Load more</button>
+  </div>
+</section>
+
+<script src="{{ site.baseurl }}/assets/js/pages/news.js"></script>

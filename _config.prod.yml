@@ -1,0 +1,6 @@
+api_base_url: "https://hub-community-apis.dekumar-ca.workers.dev"
+
+resources:
+  mode: prod
+  expose_client_js: true
+  expose_debug_bindings: false

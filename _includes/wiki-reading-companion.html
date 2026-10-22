@@ -1,0 +1,20 @@
+{% comment %}
+Reading companion for wiki pages.
+Adds: progress bar, sticky TOC rail, editorial meta strip.
+Only rendered on wiki pages (not marketplace, not dashboard).
+{% endcomment %}
+
+<!-- Reading progress bar (top of viewport) -->
+<div id="reading-progress" class="reading-progress" aria-hidden="true">
+  <div class="reading-progress__fill" id="reading-progress-fill"></div>
+</div>
+
+<!-- Meta strip — injected into page context via JS -->
+<div id="wiki-meta-source" hidden
+     data-read-time-target="wiki-reading-time"></div>
+
+<!-- Sticky TOC rail -->
+<aside class="wiki-toc" id="wiki-toc" aria-label="On this page" hidden>
+  <span class="wiki-toc__label">On this page</span>
+  <nav class="wiki-toc__nav" id="wiki-toc-nav"></nav>
+</aside>

@@ -1,0 +1,265 @@
+<!-- Comments Form Section -->
+<section class="comment-form-section" id="comment-form-section">
+  <div class="comment-form-container">
+    <button type="button" class="comment-form-toggle" id="comment-form-toggle" aria-expanded="false" aria-controls="comment-form-content">
+      <span class="comment-form-toggle__label" data-i18n="comment_form.share_thoughts">Share Your Thoughts</span>
+      <span class="comment-form-toggle__icon" id="comment-form-toggle-icon" aria-hidden="true">+</span>
+    </button>
+    <h3 class="comment-form-title" data-i18n="comment_form.share_thoughts">Share Your Thoughts</h3>
+    <p class="comment-form-subtitle" data-i18n="comment_form.discuss_page">Join the community discussion about this page</p>
+    <div class="comment-form-content" id="comment-form-content">
+    <form id="comment-form" class="comment-form" novalidate>
+      <div class="form-group">
+        <label for="author_name" class="form-label">
+          <span data-i18n="comment_form.your_name">Your Name</span>
+          <span class="optional-badge" data-i18n="comment_form.name_optional">(optional - post anonymously if preferred)</span>
+        </label>
+        <input 
+          type="text" 
+          id="author_name" 
+          name="author_name" 
+          class="form-input"
+          data-i18n-placeholder="comment_form.name_placeholder"
+          placeholder="Enter your name (or leave blank for anonymous)"
+          maxlength="60"
+        >
+      </div>
+      
+      <div class="form-group">
+        <label for="comment" class="form-label" data-i18n="comment_form.your_comment">Your Comment</label>
+        <textarea 
+          id="comment" 
+          name="comment" 
+          class="form-textarea"
+          data-i18n-placeholder="comment_form.comment_placeholder"
+          placeholder="Share your thoughts, questions, or suggestions..."
+          rows="5"
+          required
+          minlength="3"
+          maxlength="1000"
+          data-char-limit="1000"
+        ></textarea>
+      </div>
+
+        <!-- <div class="form-group form-checkbox-row">
+          <label for="is_anonymous" class="form-checkbox-label">
+            <input
+              type="checkbox"
+              id="is_anonymous"
+              name="is_anonymous"
+              class="form-checkbox"
+            >
+            <span data-i18n="comment_form.post_anonymous">Post as anonymous</span>
+          </label>
+        </div> -->
+      
+      <div id="form-message" class="form-message" style="display: none;"></div>
+
+      <div class="form-group form-actions-row">
+        <label for="is_anonymous" class="form-checkbox-label">
+          <input type="checkbox" id="is_anonymous" name="is_anonymous" class="form-checkbox">
+          <span data-i18n="comment_form.post_anonymous">Post as anonymous</span>
+        </label>
+
+        <button type="submit" class="form-button" id="submit-btn">
+          <span class="button-text" data-i18n="comment_form.post_comment">Post Comment</span>
+          <span class="button-loader" style="display: none;"></span>
+        </button>
+      </div>
+    </form>
+    </div>
+  </div>
+</section>
+
+<script>
+(function() {
+  const pageKey = "{{ page.page_key }}";
+  const communityKey = "{{ page.community_key }}";
+  const formSection = document.getElementById("comment-form-section");
+  
+  if (!pageKey || !communityKey) {
+    console.warn("Comment form: page_key or community_key missing from frontmatter");
+    formSection.style.display = "none";
+    return;
+  }
+  
+  const form = document.getElementById("comment-form");
+  const commentTextarea = document.getElementById("comment");
+  const submitBtn = document.getElementById("submit-btn");
+  const formMessage = document.getElementById("form-message");
+  const formToggle = document.getElementById("comment-form-toggle");
+  const formToggleIcon = document.getElementById("comment-form-toggle-icon");
+  const formContent = document.getElementById("comment-form-content");
+  const mobileQuery = window.matchMedia("(max-width: 768px)");
+  const commentsEndpoint =
+    window.ResiHubApi?.ENDPOINTS?.comments ||
+    `${window.API_BASE || "https://hub-community-apis.dekumar-ca.workers.dev"}/api/comments`;
+
+  function setMobileFormExpanded(expanded) {
+    formToggle.setAttribute("aria-expanded", expanded ? "true" : "false");
+    formToggleIcon.textContent = expanded ? "-" : "+";
+    formContent.classList.toggle("is-open", expanded);
+  }
+
+  function syncMobileFormState() {
+    if (!mobileQuery.matches) {
+      formToggle.setAttribute("aria-expanded", "true");
+      formToggleIcon.textContent = "-";
+      formContent.classList.add("is-open");
+      return;
+    }
+
+    setMobileFormExpanded(false);
+  }
+
+  formToggle.addEventListener("click", function() {
+    const isExpanded = formToggle.getAttribute("aria-expanded") === "true";
+    setMobileFormExpanded(!isExpanded);
+  });
+
+  if (typeof mobileQuery.addEventListener === "function") {
+    mobileQuery.addEventListener("change", syncMobileFormState);
+  } else if (typeof mobileQuery.addListener === "function") {
+    mobileQuery.addListener(syncMobileFormState);
+  }
+
+  syncMobileFormState();
+
+  // Get i18n translations (helper function) using window.t
+  function getI18n(key, fallback = "") {
+    return (typeof window.t === "function") ? window.t(key, fallback) : fallback;
+  }
+  
+
+  // Auto-expand textarea and update character count
+  commentTextarea.addEventListener("input", function() {
+    this.style.height = 'auto';
+    this.style.height = (this.scrollHeight + 2) + 'px';
+  });
+  // Initial auto-expand
+  commentTextarea.style.overflowY = 'hidden';
+  commentTextarea.style.height = (commentTextarea.scrollHeight + 2) + 'px';
+
+  
+  // Handle form submission
+  form.addEventListener("submit", async function(e) {
+    e.preventDefault();
+    
+    const authorName = document.getElementById("author_name").value.trim();
+    const commentText = document.getElementById("comment").value.trim();
+    const isAnonymous = document.getElementById("is_anonymous").checked;
+    
+    // Validation
+    if (!commentText) {
+      showMessage(getI18n("comment_form.error_empty", "Comment cannot be empty"), "error");
+      return;
+    }
+    
+    if (commentText.length < 3) {
+      showMessage(getI18n("comment_form.error_min_length", "Comment must be at least 3 characters"), "error");
+      return;
+    }
+    
+    if (commentText.length > 1000) {
+      showMessage(getI18n("comment_form.error_max_length", "Comment cannot exceed 1000 characters"), "error");
+      return;
+    }
+    
+    // Disable submit button
+    submitBtn.disabled = true;
+    submitBtn.querySelector(".button-text").style.display = "none";
+    submitBtn.querySelector(".button-loader").style.display = "inline";
+    
+    try {
+      const response = await fetch(commentsEndpoint, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          page_key: pageKey,
+          community_key: communityKey,
+          author_name: authorName,
+          comment: commentText,
+          is_anonymous: isAnonymous,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok || !data.success) {
+        throw new Error(data.error || getI18n("comment_form.error_failed", "Failed to post comment"));
+      }
+
+      showMessage(getI18n("comment_form.success", "Comment posted successfully! Thank you for your feedback."), "success");
+      form.reset();
+
+      // Render and prepend the new comment to the list using the shared function
+      const appendAndEnhance = (commentObj) => {
+        if (commentObj && window.renderCommentCard) {
+          const commentsList = document.getElementById("comments-list");
+          if (commentsList) {
+            commentsList.insertAdjacentHTML("afterbegin", window.renderCommentCard(commentObj));
+            commentsList.style.display = "block";
+            // Attach expand/collapse to the new comment
+            if (window.attachCommentExpandBehavior) {
+              window.attachCommentExpandBehavior(commentsList);
+            } else {
+              // fallback: re-define here if not global
+              const textEls = commentsList.querySelectorAll(".comment-card__text");
+              textEls.forEach(el => {
+                if (!el._expandHandlerAttached) {
+                  function toggle() {
+                    const expanded = el.classList.toggle("comment-card__text--collapsed");
+                    el.setAttribute("aria-expanded", expanded ? "false" : "true");
+                  }
+                  el.addEventListener("click", toggle);
+                  el.addEventListener("keydown", e => {
+                    if (e.key === "Enter" || e.key === " ") { e.preventDefault(); toggle(); }
+                  });
+                  el._expandHandlerAttached = true;
+                }
+              });
+            }
+          }
+        }
+      };
+
+      if (data.comment) {
+        appendAndEnhance(data.comment);
+      } else {
+        // Fallback: fetch the latest comment and append it
+        fetch(`${commentsEndpoint}?page_key=${encodeURIComponent(pageKey)}&community_key=${encodeURIComponent(communityKey)}`)
+          .then(r => r.json())
+          .then(resp => {
+            if (resp && resp.comments && resp.comments.length > 0) {
+              // Find the last comment (assuming API returns in order)
+              appendAndEnhance(resp.comments[resp.comments.length - 1]);
+            }
+          });
+      }
+      
+    } catch (error) {
+      console.error("Error posting comment:", error);
+      showMessage(error.message || getI18n("comment_form.error_failed", "Failed to post comment. Please try again."), "error");
+    } finally {
+      submitBtn.disabled = false;
+      submitBtn.querySelector(".button-text").style.display = "inline";
+      submitBtn.querySelector(".button-loader").style.display = "none";
+    }
+  });
+  
+  function showMessage(text, type) {
+    formMessage.textContent = text;
+    formMessage.className = `form-message form-message-${type}`;
+    formMessage.style.display = "block";
+    
+    if (type === "success") {
+      setTimeout(() => {
+        formMessage.style.display = "none";
+      }, 5000);
+    }
+  }
+
+})();
+</script>

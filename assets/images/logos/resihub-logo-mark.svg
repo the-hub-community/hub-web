@@ -1,0 +1,32 @@
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg"
+    role="img" aria-labelledby="title desc">
+    <title id="title">The Hub Collective Logo Mark</title>
+    <desc id="desc">Circular hub mark with connected nodes.</desc>
+    <defs>
+        <linearGradient id="markCore" x1="62" y1="56" x2="450" y2="452"
+            gradientUnits="userSpaceOnUse">
+            <stop offset="0" stop-color="#10B981" />
+            <stop offset="1" stop-color="#22D3EE" />
+        </linearGradient>
+    </defs>
+
+    <circle cx="256" cy="256" r="214" fill="url(#markCore)" />
+    <circle cx="256" cy="256" r="118" fill="#A7F3D0" />
+    <circle cx="256" cy="256" r="62" fill="#F8FAFC" />
+
+    <g stroke="#D1FAE5" stroke-width="16" stroke-linecap="round">
+        <path d="M256 176V108" />
+        <path d="M356 232L418 196" />
+        <path d="M356 280L418 316" />
+        <path d="M256 336V404" />
+        <path d="M156 280L94 316" />
+        <path d="M156 232L94 196" />
+    </g>
+
+    <circle cx="256" cy="84" r="24" fill="#E2E8F0" />
+    <circle cx="441" cy="188" r="24" fill="#BFDBFE" />
+    <circle cx="441" cy="324" r="24" fill="#CFFAFE" />
+    <circle cx="256" cy="428" r="24" fill="#D1FAE5" />
+    <circle cx="71" cy="324" r="24" fill="#BFDBFE" />
+    <circle cx="71" cy="188" r="24" fill="#CFFAFE" />
+</svg>

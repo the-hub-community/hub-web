@@ -1,0 +1,504 @@
+/* ================================================================
+   Editor Drawer — Editorial surface refinements
+   Makes the drawer feel like a writing space, not a form.
+   Loaded after editor-drawer.css.
+   ================================================================ */
+
+/* ── 1. Section cards → rule-separated blocks ─────────────── */
+.drawer-section-card {
+  background: transparent;
+  border: none;
+  border-top: 1px solid var(--border-subtle, rgba(4, 23, 72, 0.08));
+  border-radius: 0;
+  padding: 20px 0 24px;
+  margin-bottom: 0;
+  box-shadow: none;
+  overflow: visible;
+}
+
+.drawer-section-card:first-of-type {
+  border-top: none;
+  padding-top: 8px;
+}
+
+.drawer-section-card:focus-within {
+  border-color: color-mix(in srgb, var(--primary-container) 30%, transparent);
+  box-shadow: none;
+}
+
+/* Section header — small caps label, no chrome */
+.drawer-section-card .section-header {
+  position: static;
+  background: transparent;
+  border-bottom: none;
+  padding: 0 0 12px;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+.drawer-section-card .section-header::before {
+  display: none;
+}
+
+.drawer-section-card .sec-label {
+  font-family: var(--font-mono, "JetBrains Mono", monospace);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--outline, #747781);
+  padding-left: 0;
+}
+
+/* Remove the colorful status pills */
+.drawer-section-card .sec-label::after {
+  content: none;
+  display: none;
+}
+
+/* Remove button — subtler */
+.drawer-section-card .btn-remove-sec {
+  color: var(--outline-variant, #c4c6d1);
+  transition: color 0.15s ease, background 0.15s ease;
+}
+
+.drawer-section-card .btn-remove-sec:hover {
+  background: transparent;
+  color: var(--error, #ba1a1a);
+}
+
+/* ── 2. Rich toolbar → quieter ────────────────────────────── */
+.rich-toolbar {
+  background: transparent;
+  border-bottom: none;
+  border-top: 1px solid var(--border-subtle, rgba(4, 23, 72, 0.08));
+  padding: 8px 0;
+  margin-bottom: 8px;
+}
+
+.rich-toolbar__group {
+  background: transparent;
+  border: none;
+  padding: 0;
+  gap: 0;
+}
+
+.rich-toolbar button {
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  color: var(--on-surface-variant, #434750);
+  transition: background 0.12s ease, color 0.12s ease;
+}
+
+.rich-toolbar button:hover {
+  background: var(--surface-container, #ebedff);
+  color: var(--on-surface, #041748);
+}
+
+.rich-toolbar button.is-active {
+  background: var(--surface-container, #ebedff);
+  color: var(--primary, #35568e);
+  box-shadow: none;
+}
+
+/* ── 3. Editor area — breathing room ─────────────────────── */
+.editor-area {
+  min-height: 200px;
+  padding: 12px 0 32px;
+  background: transparent;
+  font-size: 1rem;
+  line-height: 1.7;
+  color: var(--on-surface, #041748);
+}
+
+.editor-area:focus {
+  background: transparent;
+}
+
+.editor-area:empty::before {
+  padding: 0;
+}
+
+/* Word count — subtle */
+.editor-area::after {
+  bottom: 4px;
+  right: 0;
+  background: transparent;
+  padding: 0;
+}
+
+/* ── 4. Media section ─────────────────────────────────────── */
+.section-settings-panel {
+  background: transparent;
+  border-top: 1px solid var(--border-subtle, rgba(4, 23, 72, 0.08));
+  border-radius: 0;
+  margin-top: 12px;
+}
+
+.section-settings-panel .editor-accordion__summary {
+  padding: 14px 0;
+  background: transparent;
+  font-size: 0.82rem;
+  color: var(--on-surface-variant, #434750);
+  font-weight: 600;
+}
+
+.section-settings-panel .editor-accordion__summary::after {
+  background: transparent;
+  border: none;
+  color: var(--outline, #747781);
+  font-size: 1rem;
+}
+
+.section-settings-panel .editor-accordion__content {
+  padding: 16px 0;
+  border-top: none;
+  background: transparent;
+}
+
+/* ── 5. Page details accordion ────────────────────────────── */
+.editor-accordion {
+  border: 1px solid var(--border-subtle, rgba(4, 23, 72, 0.08));
+  border-radius: 12px;
+  background: transparent;
+}
+
+.editor-accordion__summary {
+  background: transparent;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--on-surface-variant, #434750);
+  padding: 12px 14px;
+}
+
+.editor-accordion__summary::after {
+  background: transparent;
+  border: 1px solid var(--border-subtle, rgba(4, 23, 72, 0.12));
+  color: var(--outline, #747781);
+}
+
+.editor-accordion__content {
+  padding: 12px 14px 16px;
+  border-top: 1px solid var(--border-subtle, rgba(4, 23, 72, 0.08));
+}
+
+/* ── 6. Drawer header — quieter ───────────────────────────── */
+.drawer-header h2 {
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--on-surface, #041748);
+}
+
+.drawer-view-switcher {
+  background: var(--surface-container-low, #f3f3ff);
+  border: none;
+  padding: 2px;
+}
+
+.drawer-view-btn {
+  font-size: 0.76rem;
+  padding: 5px 12px;
+  border-radius: 8px;
+}
+
+.drawer-view-btn.active {
+  background: var(--surface-container-lowest, #fff);
+  color: var(--primary, #35568e);
+  box-shadow: 0 1px 3px rgba(4, 23, 72, 0.06);
+}
+
+/* ── 7. Footer buttons — same visual weight ──────────────── */
+.drawer-footer .btn-cancel,
+.drawer-footer .btn-sync {
+  height: 42px;
+  font-size: 0.86rem;
+  border-radius: 10px;
+}
+
+.drawer-footer .btn-sync {
+  background: var(--primary, #35568e);
+  color: #fff;
+}
+
+.drawer-footer .btn-sync:hover {
+  background: var(--primary-container, #4f6fa8);
+}
+
+/* ── 8. Add section button ────────────────────────────────── */
+.btn-add-sec {
+  border: 1.5px dashed var(--border-strong, rgba(4, 23, 72, 0.2));
+  border-radius: 12px;
+  font-size: 0.86rem;
+  height: 48px;
+  margin: 20px 0;
+}
+
+.btn-add-sec:hover {
+  background: color-mix(in srgb, var(--primary) 4%, transparent);
+  border-color: var(--primary-container);
+  border-style: solid;
+}
+
+.btn-add-sec::before {
+  content: "+";
+  font-weight: 400;
+  font-size: 1.1rem;
+}
+
+/* Give the sticky shell a solid surface so content doesn't bleed through */
+.rich-toolbar-shell {
+  background: var(--surface-container-lowest, #fff);
+  z-index: 4;
+}
+
+[data-theme="dark"] .rich-toolbar-shell {
+  background: var(--surface-container-lowest, #131a2e);
+}
+
+/* Tighter alignment after the header */
+.rich-toolbar-shell {
+  top: 0;
+}
+
+/* Flatten the toolbar shell — rule instead of box */
+.rich-toolbar-shell {
+  border: none;
+  border-radius: 0;
+  border-top: 1px solid var(--border-subtle, rgba(4, 23, 72, 0.08));
+  border-bottom: 1px solid var(--border-subtle, rgba(4, 23, 72, 0.08));
+  background: var(--surface-container-lowest, #ffffff);
+  z-index: 5;
+}
+
+[data-theme="dark"] .rich-toolbar-shell {
+  background: #131a2e;
+}
+
+/* The toolbar itself stays flat inside the opaque shell */
+.rich-toolbar {
+  background: transparent;
+  border: none;
+}
+
+/* Flatten Media & Layout accordion */
+.section-settings-panel {
+  border: none;
+  border-radius: 0;
+  border-top: 1px solid var(--border-subtle, rgba(4, 23, 72, 0.08));
+  padding: 12px 0;
+}
+
+/* Keep Page Details as a boxed control — it has form inputs inside */
+/* (leave .editor-accordion.editor-meta-panel alone) */
+
+/* ── Content section header ──────────────────────────────── */
+.section-text .floating-group {
+  position: relative;
+  display: block;
+}
+
+.section-text .content-label-fix,
+.section-text .floating-label {
+  position: static !important;
+  display: block;
+  padding: 24px 0 6px !important;
+  margin: 0 !important;
+  font-family: var(--font-mono, "JetBrains Mono", monospace);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--outline, #747781);
+  background: transparent !important;
+  transform: none !important;
+  pointer-events: none;
+  border: none !important;
+  width: 100%;
+}
+
+.section-text .floating-group::before {
+  content: "";
+  display: block;
+  height: 1px;
+  background: var(--border-subtle, rgba(4, 23, 72, 0.08));
+  margin: 0;
+}
+
+/* ── Media & Layout section header ───────────────────────── */
+.section-settings-panel {
+  border: none;
+  border-top: 1px solid var(--border-subtle, rgba(4, 23, 72, 0.08));
+  border-radius: 0;
+  margin-top: 24px;
+  background: transparent;
+}
+
+.section-settings-panel .editor-accordion__summary {
+  padding: 20px 0 16px;
+  font-family: var(--font-mono, "JetBrains Mono", monospace);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--outline, #747781);
+  background: transparent;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.section-settings-panel .editor-accordion__summary::after {
+  content: "+";
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border: 1px solid var(--border-subtle, rgba(4, 23, 72, 0.12));
+  border-radius: 999px;
+  color: var(--outline, #747781);
+  font-size: 0.9rem;
+  background: transparent;
+  flex-shrink: 0;
+}
+
+.section-settings-panel[open] .editor-accordion__summary::after {
+  content: "−";
+}
+
+.section-settings-panel .editor-accordion__content {
+  padding: 0 0 20px;
+  border-top: none;
+  background: transparent;
+}
+
+[data-theme="dark"] .section-settings-panel,
+[data-theme="dark"] .section-text .floating-group::before {
+  border-top-color: rgba(148, 163, 184, 0.12);
+}
+
+[data-theme="dark"] .section-settings-panel .editor-accordion__summary::after {
+  border-color: rgba(148, 163, 184, 0.18);
+  color: #94a3b8;
+}
+
+/* Moderation inline hint — non-blocking warning */
+.moderation-hint {
+  display: none;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px 14px;
+  margin: 12px 0;
+  background: color-mix(in srgb, var(--tertiary, #7d0bd5) 8%, transparent);
+  border-left: 3px solid var(--tertiary, #7d0bd5);
+  border-radius: 8px;
+  color: var(--on-surface, #041748);
+  font-size: 0.86rem;
+  line-height: 1.5;
+}
+
+.moderation-hint.is-visible { display: flex; }
+
+.moderation-hint i {
+  color: var(--tertiary, #7d0bd5);
+  font-size: 0.9rem;
+  margin-top: 2px;
+  flex-shrink: 0;
+}
+
+[data-theme="dark"] .moderation-hint {
+  background: rgba(125, 11, 213, 0.14);
+  color: #e2e8f0;
+}
+
+/* ── AI score badge on section header ──────────────────────── */
+.ai-section-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 24px;
+  padding: 0 10px 0 8px;
+  border: none;
+  border-radius: 999px;
+  background: var(--surface-container, #ebedff);
+  color: var(--on-surface-variant, #434750);
+  font-family: var(--font-mono, "JetBrains Mono", monospace);
+  font-size: 0.66rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  gap: 4px;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.ai-section-badge::before {
+  content: "✦";
+  font-size: 0.62rem;
+  opacity: 0.6;
+}
+
+.ai-section-badge::after {
+  content: "";
+}
+
+/* Hide the badge when the score is 0 / unknown */
+.ai-section-badge[hidden] { display: none; }
+.ai-section-badge[data-score="0"] { display: none; }
+
+.ai-section-badge:hover {
+  background: var(--surface-container-high, #e3e7ff);
+}
+
+.ai-section-badge.is-good {
+  background: rgba(16, 185, 129, 0.14);
+  color: #047857;
+}
+
+.ai-section-badge.is-fair {
+  background: rgba(245, 158, 11, 0.16);
+  color: #92400e;
+}
+
+.ai-section-badge.is-low {
+  background: rgba(239, 68, 68, 0.13);
+  color: #991b1b;
+}
+
+[data-theme="dark"] .ai-section-badge {
+  background: rgba(148, 163, 184, 0.12);
+  color: #94a3b8;
+}
+
+[data-theme="dark"] .ai-section-badge.is-good {
+  background: rgba(16, 185, 129, 0.18);
+  color: #6ee7b7;
+}
+
+[data-theme="dark"] .ai-section-badge.is-fair {
+  background: rgba(245, 158, 11, 0.18);
+  color: #fcd34d;
+}
+
+[data-theme="dark"] .ai-section-badge.is-low {
+  background: rgba(239, 68, 68, 0.18);
+  color: #fca5a5;
+}
+
+/* Hide the badge if the section is empty */
+.editor-section:not(:focus-within) .ai-section-badge[data-score="0"] {
+  display: none;
+}
+
+.editor-section .section-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.editor-section .section-header .sec-label,
+.editor-section .section-header [data-editor-section-number] {
+  flex: 1;
+}

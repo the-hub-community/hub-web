@@ -1,0 +1,389 @@
+/* ================================================================
+   Detail page v2 — Split layout, verified badges, inquiry panel
+   ================================================================ */
+
+.detail-shell {
+  max-width: 1600px;
+  margin: 0 auto;
+  padding: 0;
+}
+
+.detail-breadcrumb {
+  display: flex;
+  gap: 8px;
+  font-size: 0.78rem;
+  color: var(--outline);
+  margin-bottom: 20px;
+}
+
+.detail-breadcrumb a { color: var(--outline); text-decoration: none; }
+.detail-breadcrumb a:hover { color: var(--on-surface); }
+
+.detail-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr);
+  gap: 32px;
+  align-items: start;
+}
+
+@media (max-width: 1200px) {
+  .detail-grid {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 900px) {
+  .detail-grid {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+}
+
+@media (max-width: 1024px) {
+  .detail-grid {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+}
+
+/* Gallery */
+.detail-gallery {
+  position: sticky;
+  top: 88px;
+}
+
+.detail-gallery__hero {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  max-height: 480px;
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  background: var(--surface-container-low);
+}
+
+.detail-gallery__hero img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  cursor: zoom-in;
+}
+
+.detail-gallery__hero-badges {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.detail-gallery__zoom {
+  position: absolute;
+  bottom: 16px;
+  right: 16px;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.95);
+  color: var(--on-surface);
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  border: none;
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.15);
+}
+
+.detail-gallery__thumbs {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.detail-thumb {
+  aspect-ratio: 1;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 2px solid transparent;
+  cursor: pointer;
+  padding: 0;
+  background: var(--surface-container-low);
+  transition: border-color 0.15s ease;
+}
+
+.detail-thumb.is-active { border-color: var(--on-surface); }
+
+.detail-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* Info panel */
+.detail-info {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  /* max-width: 640px; */
+}
+
+.detail-badges-row {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 4px;
+}
+
+.detail-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  background: var(--surface-container-low);
+  color: var(--on-surface-variant);
+}
+
+.detail-pill--verified { background: rgba(59, 130, 246, 0.12); color: #1e40af; }
+.detail-pill--fast { background: rgba(16, 185, 129, 0.12); color: #047857; }
+.detail-pill--pickup { background: rgba(148, 163, 184, 0.15); color: var(--on-surface-variant); }
+
+.detail-title {
+  font-family: var(--font-display);
+  font-size: clamp(1.5rem, 2.4vw, 2rem);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.15;
+  color: var(--on-surface);
+  margin: 0;
+  word-break: break-word;
+}
+
+.detail-description {
+  font-size: 0.94rem;
+  color: var(--on-surface-variant);
+  line-height: 1.55;
+  margin: 0;
+}
+
+.detail-meta-row {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+  font-size: 0.8rem;
+  color: var(--outline);
+  font-weight: 500;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.detail-meta-row span::before {
+  content: "·";
+  margin-right: 6px;
+  color: var(--outline);
+}
+
+.detail-meta-row span:first-child::before { display: none; }
+
+/* Price card */
+.detail-price-card {
+  padding: 14px 18px;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-subtle);
+  background: var(--surface-container-lowest);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.detail-price-card__label {
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--outline);
+}
+
+.detail-price-card__value {
+  font-family: var(--font-display);
+  font-size: 2rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: var(--on-surface);
+  line-height: 1;
+}
+
+.detail-price-card__value span {
+  font-size: 1rem;
+  color: var(--outline);
+  font-weight: 600;
+  margin-left: 4px;
+}
+
+.detail-price-card__hint {
+  font-size: 0.78rem;
+  color: var(--outline);
+}
+
+.detail-price-card__hint strong { color: var(--on-surface); }
+
+/* Seller card */
+.detail-seller-card {
+  padding: 16px 18px;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-subtle);
+  background: var(--surface-container-lowest);
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.detail-seller-card__avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #fbbf24, #f59e0b);
+  color: #ffffff;
+  display: grid;
+  place-items: center;
+  font-size: 1.1rem;
+  font-weight: 800;
+  flex-shrink: 0;
+}
+
+.detail-seller-card__body { flex: 1; min-width: 0; }
+
+.detail-seller-card__name {
+  font-size: 0.94rem;
+  font-weight: 700;
+  color: var(--on-surface);
+  margin: 0 0 2px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.detail-seller-card__name i { color: var(--color-verified); font-size: 0.82rem; }
+
+.detail-seller-card__meta {
+  font-size: 0.76rem;
+  color: var(--outline);
+}
+
+.detail-seller-card__stats {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+}
+
+.detail-seller-card__rating {
+  font-size: 0.86rem;
+  font-weight: 800;
+  color: var(--on-surface);
+}
+
+.detail-seller-card__reviews {
+  font-size: 0.7rem;
+  color: var(--outline);
+}
+
+/* Inquiry shortcuts */
+.detail-shortcuts {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.detail-shortcuts__label {
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--outline);
+}
+
+.detail-shortcut {
+  display: inline-flex;
+  align-items: center;
+  padding: 10px 14px;
+  border: 1px solid var(--border-default);
+  border-radius: 10px;
+  background: var(--surface-container-lowest);
+  color: var(--on-surface);
+  font-size: 0.82rem;
+  font-weight: 500;
+  cursor: pointer;
+  text-align: left;
+  font-family: inherit;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.detail-shortcut:hover {
+  border-color: var(--border-strong);
+  background: var(--surface-container-low);
+}
+
+/* CTA button (full-width) */
+.detail-cta {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  height: 52px;
+  border: none;
+  border-radius: 12px;
+  background: var(--primary);
+  color: #ffffff;
+  font-size: 0.94rem;
+  font-weight: 700;
+  text-decoration: none;
+  cursor: pointer;
+  font-family: inherit;
+  box-shadow: 0 6px 16px color-mix(in srgb, var(--primary) 24%, transparent);
+  transition: background 0.15s ease, transform 0.15s ease;
+}
+
+.detail-cta:hover {
+  background: var(--primary);
+  transform: translateY(-1px);
+  box-shadow: 0 8px 24px color-mix(in srgb, var(--primary) 24%, transparent);
+}
+
+/* When gallery has no image, reduce height so comments aren't pushed far down */
+.detail-gallery__hero.is-empty {
+  aspect-ratio: auto;
+  min-height: 240px;
+  max-height: 280px;
+}
+
+/* Empty state fills the entire gallery hero when there's no image */
+.detail-gallery__hero > .empty-state {
+  position: absolute;
+  inset: 12px;
+  width: auto;
+  height: auto;
+  min-height: 0;
+  border: 2px dashed var(--border-default);
+  border-radius: var(--radius-xl);
+  background: var(--surface-container-low);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 24px;
+  text-align: center;
+}
+
+.detail-gallery__hero > .empty-state .empty-state__icon {
+  width: 56px;
+  height: 56px;
+  font-size: 1.4rem;
+  margin: 0;
+}

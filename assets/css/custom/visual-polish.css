@@ -1,0 +1,183 @@
+/* ================================================================
+   Visual Polish — 2026 signature effects
+   Spotlight glow · noise texture · gradient borders · shimmer
+   ================================================================ */
+
+/* ── 1. NOISE TEXTURE OVERLAY ─────────────────────────────────
+   Breaks the sterile digital feel with a subtle grain. Zero network. */
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9998;
+  opacity: 0.035;
+  mix-blend-mode: multiply;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+@media (prefers-color-scheme: dark) {
+  body::after {
+    mix-blend-mode: screen;
+    opacity: 0.06;
+  }
+}
+
+/* ── 2. SPOTLIGHT GLOW ON CARDS ───────────────────────────────
+   Radial gradient that follows the cursor. Pure CSS + one JS file. */
+.spotlight-card {
+  position: relative;
+  overflow: hidden;
+  transition: transform var(--duration-base) var(--ease-out),
+              box-shadow var(--duration-base) var(--ease-out);
+}
+
+.spotlight-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity var(--duration-base) var(--ease-out);
+  background: radial-gradient(
+    500px circle at var(--spotlight-x, 50%) var(--spotlight-y, 50%),
+    rgba(147, 51, 234, 0.10),
+    transparent 40%
+  );
+  z-index: 1;
+}
+
+.spotlight-card:hover::before {
+  opacity: 1;
+}
+
+.spotlight-card > * {
+  position: relative;
+  z-index: 2;
+}
+
+/* Apply spotlight automatically to common cards */
+.hub-card,
+.asymmetric-card,
+.ad-card-wrapper,
+.drawer-section-card,
+.empty-state,
+.success-modal-card {
+  /* opt-in via .spotlight-card class in markup for control */
+}
+
+/* ── 3. GRADIENT FOCUS BORDERS ────────────────────────────────
+   Rotating conic-gradient on focused inputs. Linear-style signature. */
+@property --border-angle {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+
+.gradient-focus {
+  position: relative;
+}
+
+.gradient-focus:focus-within {
+  outline: none;
+}
+
+.gradient-focus:focus-within::after {
+  content: "";
+  position: absolute;
+  inset: -2px;
+  border-radius: inherit;
+  padding: 2px;
+  background: conic-gradient(
+    from var(--border-angle),
+    transparent 0%,
+    var(--primary, #9333ea) 25%,
+    transparent 50%
+  );
+  -webkit-mask: linear-gradient(#000 0 0) content-box,
+                linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+          mask-composite: exclude;
+  animation: borderSpin 4s linear infinite;
+  pointer-events: none;
+}
+
+@keyframes borderSpin {
+  to { --border-angle: 360deg; }
+}
+
+/* ── 4. SHIMMER TEXT (loading state) ────────────────────────── */
+.shimmer-text {
+  background: linear-gradient(
+    90deg,
+    var(--text-muted) 0%,
+    var(--text-primary) 50%,
+    var(--text-muted) 100%
+  );
+  background-size: 200% 100%;
+  -webkit-background-clip: text;
+          background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: shimmerSlide 2s linear infinite;
+}
+
+@keyframes shimmerSlide {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* ── 5. CARD HOVER LIFT (unified) ───────────────────────────── */
+.hub-card,
+.asymmetric-card,
+.ad-card-wrapper {
+  transition: transform var(--duration-base) var(--ease-out),
+              box-shadow var(--duration-base) var(--ease-out);
+  will-change: transform;
+}
+
+.hub-card:hover,
+.asymmetric-card:hover,
+.ad-card-wrapper:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+}
+
+/* ── 6. BUTTON PRESS FEEDBACK ───────────────────────────────── */
+.btn-primary-header:active,
+.btn-submit-main:active,
+.btn-sync:active,
+.form-button:active {
+  transform: translateY(0) scale(0.98);
+  transition-duration: 60ms;
+}
+
+/* ── 7. SMOOTH THEME TRANSITION ─────────────────────────────── */
+html.theme-transitioning,
+html.theme-transitioning * {
+  transition:
+    background-color var(--duration-base) var(--ease-out),
+    color var(--duration-base) var(--ease-out),
+    border-color var(--duration-base) var(--ease-out) !important;
+}
+
+/* ── 8. FOCUS RING (unified, accessible) ────────────────────── */
+:focus-visible {
+  outline: 2px solid var(--primary, #9333ea);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* ── 9. RESPECT REDUCED MOTION ──────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  .spotlight-card::before,
+  .gradient-focus:focus-within::after,
+  .shimmer-text {
+    animation: none !important;
+    transition: none !important;
+  }
+  .hub-card:hover,
+  .asymmetric-card:hover,
+  .ad-card-wrapper:hover {
+    transform: none;
+  }
+}

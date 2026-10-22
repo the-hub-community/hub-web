@@ -1,0 +1,201 @@
+---
+layout: default
+---
+
+{% assign images = page.image_url | default: "" | split: "," %}
+{% assign primary_image = "" %}
+{% assign image_count = 0 %}
+{% for img in images %}
+  {% assign normalized_img = img | strip %}
+  {% unless normalized_img == "" %}
+    {% assign image_count = image_count | plus: 1 %}
+    {% if primary_image == "" %}
+      {% assign primary_image = normalized_img %}
+    {% endif %}
+  {% endunless %}
+{% endfor %}
+
+{% assign listing_price = page.price | default: '' | strip %}
+{% assign has_listing_price = false %}
+{% unless listing_price == '' %}
+  {% assign has_listing_price = true %}
+{% endunless %}
+
+{% assign raw_contact = page.contact | default: "" | strip %}
+{% assign contact_lower = raw_contact | downcase %}
+{% assign tel_sanitized = raw_contact | replace: ' ', '' | replace: '-', '' | replace: '(', '' | replace: ')', '' %}
+{% assign contact_has_space = false %}
+{% if contact_lower contains ' ' %}
+  {% assign contact_has_space = true %}
+{% endif %}
+{% assign raw_contact = page.contact | default: "" | strip %}
+{% assign contact_lower = raw_contact | downcase %}
+{% assign tel_sanitized = raw_contact | replace: ' ', '' | replace: '-', '' | replace: '(', '' | replace: ')', '' | replace: '.', '' %}
+{% assign cta_href = "" %}
+{% assign cta_label = "Contact Seller" %}
+{% assign cta_icon = "fa-solid fa-message" %}
+
+{% if raw_contact == "" %}
+  {% assign cta_href = "#" %}
+  {% assign cta_label = "Contact Unavailable" %}
+{% elsif contact_lower contains "@" and contact_lower contains "." and contact_lower contains " " == false %}
+  {% assign cta_href = "mailto:" | append: raw_contact %}
+  {% assign cta_label = "Email Seller" %}
+  {% assign cta_icon = "fa-solid fa-envelope" %}
+{% elsif contact_lower contains "http://" or contact_lower contains "https://" %}
+  {% assign cta_href = raw_contact %}
+  {% assign cta_label = "Open Link" %}
+  {% assign cta_icon = "fa-solid fa-arrow-up-right-from-square" %}
+{% else %}
+  <!-- It's a phone number or name. Only make it a tel: link if it has numbers -->
+  {% assign digit_count = tel_sanitized | size %}
+  {% if digit_count > 5 %}
+    {% assign cta_href = "tel:" | append: tel_sanitized %}
+    {% assign cta_label = "Call Seller" %}
+    {% assign cta_icon = "fa-solid fa-phone" %}
+  {% else %}
+    {% assign cta_href = "#" %}
+    {% assign cta_label = "Contact via Community" %}
+    {% assign cta_icon = "fa-solid fa-users" %}
+  {% endif %}
+{% endif %}
+
+<div class="detail-shell">
+
+  <nav class="detail-breadcrumb" aria-label="Breadcrumb">
+    <a href="{{ site.baseurl }}/">Home</a>
+    <span>/</span>
+    <a href="{{ site.baseurl }}/marketplace.html">Marketplace</a>
+    <span>/</span>
+    <a href="{{ site.baseurl }}/marketplace.html?category={{ page.category | url_encode }}">{{ page.category | default: "General" }}</a>
+    <span>/</span>
+    <span style="color:var(--on-surface);font-weight:600;">{{ page.title }}</span>
+  </nav>
+
+  <div class="detail-grid">
+
+    <!-- Gallery -->
+    <div class="detail-gallery">
+      <div class="detail-gallery__hero{% if primary_image == '' %} is-empty{% endif %}">
+        {% if primary_image != "" %}
+          <img id="detailHeroImg" src="{{ primary_image | relative_url }}" alt="{{ page.title | escape }}">
+        {% else %}
+          {% include empty-state.html category=page.category label="Photos coming soon" %}
+        {% endif %}
+
+        <div class="detail-gallery__hero-badges">
+          {% if page.verified %}
+            <span class="mp-badge mp-badge--verified"><i class="fa-solid fa-circle-check"></i> Verified Neighbor</span>
+          {% endif %}
+        </div>
+      </div>
+
+      {% if image_count > 1 %}
+      <div class="detail-gallery__thumbs" id="detailThumbs">
+        {% assign idx = 0 %}
+        {% for img in images %}
+          {% assign clean = img | strip %}
+          {% if clean != "" %}
+            <button type="button" class="detail-thumb {% if idx == 0 %}is-active{% endif %}"
+                    data-index="{{ idx }}"
+                    data-src="{{ clean | relative_url }}">
+              <img src="{{ clean | relative_url }}" alt="Thumbnail {{ idx | plus: 1 }}">
+            </button>
+            {% assign idx = idx | plus: 1 %}
+          {% endif %}
+        {% endfor %}
+      </div>
+      {% endif %}
+    </div>
+
+    <!-- Info panel -->
+    <div class="detail-info">
+
+      <h1 class="detail-title">{{ page.title }}</h1>
+
+      <div class="detail-meta-row">
+        <span>Posted {{ page.date | date: "%b %-d" }}</span>
+        <span>{{ page.target_community | default: page.condo | default: "General" }}</span>
+        <span>{{ page.category | default: "General" }}</span>
+      </div>
+
+      {% comment %}
+      Strip leading h1 from rendered content, then only render description
+      if there's actual text left over.
+      {% endcomment %}
+      {% assign clean_content = content %}
+      {% if clean_content contains '<h1>' %}
+        {% assign h1_parts = clean_content | split: '</h1>' %}
+        {% assign clean_content = h1_parts | slice: 1, h1_parts.size | join: '</h1>' %}
+      {% endif %}
+
+      {% assign content_stripped = clean_content | strip_html | strip %}
+      {% if content_stripped != '' %}
+      <div class="detail-description">
+        {{ clean_content }}
+      </div>
+      {% endif %}
+
+      {% if has_listing_price %}
+      <div class="detail-price-card">
+        <span class="detail-price-card__label">Community Price</span>
+        <div class="detail-price-card__value">${{ listing_price }}<span>CAD</span></div>
+        <span class="detail-price-card__hint">Fair value · <strong>no fees</strong> on The Hub Community</span>
+      </div>
+      {% endif %}
+
+      <div class="detail-seller-card">
+        <div class="detail-seller-card__avatar">{{ raw_contact | default: "?" | slice: 0 | upcase }}</div>
+        <div class="detail-seller-card__body">
+          <p class="detail-seller-card__name">
+            {{ raw_contact | default: "Verified neighbor" }}
+            <i class="fa-solid fa-circle-check"></i>
+          </p>
+          <span class="detail-seller-card__meta">Resident · Verified neighbor</span>
+        </div>
+        
+      </div>
+
+
+
+      <a href="{{ cta_href }}" class="detail-cta">
+        <i class="{{ cta_icon }}"></i>
+        {{ cta_label }}
+      </a>
+
+      <div class="ugc-report-wrap ugc-report-wrap--detail">
+        <button type="button" class="report-content-btn" aria-label="Report this listing">
+          <i class="fa-solid fa-flag"></i>
+          Report Listing
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  {% if page.community_key and page.page_key %}
+  <div class="comments-shell">
+    <div class="comments-shell__col comments-shell__col--list">
+      {% include comments-list.html %}
+    </div>
+    <div class="comments-shell__col comments-shell__col--form">
+      {% include comment-form.html %}
+    </div>
+  </div>
+  {% endif %}
+
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const hero = document.getElementById('detailHeroImg');
+    const thumbs = document.querySelectorAll('.detail-thumb');
+    thumbs.forEach((t) => {
+      t.addEventListener('click', () => {
+        if (hero) hero.src = t.dataset.src;
+        thumbs.forEach((x) => x.classList.remove('is-active'));
+        t.classList.add('is-active');
+      });
+    });
+  });
+</script>

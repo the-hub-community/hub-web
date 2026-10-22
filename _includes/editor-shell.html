@@ -1,0 +1,56 @@
+{% comment %}
+Unified editor section template.
+Used by:
+  - _includes/editor.html       (drawer on existing pages)
+  - _includes/pages/submit.html (wizard step 2)
+Both instantiate via window.EditorCore.mount(container, options).
+{% endcomment %}
+
+<template id="editor-section-template">
+  <div class="editor-section" data-editor-section>
+    <div class="editor-section__header">
+      <span class="editor-section__label">
+        <span data-i18n="common.section">Section</span>
+        <span data-editor-section-number>1</span>
+      </span>
+      <button
+        type="button"
+        class="editor-section__remove"
+        data-editor-remove
+        aria-label="Remove section"
+      >&times;</button>
+    </div>
+
+    <div class="editor-section__toolbar" role="toolbar" aria-label="Formatting">
+      <button type="button" data-editor-cmd="bold" title="Bold"><i class="fa-solid fa-bold" aria-hidden="true"></i></button>
+      <button type="button" data-editor-cmd="italic" title="Italic"><i class="fa-solid fa-italic" aria-hidden="true"></i></button>
+      <button type="button" data-editor-cmd="underline" title="Underline"><i class="fa-solid fa-underline" aria-hidden="true"></i></button>
+      <button type="button" data-editor-cmd="insertUnorderedList" title="Bulleted list"><i class="fa-solid fa-list-ul" aria-hidden="true"></i></button>
+      <span class="editor-section__toolbar-sep" aria-hidden="true"></span>
+      <button type="button" data-editor-cmd="undo" title="Undo"><i class="fa-solid fa-rotate-left" aria-hidden="true"></i></button>
+      <button type="button" data-editor-cmd="redo" title="Redo"><i class="fa-solid fa-rotate-right" aria-hidden="true"></i></button>
+    </div>
+
+    <div
+      class="editor-section__body"
+      contenteditable="true"
+      role="textbox"
+      aria-multiline="true"
+      spellcheck="true"
+      data-editor-area
+      data-placeholder="Write your content here…"
+    ></div>
+
+    <div class="editor-section__media">
+      <div class="image-picker" data-role="image-picker"></div>
+      <div class="editor-section__video">
+        <input
+          type="text"
+          data-editor-video
+          placeholder="YouTube URL (optional)"
+          class="editor-section__input"
+        >
+      </div>
+    </div>
+  </div>
+</template>

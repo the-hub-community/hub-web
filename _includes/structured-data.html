@@ -1,0 +1,66 @@
+{% if page.layout == 'marketplace-item' %}
+{% assign schema_images = page.image_url | default: '' | split: ',' %}
+{% assign schema_has_image = false %}
+{% assign schema_kind = 'Product' %}
+{% if page.category == 'Services' or page.category == 'Food' %}
+{% assign schema_kind = 'Service' %}
+{% endif %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "{{ schema_kind }}",
+  "name": {{ include.seo_title | jsonify }},
+  "description": {{ include.seo_description | jsonify }},
+  "url": {{ include.seo_canonical_url | jsonify }},
+  "category": {{ page.category | default: 'General' | jsonify }},
+  "areaServed": {
+    "@type": "Place",
+    "name": {{ page.target_community | default: page.condo | default: 'General' | jsonify }}
+  },
+  "provider": {
+    "@type": "Organization",
+    "name": {{ site.title | default: 'The Hub Collective' | jsonify }}
+  }{% if page.contact %},
+  "seller": {
+    "@type": "Person",
+    "name": {{ page.contact | jsonify }}
+  }{% endif %}{% if page.price %},
+  "offers": {
+    "@type": "Offer",
+    "price": {{ page.price | jsonify }},
+    "priceCurrency": "CAD",
+    "availability": "https://schema.org/InStock",
+    "url": {{ include.seo_canonical_url | jsonify }}
+  }{% endif %}{% assign rendered_schema_image = false %}{% for img in schema_images %}{% assign normalized_schema_img = img | strip %}{% if normalized_schema_img != '' %}{% unless rendered_schema_image %},
+  "image": [
+{% assign rendered_schema_image = true %}{% else %},
+{% endunless %}    {{ normalized_schema_img | absolute_url | jsonify }}{% endif %}{% endfor %}{% if rendered_schema_image %}
+  ]{% else %},
+  "image": [{{ include.seo_image_url | jsonify }}]{% endif %}
+}
+</script>
+{% elsif page.url == '/marketplace.html' %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "CollectionPage",
+  "name": {{ page.title | default: 'Marketplace' | jsonify }},
+  "description": {{ include.seo_description | jsonify }},
+  "url": {{ include.seo_canonical_url | jsonify }},
+  "mainEntity": {
+    "@type": "ItemList",
+    "numberOfItems": {{ site.pros | size }},
+    "itemListElement": [
+      {% for ad in site.pros limit: 12 %}
+      {
+        "@type": "ListItem",
+        "position": {{ forloop.index }},
+        "url": {{ ad.url | absolute_url | jsonify }},
+        "name": {{ ad.title | jsonify }}
+      }{% unless forloop.last %},{% endunless %}
+      {% endfor %}
+    ]
+  }
+}
+</script>
+{% endif %}

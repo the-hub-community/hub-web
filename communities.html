@@ -1,0 +1,43 @@
+---
+layout: default
+title: Communities
+---
+
+<section class="dashboard-ed">
+  <header class="ed-hero">
+    <div class="ed-hero__eyebrow">
+      <span>All communities</span>
+    </div>
+    <h1 class="ed-hero__title">Every neighbourhood on the Hub.</h1>
+    <p class="ed-hero__subtitle">
+      Each community is maintained by the residents inside it. Pick one to explore its wiki, marketplace, and active notices.
+    </p>
+  </header>
+
+  {% assign communities = site.pages
+     | where_exp: "p", "p.path contains 'content/'"
+     | where_exp: "p", "p.name == 'index.md' or p.name == 'index.html'"
+     | sort: "title" %}
+
+  <div class="ed-list">
+    {% for c in communities %}
+      {% assign c_name = c.condo | default: c.title %}
+      {% assign c_slug = c_name | slugify %}
+      {% assign c_count = site.pages | where: "condo", c_name | size %}
+      <a href="{{ site.baseurl }}/content/{{ c_slug }}/" class="ed-list__row" data-community-slug="{{ c_slug }}">
+        <span class="ed-list__monogram" data-community-slug="{{ c_slug }}" aria-hidden="true">
+          {{ c_name | slice: 0 | upcase }}
+        </span>
+        <span class="ed-list__body">
+          <span class="ed-list__title">{{ c_name }}</span>
+          <span class="ed-list__meta">
+            <span>{{ c_count }} page{% if c_count != 1 %}s{% endif %}</span>
+            <span class="ed-list__meta-sep">·</span>
+            <span>Resident-maintained</span>
+          </span>
+        </span>
+        <span class="ed-list__arrow"><i class="fa-solid fa-arrow-right"></i></span>
+      </a>
+    {% endfor %}
+  </div>
+</section>

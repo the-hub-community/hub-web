@@ -1,0 +1,83 @@
+---
+layout: default
+title: Settings
+robots: noindex, nofollow
+sitemap: false
+---
+
+<main class="main-content">
+  <div class="form-shell">
+    <div class="page-hero">
+      <div class="page-hero__meta">
+        <span class="page-hero__dot"></span>
+        <span class="page-hero__eyebrow">Preferences</span>
+      </div>
+      <h1 class="page-hero__title">Settings</h1>
+      <p class="page-hero__subtitle">
+        Control how The Hub Community works on this device.
+      </p>
+    </div>
+
+    <div class="settings-list">
+      <div class="settings-item">
+        <div>
+          <div class="settings-item__title">Theme</div>
+          <div class="settings-item__desc">Light, dark, or match your system</div>
+        </div>
+        <button type="button" class="btn btn--secondary btn--sm" data-theme-toggle>
+          Toggle
+        </button>
+      </div>
+
+      <div class="settings-item">
+        <div>
+          <div class="settings-item__title">Language</div>
+          <div class="settings-item__desc">English or Français</div>
+        </div>
+        <select id="languageToggle" class="modern-input" style="max-width: 160px;">
+          <option value="en">English</option>
+          <option value="fr">Français</option>
+        </select>
+      </div>
+
+      <div class="settings-item">
+        <div>
+          <div class="settings-item__title">Text size</div>
+          <div class="settings-item__desc">Adjust reading comfort</div>
+        </div>
+        <div class="settings-item__zoom">
+          <button id="zoomOut" aria-label="Zoom out" class="btn btn--ghost btn--sm">A−</button>
+          <button id="zoomReset" aria-label="Reset zoom" class="btn btn--ghost btn--sm">100%</button>
+          <button id="zoomIn" aria-label="Zoom in" class="btn btn--ghost btn--sm">A+</button>
+        </div>
+      </div>
+
+      <div class="settings-item settings-item--danger">
+        <div>
+          <div class="settings-item__title">Device identity</div>
+          <div class="settings-item__desc">
+            Your submissions are tracked by a random key stored in this browser. Clearing it removes your submission history from this device.
+          </div>
+        </div>
+        <button type="button" class="btn btn--secondary btn--sm" id="clearDeviceKey">
+          Clear
+        </button>
+      </div>
+    </div>
+  </div>
+</main>
+
+<script>
+(function initSettingsPage() {
+  "use strict";
+
+  document.getElementById("clearDeviceKey")?.addEventListener("click", () => {
+    if (!confirm("This will clear your device key. You won't be able to check the status of your previous submissions from this device. Continue?")) return;
+    localStorage.removeItem("resiHubDeviceKey");
+    localStorage.removeItem("resiHubSubmissions");
+    localStorage.removeItem("editor-draft");
+    alert("Device key cleared.");
+    location.reload();
+  });
+})();
+</script>

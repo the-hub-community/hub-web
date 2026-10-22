@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    {% include head.html %}
+
+    {% comment %} DESIGN SYSTEM {% endcomment %}
+    <link rel="stylesheet" href="{{ '/assets/css/custom/tokens.css' | relative_url }}">
+    <link rel="stylesheet" href="{{ '/assets/css/custom/typography.css' | relative_url }}">
+    <link rel="stylesheet" href="{{ '/assets/css/custom/components.css' | relative_url }}">
+
+    {% comment %} LAYOUT {% endcomment %}
+    <link rel="stylesheet" href="{{ '/assets/css/custom/header-v2.css' | relative_url }}">
+    <link rel="stylesheet" href="{{ '/assets/css/custom/sidebar-v2.css' | relative_url }}">
+
+    {% comment %} PAGES {% endcomment %}
+    <link rel="stylesheet" href="{{ '/assets/css/custom/dashboard.css' | relative_url }}">
+    <link rel="stylesheet" href="{{ '/assets/css/custom/marketplace-v2.css' | relative_url }}">
+    <link rel="stylesheet" href="{{ '/assets/css/custom/detail-v2.css' | relative_url }}">
+
+    {% comment %} UTILITIES {% endcomment %}
+    <link rel="stylesheet" href="{{ '/assets/css/custom/empty-states.css' | relative_url }}">
+    <link rel="stylesheet" href="{{ '/assets/css/custom/form-polish.css' | relative_url }}">
+    <link rel="stylesheet" href="{{ '/assets/css/custom/visual-polish.css' | relative_url }}">
+    <link rel="stylesheet" href="{{ '/assets/css/custom/dark-mode.css' | relative_url }}">
+    <link rel="stylesheet" href="{{ '/assets/css/custom/all-media.css' | relative_url }}">
+    <link rel="stylesheet" href="{{ '/assets/css/custom/footer-v2.css' | relative_url }}">
+    <link rel="stylesheet" href="{{ '/assets/css/custom/editor-drawer.css' | relative_url }}">
+    <link rel="stylesheet" href="{{ '/assets/css/custom/command-palette.css' | relative_url }}">
+    <link rel="stylesheet" href="{{ '/assets/css/custom/editorial.css' | relative_url }}">
+    <link rel="stylesheet" href="{{ '/assets/css/custom/dashboard-extras.css' | relative_url }}">
+    <link rel="stylesheet" href="{{ '/assets/css/custom/community-hero.css' | relative_url }}">
+    <link rel="stylesheet" href="{{ '/assets/css/custom/wiki-editorial.css' | relative_url }}">
+    <link rel="stylesheet" href="{{ '/assets/css/custom/marketplace-editorial.css' | relative_url }}">
+    <link rel="stylesheet" href="{{ '/assets/css/custom/editor-drawer-editorial.css' | relative_url }}">
+    <link rel="stylesheet" href="{{ '/assets/css/comments.css' | relative_url }}">
+    <link rel="stylesheet" href="{{ '/assets/css/custom/wiki-alerts.css' | relative_url }}">
+
+    {% if page.custom_stylesheets %}
+    {% for stylesheet in page.custom_stylesheets %}
+    <link rel="stylesheet" href="{{ '/assets/css/' | append: stylesheet | append: '.css' | relative_url }}">
+    {% endfor %}
+    {% endif %}
+</head>
+
+{% assign current_condo = page.condo %}
+{% if current_condo == nil or current_condo == "" %}
+{% assign raw_condo = page.url | split: 'condo=' | last | split: '&' | first %}
+{% if raw_condo contains '/' or raw_condo == page.url %}
+{% assign current_condo = nil %}
+{% else %}
+{% assign current_condo = raw_condo | replace: '-', ' ' %}
+{% endif %}
+{% endif %}
+
+{% assign fallback_page_id = 'home' %}
+{% unless page.url == '/' or page.url == '' %}
+{% assign fallback_page_id = page.url | slugify %}
+{% endunless %}
+
+{% assign page_community_key = page.community_key %}
+{% if page_community_key == nil or page_community_key == '' %}
+{% if current_condo %}
+{% assign page_community_key = current_condo | slugify | prepend: 'comm-' %}
+{% else %}
+{% assign page_community_key = '' %}
+{% endif %}
+{% endif %}
+
+<body class="{% if page.url == '/submit.html' %}layout-submit{% endif %}"
+    data-baseurl="{{ site.baseurl | default: '' }}" data-page-condo="{{ page.condo | default: '' | escape }}"
+    data-page-path="{{ page.path | default: '' | escape }}"
+    data-page-key="{{ page.page_key | default: fallback_page_id | escape }}"
+    data-community-key="{{ page_community_key | escape }}"
+    data-resource-mode="{{ site.resources.mode | default: 'dev' }}"
+    data-expose-debug-bindings="{{ site.resources.expose_debug_bindings | default: true }}">
+
+    {% include header.html %}
+
+    <div class="app-shell">
+        <div class="sidebar-overlay" id="sidebarOverlay"></div>
+        {% include sidebar.html %}
+
+        <main class="main-content">
+
+            {% if page.url == '/' or page.layout == 'marketplace-item' %}
+            {{ content }}
+            {% else %}
+
+            {% if current_condo %}
+            {% assign now_ts = 'now' | date: '%s' %}
+            {% assign alert_ttl_seconds = 432000 %}
+            {% assign active_alerts = site.pages | where: "layout", "broadcast" | where: "condo", current_condo | sort:
+            'date' | reverse %}
+            {% assign visible_alert_count = 0 %}
+            {% for alert in active_alerts %}
+            {% assign alert_ts = alert.date | date: '%s' %}
+            {% assign alert_age = now_ts | minus: alert_ts %}
+            {% if alert_age >= 0 and alert_age <= alert_ttl_seconds %} {% assign visible_alert_count=visible_alert_count
+                | plus: 1 %} {% endif %} {% endfor %} 
+                {% if visible_alert_count > 0 %}
+                    <!-- Mobile Toggle Button -->
+                    <button type="button" class="mobile-alerts-toggle" id="mobileAlertsBtn">
+                        <span class="mobile-alerts-badge">{{ visible_alert_count }}</span>
+                        Active Alert{% if visible_alert_count != 1 %}s{% endif %}
+                        <i class="fa-solid fa-chevron-down" id="mobileAlertsIcon"></i>
+                    </button>
+
+                    <!-- Alerts Container -->
+                    <div class="wiki-alerts" id="wikiAlertsContainer">
+                        {% assign displayed_alerts = 0 %}
+                        {% for alert in active_alerts %}
+                            {% assign alert_ts = alert.date | date: '%s' %}
+                            {% assign alert_age = now_ts | minus: alert_ts %}
+                            
+                            {% if alert_age >= 0 and alert_age <= alert_ttl_seconds %}
+                                {% if displayed_alerts < 3 %}
+                                    {% assign expires_ts = alert_ts | plus: alert_ttl_seconds %}
+                                    {% assign remaining_seconds = expires_ts | minus: now_ts %}
+                                    {% assign remaining_hours_total = remaining_seconds | divided_by: 3600 %}
+                                    {% assign remaining_days = remaining_hours_total | divided_by: 24 %}
+                                    {% assign remaining_hours = remaining_hours_total | modulo: 24 %}
+                                    {% assign alert_urgency = alert.urgency | default: 'low' %}
+                                    
+                                    {% case alert_urgency %}
+                                    {% when 'critical' %}{% assign urgency_label = 'Critical alert' %}
+                                    {% when 'high' %}{% assign urgency_label = 'Urgent notice' %}
+                                    {% when 'medium' %}{% assign urgency_label = 'Community notice' %}
+                                    {% else %}{% assign urgency_label = 'Notice' %}
+                                    {% endcase %}
+                                    
+                                    <details class="wiki-alert" data-urgency="{{ alert_urgency }}">
+                                        <summary class="wiki-alert__summary">
+                                            <span class="wiki-alert__live" aria-hidden="true"><span class="wiki-alert__dot"></span></span>
+                                            <span class="wiki-alert__title">{{ alert.title }}</span>
+                                            <span class="wiki-alert__meta">
+                                                <span class="wiki-alert__meta-label">{{ urgency_label }}</span>
+                                                <span class="wiki-alert__meta-sep">·</span>
+                                                <span class="wiki-alert__meta-time">
+                                                    {% if remaining_days > 0 %}{{ remaining_days }}d {% endif %}{{ remaining_hours }}h left
+                                                </span>
+                                            </span>
+                                            <span class="wiki-alert__chevron" aria-hidden="true"><i class="fa-solid fa-chevron-down"></i></span>
+                                        </summary>
+                                        <div class="wiki-alert__body">
+                                            <div class="wiki-alert__content">{{ alert.content | markdownify }}</div>
+                                            <div class="wiki-alert__footer">
+                                                <span class="wiki-alert__date"><i class="fa-regular fa-calendar"></i> {{ alert.date | date: "%B %-d, %Y" }}</span>
+                                                <a class="wiki-alert__link" href="{{ alert.url | relative_url }}">Read full notice <i class="fa-solid fa-arrow-right"></i></a>
+                                            </div>
+                                        </div>
+                                    </details>
+                                    {% assign displayed_alerts = displayed_alerts | plus: 1 %}
+                                {% endif %}
+                            {% endif %}
+                        {% endfor %}
+
+                        {% if visible_alert_count > 3 %}
+                            <a href="{{ site.baseurl }}/notices.html?condo={{ current_condo | slugify }}" class="wiki-alerts__view-all">
+                                View all {{ visible_alert_count }} active notices →
+                            </a>
+                        {% endif %}
+                    </div>
+                    {% endif %}
+
+
+                {% endif %}
+
+                <div class="wiki-layout">
+                    <article class="content-card">
+
+                        {% if current_condo and current_condo != "General" and page.url != "/marketplace.html" and
+                        page.url !=
+                        "/broadcast.html" and page.url != "/list-service.html" %}
+                        <div class="page-community-chip" data-community-slug="{{ current_condo | slugify }}"
+                            aria-label="Current community" data-i18n-aria-label="default.current_community_aria">
+                            <i class="fa-solid fa-location-dot" aria-hidden="true"></i>
+                            <span><span data-i18n="default.community_prefix">Community:</span> {{ current_condo
+                                }}</span>
+                        </div>
+                        {% endif %}
+
+                        {% if page.tags and page.tags.size > 0 %}
+                        <div class="page-tag-strip" aria-label="Page tags"
+                            data-i18n-aria-label="default.page_tags_aria">
+                            {% for tag in page.tags %}
+                            <span class="page-tag-chip">#{{ tag }}</span>
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+
+                        {% if page.url contains '/content/' and page.condo %}
+                        {% assign wiki_word_count = page.content | strip_html | number_of_words %}
+                        {% assign wiki_read_min = wiki_word_count | divided_by: 200 | plus: 1 %}
+                        <div class="wiki-meta-strip">
+                            {% if page.author %}
+                            <span class="wiki-meta-strip__item">
+                                <i class="fa-regular fa-user"></i>
+                                <span class="wiki-meta-strip__author">{{ page.author }}</span>
+                            </span>
+                            <span class="wiki-meta-strip__sep">·</span>
+                            {% endif %}
+
+                            <span class="wiki-meta-strip__item">
+                                <i class="fa-regular fa-clock"></i>
+                                <span>{{ page.date | date: "%b %-d, %Y" }}</span>
+                            </span>
+
+                            <span class="wiki-meta-strip__sep">·</span>
+                            <span class="wiki-meta-strip__item">
+                                <i class="fa-solid fa-book-open"></i>
+                                <span>{{ wiki_read_min }} min read</span>
+                            </span>
+
+                            {% if page.tags and page.tags.size > 0 %}
+                            <span class="wiki-meta-strip__sep">·</span>
+                            <span class="wiki-meta-strip__item">
+                                <i class="fa-solid fa-tag"></i>
+                                <span>{{ page.tags | join: " · " }}</span>
+                            </span>
+                            {% endif %}
+                        </div>
+                        {% endif %}
+                        <div class="wiki-render" data-raw-md="{{ page.content | escape }}" data-ugc-type="wiki"
+                            data-ugc-id="{{ page.page_key | default: fallback_page_id }}"
+                            data-community-key="{{ page_community_key }}"
+                            data-page-key="{{ page.page_key | default: fallback_page_id }}"
+                            data-ugc-text="{{ page.content | strip_html | strip_newlines | replace: '  ', ' ' | truncate: 220 }}">
+                            {{ content }}
+                        </div>
+
+                        {% if page.community_key and page.page_key and page.url != "/submit.html" and page.url !=
+                        "/broadcast.html"
+                        and
+                        page.url != "/list-service.html" and page.url != "/marketplace.html" %}
+                        <div class="ugc-report-wrap ugc-report-wrap--detail" data-ugc-type="wiki"
+                            data-ugc-id="{{ page.page_key }}" data-community-key="{{ page.community_key }}"
+                            data-page-key="{{ page.page_key }}"
+                            data-ugc-text="{{ page.content | strip_html | strip_newlines | replace: '  ', ' ' | truncate: 220 }}">
+                            <button type="button" class="report-content-btn" aria-label="Report this page content"
+                                data-i18n-aria-label="trust_safety.report_page_aria"
+                                data-i18n="trust_safety.report_content">Report
+                                Content</button>
+                        </div>
+                        {% endif %}
+
+                        {% if page.url != "/submit.html" and page.url != "/broadcast.html" and page.url !=
+                        "/list-service.html" and
+                        page.url != "/marketplace.html" or current_condo and page.url != "/submit.html" and page.url !=
+                        "/broadcast.html" and page.layout != "marketplace-item" %}
+                       <div class="page-actions-row" style="display: flex; align-items: center; gap: 12px; margin: 32px 0; padding-top: 24px; border-top: 1px solid var(--border-subtle);">
+                            {% if current_condo and page.url != "/submit.html" and page.url != "/broadcast.html" and page.layout != "marketplace-item" %}
+                            <button type="button" id="pageEditBtn" class="btn-edit-action" aria-haspopup="dialog" aria-expanded="false" onclick="prepareEdit()">
+                                <i class="fa-regular fa-pen-to-square"></i>
+                                <span data-i18n="default.edit">Edit</span>
+                            </button>
+                            {% endif %}
+
+                            {% if page.community_key and page.page_key %}
+                            <div class="ugc-report-wrap" data-ugc-type="wiki" data-ugc-id="{{ page.page_key }}" data-community-key="{{ page.community_key }}" data-page-key="{{ page.page_key }}" data-ugc-text="{{ page.content | strip_html | truncate: 220 }}">
+                                <button type="button" class="btn-edit-action report-content-btn" style="border-color: #fca5a5; color: #b91c1c; background: #fef2f2;" aria-label="Report this page content">
+                                    <i class="fa-solid fa-flag"></i> Report
+                                </button>
+                            </div>
+                            {% endif %}
+
+                            <div class="page-share-inline" style="margin-left: auto; display: flex; align-items: center; gap: 12px;">
+                                <span class="page-share-inline__label" style="font-size: 0.75rem; font-weight: 700; color: var(--outline); text-transform: uppercase;">Share</span>
+                                <div class="page-share-inline__links" style="display: flex; gap: 8px;">
+                                    <a data-share-platform="whatsapp" href="#" target="_blank" rel="noopener" aria-label="Share on WhatsApp">
+                                        <i class="fa-brands fa-whatsapp"></i>
+                                    </a>
+                                    <a data-share-platform="facebook" href="#" target="_blank" rel="noopener" aria-label="Share on Facebook">
+                                        <i class="fa-brands fa-facebook-f"></i>
+                                    </a>
+                                    <a data-share-platform="x" href="#" target="_blank" rel="noopener" aria-label="Share on X">
+                                        <i class="fa-brands fa-x-twitter"></i>
+                                    </a>
+                                    <a data-share-platform="linkedin" href="#" target="_blank" rel="noopener" aria-label="Share on LinkedIn">
+                                        <i class="fa-brands fa-linkedin-in"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        {% endif %}
+
+                        {% if page.content_fr and page.content_fr != "" %}
+                        <template id="wikiContentFr">{{ page.content_fr | markdownify }}</template>
+                        {% endif %}
+
+                        {% if page.community_key and page.page_key %}
+                        <div class="comments-shell">
+                            <div class="comments-shell__col comments-shell__col--list">
+                                {% include comments-list.html %}
+                            </div>
+                            <div class="comments-shell__col comments-shell__col--form">
+                                {% include comment-form.html %}
+                            </div>
+                        </div>
+                        {% endif %}
+
+                    </article>
+
+                    {% if page.url contains '/content/' and page.condo %}
+                    <a href="#" class="wiki-back-to-top" aria-label="Back to top">
+                        <i class="fa-solid fa-arrow-up" aria-hidden="true"></i>
+                        <span>Back to top</span>
+                    </a>
+                    {% endif %}
+                </div>
+                {% endif %}
+
+        </main>
+    </div>
+
+    {% if page.url != "/submit.html" %}
+        {% if page.url contains '/content/' and page.layout != 'broadcast' %}
+        {% include editor.html %}
+        {% endif %}
+    {% endif %}
+
+    {% include mobile-tabbar.html %}
+    {% include editor-shell.html %}
+    {% include footer.html %}
+    {% include command-palette.html %}
+
+    {% if site.resources.expose_client_js != false %}
+    <script>
+        window.API_BASE = "{{ site.api_base_url | default: 'https://hub-community-apis.dekumar-ca.workers.dev' }}";
+    </script>
+    <script src="{{ '/assets/js/shared/wiki-reading.js' | relative_url }}" defer></script>
+    <script
+        src="{{ '/assets/js/shared/trust-safety.js?v=' | append: site.github.build_revision | relative_url }}"></script>
+    <script src="{{ '/assets/js/i18n.js?v=' | append: site.github.build_revision | relative_url }}"></script>
+    <script type="module"
+        src="{{ '/assets/js/default-layout.js?v=' | append: site.github.build_revision | relative_url }}"></script>
+    <script src="{{ '/assets/js/shared/image-fallback.js?v=' | append: site.github.build_revision | relative_url }}"
+        defer></script>
+    {% endif %}
+
+
+</body>
+
+</html>

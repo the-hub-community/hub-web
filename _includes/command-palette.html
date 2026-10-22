@@ -1,0 +1,37 @@
+<div id="cmd-palette" class="cmd-palette" aria-hidden="true" role="dialog" aria-modal="true" aria-label="Command palette">
+  <div class="cmd-palette__backdrop" data-cmdk-close="true"></div>
+  <div class="cmd-palette__panel" role="combobox" aria-expanded="true" aria-haspopup="listbox">
+    <div class="cmd-palette__input-row">
+      <i class="fa-solid fa-magnifying-glass cmd-palette__search-icon" aria-hidden="true"></i>
+      <input
+        type="text"
+        id="cmd-palette-input"
+        class="cmd-palette__input"
+        placeholder="Search pages, listings, actions…"
+        data-i18n-placeholder="command_palette.placeholder"
+        autocomplete="off"
+        spellcheck="false"
+        aria-controls="cmd-palette-results"
+        aria-autocomplete="list"
+      >
+      <kbd class="cmd-palette__kbd">ESC</kbd>
+    </div>
+
+    <div id="cmd-palette-results" class="cmd-palette__results" role="listbox" aria-label="Search results">
+      <div class="cmd-palette__empty" id="cmd-palette-empty" hidden>
+        <i class="fa-regular fa-face-smile" aria-hidden="true"></i>
+        <p data-i18n="command_palette.empty">No results. Try a different query.</p>
+      </div>
+      <div class="cmd-palette__loading" id="cmd-palette-loading" hidden>
+        <span class="cmd-palette__spinner" aria-hidden="true"></span>
+        <span data-i18n="command_palette.loading">Searching…</span>
+      </div>
+    </div>
+
+    <footer class="cmd-palette__footer">
+      <span class="cmd-palette__hint"><kbd>↑</kbd><kbd>↓</kbd> navigate</span>
+      <span class="cmd-palette__hint"><kbd>↵</kbd> open</span>
+      <span class="cmd-palette__hint"><kbd>ESC</kbd> close</span>
+    </footer>
+  </div>
+</div>

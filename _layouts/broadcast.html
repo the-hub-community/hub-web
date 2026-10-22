@@ -1,0 +1,42 @@
+---
+layout: default
+---
+
+{% assign alert_urgency = page.urgency | default: 'medium' %}
+
+{% case alert_urgency %}
+  {% when 'critical' %}{% assign urgency_label = 'Critical alert' %}
+  {% when 'high' %}{% assign urgency_label = 'Urgent notice' %}
+  {% when 'medium' %}{% assign urgency_label = 'Community notice' %}
+  {% else %}{% assign urgency_label = 'Notice' %}
+{% endcase %}
+
+<article class="broadcast-page" data-urgency="{{ alert_urgency }}">
+
+  <header class="broadcast-page__hero">
+    <div class="broadcast-page__eyebrow">
+      <span class="broadcast-page__dot" aria-hidden="true"></span>
+      <span>{{ urgency_label }}</span>
+    </div>
+
+    <h1 class="broadcast-page__title">{{ page.title }}</h1>
+
+    <div class="broadcast-page__meta">
+      <span>{{ page.condo }}</span>
+      <span class="broadcast-page__sep">·</span>
+      <span>{{ page.date | date: "%B %-d, %Y" }}</span>
+    </div>
+  </header>
+
+  <div class="broadcast-page__body">
+    {{ content }}
+  </div>
+
+  <footer class="broadcast-page__footer">
+    <a href="{{ site.baseurl }}/content/{{ page.condo | slugify }}/" class="broadcast-page__back">
+      <i class="fa-solid fa-arrow-left" aria-hidden="true"></i>
+      <span>Back to {{ page.condo }}</span>
+    </a>
+  </footer>
+
+</article>

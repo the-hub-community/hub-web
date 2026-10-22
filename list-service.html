@@ -1,0 +1,145 @@
+---
+layout: default
+title: List a Service
+robots: noindex, nofollow
+sitemap: false
+---
+
+<main class="main-content">
+  <div class="form-shell">
+
+    <div class="page-hero">
+      <div class="page-hero__meta">
+        <span class="page-hero__dot"></span>
+        <span class="page-hero__eyebrow">Marketplace</span>
+      </div>
+      <h1 class="page-hero__title" data-i18n="list_service.heading">Create Marketplace Listing</h1>
+      <p class="page-hero__subtitle">
+        Post a listing to your community. Approved listings appear in the marketplace within 24 hours.
+      </p>
+    </div>
+
+    <form id="marketplaceForm" class="listing-form">
+      <input type="hidden" name="type" value="marketplace">
+      <input type="hidden" name="community_key" id="marketplaceCommunityKey" value="">
+
+      <!-- Service Photos -->
+      <div class="form-group">
+        <label data-i18n="list_service.service_photos">Service Photos (Up to 4)</label>
+        <div class="file-drop" id="fileDropZone">
+          <i class="fa-solid fa-cloud-arrow-up"></i>
+          <div class="file-drop__title" data-i18n="list_service.click_or_drag">Click or drag to upload</div>
+          <div class="file-drop__hint" data-i18n="list_service.multi_file_hint">
+            Hold <strong>CTRL</strong> (Win) or <strong>CMD</strong> (Mac) for multiple files · Max 2MB each
+          </div>
+          <input type="file" name="image" id="imageInput" accept="image/*" multiple hidden>
+        </div>
+        <div id="fileNamesDisplay" class="file-chips"></div>
+        <div id="fileError" class="form-error" hidden></div>
+      </div>
+
+      <!-- Title + Price -->
+      <div class="form-row-2col">
+        <div class="form-group">
+          <label data-i18n="list_service.listing_title">Listing Title</label>
+          <input
+            type="text"
+            name="title"
+            data-i18n-placeholder="list_service.title_placeholder"
+            placeholder="e.g., Expert Math Tutoring"
+            required
+            class="modern-input"
+            data-char-limit="140"
+          >
+        </div>
+        <div class="form-group">
+          <label data-i18n="list_service.price">Price ($)</label>
+          <input type="number" name="price" placeholder="0.00" class="modern-input">
+        </div>
+      </div>
+
+      <!-- Community + Category -->
+      <div class="form-row-2col">
+        <div class="form-group">
+          <label data-i18n="list_service.target_community">Target Community</label>
+          <select name="condo" id="marketplaceCommunitySelect" required class="modern-input">
+            <option value="General" data-community-key="" data-i18n="list_service.general_all_hubs">General (All Hubs)</option>
+            {% assign community_indices = site.pages | where_exp: "p", "p.path contains 'content/'" | where_exp: "p", "p.name == 'index.md' or p.name == 'index.html'" %}
+            {% for community in community_indices %}
+              {% assign path_parts = community.path | split: '/' %}
+              {% assign folder_slug = path_parts[1] %}
+              {% assign inferred_key = 'comm-' | append: folder_slug %}
+              <option
+                value="{{ community.condo | default: community.title }}"
+                data-community-key="{{ community.community_key | default: inferred_key }}"
+              >{{ community.condo | default: community.title }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="form-group">
+          <label data-i18n="list_service.category">Category</label>
+          <select name="category" required class="modern-input">
+            <option value="Services" data-i18n="list_service.category_services">Services</option>
+            <option value="Parking" data-i18n="list_service.category_parking">Parking</option>
+            <option value="Rentals" data-i18n="list_service.category_rentals">Rentals</option>
+            <option value="Food" data-i18n="list_service.category_food">Food</option>
+            <option value="Items for Sale" data-i18n="list_service.category_items_for_sale">Items for Sale</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Contact -->
+      <div class="form-group">
+        <label data-i18n="list_service.contact_details">Contact Details</label>
+        <input
+          type="text"
+          name="contact"
+          data-i18n-placeholder="list_service.contact_placeholder"
+          placeholder="Phone, Email, or WhatsApp"
+          class="modern-input"
+          data-char-limit="200"
+        >
+      </div>
+
+      <!-- Description -->
+      <div class="form-group">
+        <label data-i18n="list_service.description">Description</label>
+        <textarea
+          name="content"
+          rows="5"
+          data-i18n-placeholder="list_service.description_placeholder"
+          placeholder="Provide more details about what you are offering..."
+          class="modern-input"
+          data-char-limit="4000"
+        ></textarea>
+      </div>
+
+      <!-- Tags -->
+      <div class="form-group">
+        <label>Tags (comma separated)</label>
+        <input
+          type="text"
+          name="tags"
+          placeholder="e.g., tutoring, online, evening"
+          class="modern-input"
+          autocomplete="off"
+          data-char-limit="120"
+        >
+      </div>
+
+      <!-- Actions -->
+      <div class="form-actions">
+        <button type="button" class="btn btn--secondary" onclick="history.back()">Cancel</button>
+        <button type="submit" id="submitBtn" class="btn btn--primary btn--lg" data-i18n="list_service.launch_listing">
+          <i class="fa-solid fa-paper-plane"></i>
+          Launch Listing
+        </button>
+      </div>
+
+      <p id="listingSubmissionError" class="form-error" hidden></p>
+
+    </form>
+  </div>
+</main>
+
+<script src="{{ site.baseurl }}/assets/js/pages/list-service-page.js"></script>

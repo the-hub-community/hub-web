@@ -1,0 +1,17 @@
+{% comment %} PWA + mobile browser meta tags {% endcomment %}
+
+<link rel="manifest" href="{{ '/manifest.webmanifest' | relative_url }}">
+
+<!-- iOS home-screen -->
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="The Hub Community">
+<link rel="apple-touch-icon" href="{{ '/assets/images/logos/the-hub-community-mark.svg' | relative_url }}">
+
+<!-- Android / Chromium -->
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#35568e" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0b1120" media="(prefers-color-scheme: dark)">
+
+<!-- Format detection — prevents iOS from auto-linking numbers/addresses -->
+<meta name="format-detection" content="telephone=no,address=no,email=no">

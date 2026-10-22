@@ -1,0 +1,38 @@
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg"
+    role="img" aria-labelledby="title desc">
+    <title id="title">The Hub Collective Badge Logo</title>
+    <desc id="desc">Rounded badge with circular hub symbol for sidebar navigation.</desc>
+    <defs>
+        <linearGradient id="badgeBg" x1="56" y1="40" x2="456" y2="476"
+            gradientUnits="userSpaceOnUse">
+            <stop offset="0" stop-color="#0F172A" />
+            <stop offset="1" stop-color="#1E3A8A" />
+        </linearGradient>
+        <linearGradient id="badgeNode" x1="156" y1="138" x2="356" y2="338"
+            gradientUnits="userSpaceOnUse">
+            <stop offset="0" stop-color="#10B981" />
+            <stop offset="1" stop-color="#22D3EE" />
+        </linearGradient>
+    </defs>
+
+    <rect x="40" y="40" width="432" height="432" rx="110" fill="url(#badgeBg)" />
+    <circle cx="256" cy="256" r="126" fill="url(#badgeNode)" />
+    <circle cx="256" cy="256" r="70" fill="#A7F3D0" />
+    <circle cx="256" cy="256" r="40" fill="#F8FAFC" />
+
+    <g stroke="#D1FAE5" stroke-width="12" stroke-linecap="round">
+        <path d="M256 180V138" />
+        <path d="M318 216L355 194" />
+        <path d="M318 296L355 318" />
+        <path d="M256 332V374" />
+        <path d="M194 296L157 318" />
+        <path d="M194 216L157 194" />
+    </g>
+
+    <circle cx="256" cy="120" r="18" fill="#E2E8F0" />
+    <circle cx="374" cy="188" r="18" fill="#BFDBFE" />
+    <circle cx="374" cy="324" r="18" fill="#CFFAFE" />
+    <circle cx="256" cy="392" r="18" fill="#D1FAE5" />
+    <circle cx="138" cy="324" r="18" fill="#BFDBFE" />
+    <circle cx="138" cy="188" r="18" fill="#CFFAFE" />
+</svg>

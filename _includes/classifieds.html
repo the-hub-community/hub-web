@@ -1,0 +1,44 @@
+{% assign primary_img = ad.image_url | default: "" | split: "," | first | strip %}
+<div class="ad-card-wrapper"
+     data-category="{{ ad.category }}"
+     data-title="{{ ad.title }}"
+     data-price="{{ ad.price }}"
+     data-tags="{{ ad.tags | join: ' ' }}"
+     data-community="{{ ad.target_community | default: ad.condo | default: 'General' }}"
+     data-community-slug="{{ ad.target_community | default: ad.condo | default: 'General' | slugify }}"
+     data-date="{{ ad.date | date: '%s' }}">
+
+  <a href="{{ ad.url | relative_url }}" class="mp-card-v2">
+
+    <div class="mp-card-v2__media">
+      {% if primary_img != "" %}
+        <img src="{{ primary_img | relative_url }}" alt="{{ ad.title | escape }}" loading="lazy" decoding="async">
+      {% else %}
+        {% include empty-state.html category=ad.category label="Photos coming soon" %}
+      {% endif %}
+
+      <div class="mp-card-v2__badges">
+        {% if ad.verified %}
+          <span class="mp-badge mp-badge--verified"><i class="fa-solid fa-circle-check"></i> Verified</span>
+        {% endif %}
+        {% if ad.photo_count and ad.photo_count > 1 %}
+          <span class="mp-badge mp-badge--count"><i class="fa-solid fa-images"></i> {{ ad.photo_count }} photos</span>
+        {% endif %}
+      </div>
+
+      <button type="button" class="mp-card-v2__heart" data-url="{{ ad.url | relative_url }}" aria-label="Save listing">
+        <i class="fa-regular fa-heart"></i>
+      </button>
+    </div>
+
+    <div class="mp-card-v2__body">
+      <span class="mp-card-v2__category">{{ ad.category | default: "General" }}</span>
+      <h3 class="mp-card-v2__title">{{ ad.title }}</h3>
+      <p class="mp-card-v2__meta">{{ ad.target_community | default: ad.condo | default: "General" }} · {{ ad.date | date: "%-d %b" }}</p>
+      <div class="mp-card-v2__price">
+       {% if ad.price and ad.price != "" %} ${{ ad.price }}<span>CAD</span> {% else %} Contact for price {% endif %}
+      </div>
+    </div>
+
+  </a>
+</div>

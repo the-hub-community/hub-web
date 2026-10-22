@@ -1,0 +1,194 @@
+/* ================================================================
+   AI Assistant Dock (Inline for Submit Page)
+   ================================================================ */
+
+.ai-assistant-dock {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px;
+  margin: 20px 0;
+  background: #f8fbff;
+  border: 1px solid #c5d6f6;
+  border-radius: 12px;
+  width: 100%;
+  max-width: 100%;
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.08);
+  font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  color: #0f172a;
+  animation: slideInUp 0.3s ease-out;
+}
+
+.ai-assistant-dock.hidden {
+  display: none;
+}
+
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.ai-dock-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.ai-dock-title {
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #1d4ed8;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.ai-dock-title i {
+  font-size: 14px;
+  animation: spin 2s linear infinite;
+}
+
+.ai-dock-content {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.ai-dock-section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.ai-dock-section-title {
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  color: #475569;
+}
+
+.ai-dock-suggestions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.ai-dock-suggestion {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+  padding: 10px;
+  background: #eef4ff;
+  border-left: 3px solid #3b82f6;
+  border-radius: 4px;
+  font-size: 13px;
+  color: #0f172a;
+  line-height: 1.4;
+}
+
+.ai-dock-suggestion-icon {
+  font-size: 12px;
+  color: #3b82f6;
+  flex-shrink: 0;
+}
+
+.ai-dock-suggestion-text {
+  flex: 1;
+}
+
+.ai-dock-action {
+  border: 1px solid #93c5fd;
+  background: #eff6ff;
+  color: #1d4ed8;
+  font-size: 11px;
+  font-weight: 700;
+  border-radius: 999px;
+  padding: 6px 10px;
+  cursor: pointer;
+  transition: background 0.2s ease, border-color 0.2s ease;
+  margin-left: 8px;
+}
+
+.ai-dock-action:hover {
+  background: #dbeafe;
+  border-color: #60a5fa;
+}
+
+.ai-dock-quality {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  padding: 10px;
+  background: #f0f9ff;
+  border-radius: 6px;
+}
+
+.ai-dock-quality-metric {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.ai-dock-quality-label {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: #475569;
+}
+
+.ai-dock-quality-bar {
+  height: 6px;
+  background: rgba(99, 102, 241, 0.1);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.ai-dock-quality-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #6366f1, #8b5cf6);
+  border-radius: 3px;
+  transition: width 0.3s ease;
+  width: 0%;
+}
+
+.ai-dock-quality-value {
+  font-size: 12px;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+@media (max-width: 768px) {
+  .ai-assistant-dock {
+    margin: 16px 0;
+    padding: 12px;
+    border-radius: 10px;
+  }
+
+  .ai-dock-quality {
+    grid-template-columns: auto auto;
+  }
+
+  .ai-dock-section-title {
+    font-size: 11px;
+  }
+
+  .ai-dock-suggestion {
+    font-size: 12px;
+    padding: 9px 10px;
+  }
+
+  .ai-dock-action {
+    font-size: 10px;
+    padding: 5px 9px;
+  }
+}

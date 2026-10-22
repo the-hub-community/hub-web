@@ -1,0 +1,525 @@
+/* ================================================================
+   Community Hero + Pulse Strip
+   Tinted hero card (per-community accent) + recent activity strip.
+   ================================================================ */
+
+/* ── Community Hero ──────────────────────────────────────── */
+.community-hero {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 32px;
+  padding: 32px 36px;
+  border-radius: 20px;
+  background: var(--surface-container-lowest, #ffffff);
+  border: 1px solid var(--border-subtle, rgba(4, 23, 72, 0.08));
+  overflow: hidden;
+  margin-bottom: 40px;
+  isolation: isolate;
+}
+
+/* Tinted gradient wash — accent color from community-color.js */
+.community-hero[data-accent] {
+  background: linear-gradient(135deg,
+    color-mix(in srgb, var(--accent) 8%, var(--surface-container-lowest)) 0%,
+    var(--surface-container-lowest) 60%);
+  border-color: color-mix(in srgb, var(--accent) 20%, var(--border-subtle));
+}
+
+/* Soft radial glow — positioning layer, always present */
+.community-hero__glow {
+  position: absolute;
+  top: -80px;
+  right: -120px;
+  width: 360px;
+  height: 360px;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 0;
+  background: radial-gradient(circle,
+    color-mix(in srgb, var(--accent, var(--primary)) 14%, transparent) 0%,
+    color-mix(in srgb, var(--accent, var(--primary)) 4%, transparent) 40%,
+    transparent 70%);
+}
+
+.community-hero__body {
+  position: relative;
+  z-index: 1;
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* Eyebrow: community name with pulsing dot */
+.community-hero__eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.community-hero__dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--accent, var(--primary, #35568e));
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent, var(--primary)) 18%, transparent);
+}
+
+.community-hero__eyebrow-text {
+  font-family: var(--font-mono, "JetBrains Mono", monospace);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--accent, var(--primary, #35568e));
+}
+
+/* Title — the greeting */
+.community-hero__title {
+  font-family: var(--font-display, "Plus Jakarta Sans", sans-serif);
+  font-size: clamp(2rem, 4vw, 3rem);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1.05;
+  color: var(--on-surface, #041748);
+  margin: 0;
+}
+
+.community-hero__subtitle {
+  font-size: 0.95rem;
+  line-height: 1.55;
+  color: var(--on-surface-variant, #434750);
+  margin: 0;
+  max-width: 52ch;
+}
+
+/* Live stats row — mono, compact */
+.community-hero__stats {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 8px;
+  font-family: var(--font-mono, "JetBrains Mono", monospace);
+  font-size: 0.74rem;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  color: var(--on-surface-variant, #434750);
+}
+
+.community-hero__stat strong {
+  font-weight: 700;
+  color: var(--on-surface, #041748);
+  margin-right: 4px;
+}
+
+.community-hero__stat--active strong {
+  color: var(--accent, #ba1a1a);
+}
+
+.community-hero__stat-sep {
+  color: var(--outline-variant, #c4c6d1);
+}
+
+/* CTA button */
+.community-hero__enter,
+.community-hero__cta {
+  position: relative;
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 20px;
+  border-radius: 12px;
+  background: var(--accent, var(--primary, #35568e));
+  color: #ffffff;
+  font-family: var(--font-body, "Inter", sans-serif);
+  font-size: 0.86rem;
+  font-weight: 600;
+  text-decoration: none;
+  white-space: nowrap;
+  flex-shrink: 0;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  box-shadow: 0 4px 14px -4px color-mix(in srgb, var(--accent, var(--primary)) 40%, transparent);
+}
+
+.community-hero__enter:hover,
+.community-hero__cta:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 20px -4px color-mix(in srgb, var(--accent, var(--primary)) 48%, transparent);
+  background: color-mix(in srgb, var(--accent, var(--primary)) 92%, #000 8%);
+}
+
+.community-hero__enter:active,
+.community-hero__cta:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 6px -2px color-mix(in srgb, var(--accent, var(--primary)) 40%, transparent);
+}
+
+.community-hero__enter:focus-visible,
+.community-hero__cta:focus-visible {
+  outline: 2px solid var(--accent, var(--primary));
+  outline-offset: 3px;
+}
+
+.community-hero__enter i,
+.community-hero__cta i {
+  font-size: 0.72rem;
+}
+
+/* Empty state */
+.community-hero--empty {
+  background: var(--surface-container-low, #f3f3ff);
+}
+
+.community-hero--empty .community-hero__stats {
+  margin-top: 16px;
+}
+
+/* ── Mobile ──────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .community-hero {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 20px;
+    padding: 24px 22px;
+    border-radius: 18px;
+    margin-bottom: 28px;
+  }
+
+  .community-hero__glow {
+    top: -60px;
+    right: -100px;
+    width: 240px;
+    height: 240px;
+  }
+
+  .community-hero__title {
+    font-size: 1.85rem;
+  }
+
+  .community-hero__subtitle {
+    font-size: 0.9rem;
+    max-width: 100%;
+  }
+
+  .community-hero__enter,
+  .community-hero__cta {
+    width: 100%;
+    justify-content: center;
+    padding: 14px 20px;
+  }
+}
+
+/* ── Dark mode ───────────────────────────────────────────── */
+[data-theme="dark"] .community-hero {
+  background: var(--surface-container-lowest, #131a2e);
+  border-color: rgba(148, 163, 184, 0.14);
+}
+
+[data-theme="dark"] .community-hero[data-accent] {
+  background: linear-gradient(135deg,
+    color-mix(in srgb, var(--accent) 10%, #131a2e) 0%,
+    #131a2e 60%);
+  border-color: color-mix(in srgb, var(--accent) 24%, transparent);
+}
+
+[data-theme="dark"] .community-hero__glow {
+  background: radial-gradient(circle,
+    color-mix(in srgb, var(--accent, #93c5fd) 18%, transparent) 0%,
+    color-mix(in srgb, var(--accent, #93c5fd) 5%, transparent) 40%,
+    transparent 70%);
+}
+
+[data-theme="dark"] .community-hero__title {
+  color: #e2e8f0;
+}
+
+[data-theme="dark"] .community-hero__subtitle {
+  color: #94a3b8;
+}
+
+[data-theme="dark"] .community-hero__stat strong {
+  color: #e2e8f0;
+}
+
+[data-theme="dark"] .community-hero__stats {
+  color: #94a3b8;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   PULSE STRIP
+   ══════════════════════════════════════════════════════════════ */
+
+.pulse {
+  margin-bottom: 40px;
+}
+
+.pulse__header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 4px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--border-subtle, rgba(4, 23, 72, 0.08));
+}
+
+.pulse__title {
+  font-family: var(--font-display, "Plus Jakarta Sans", sans-serif);
+  font-size: 1.15rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--on-surface, #041748);
+  margin: 0;
+}
+
+.pulse__meta {
+  font-family: var(--font-mono, "JetBrains Mono", monospace);
+  font-size: 0.68rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--outline, #747781);
+}
+
+.pulse__track {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+  margin-top: 20px;
+}
+
+/* ── Pulse card ──────────────────────────────────────────── */
+.pulse-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 16px 16px 14px;
+  border-radius: 14px;
+  background: var(--surface-container-lowest, #ffffff);
+  border: 1px solid var(--border-subtle, rgba(4, 23, 72, 0.08));
+  text-decoration: none;
+  color: inherit;
+  transition: border-color 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.pulse-card:hover {
+  border-color: var(--border-strong, rgba(4, 23, 72, 0.2));
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px -6px rgba(4, 23, 72, 0.12);
+}
+
+.pulse-card__dot {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--pulse-dot, var(--outline-variant));
+  opacity: 0.7;
+}
+
+.pulse-card__kind {
+  font-family: var(--font-mono, "JetBrains Mono", monospace);
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--outline, #747781);
+  margin-bottom: 4px;
+}
+
+.pulse-card__title {
+  font-family: var(--font-display, "Plus Jakarta Sans", sans-serif);
+  font-size: 0.94rem;
+  font-weight: 600;
+  letter-spacing: -0.005em;
+  line-height: 1.35;
+  color: var(--on-surface, #041748);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  margin-bottom: 4px;
+}
+
+.pulse-card__meta {
+  font-family: var(--font-mono, "JetBrains Mono", monospace);
+  font-size: 0.68rem;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  color: var(--outline, #747781);
+  margin-top: auto;
+}
+
+/* ── Mobile: horizontal scroll with snap ─────────────────── */
+@media (max-width: 768px) {
+  .pulse__track {
+    display: flex;
+    grid-template-columns: none;
+    gap: 12px;
+    margin: 16px -16px 0;
+    padding: 0 16px 4px;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .pulse__track::-webkit-scrollbar { display: none; }
+
+  .pulse-card {
+    flex: 0 0 200px;
+    scroll-snap-align: start;
+  }
+
+  .pulse__header {
+    margin-bottom: 0;
+  }
+}
+
+/* ── Dark mode ───────────────────────────────────────────── */
+[data-theme="dark"] .pulse__title {
+  color: #e2e8f0;
+}
+
+[data-theme="dark"] .pulse-card {
+  background: var(--surface-container-lowest, #131a2e);
+  border-color: rgba(148, 163, 184, 0.14);
+}
+
+[data-theme="dark"] .pulse-card__title {
+  color: #e2e8f0;
+}
+
+[data-theme="dark"] .pulse-card__kind,
+[data-theme="dark"] .pulse-card__meta {
+  color: #64748b;
+}
+
+[data-theme="dark"] .pulse-card:hover {
+  border-color: rgba(148, 163, 184, 0.32);
+}
+
+/* ── Ensure button text contrast on every accent ─────────────── */
+
+/* Default: white on primary blue */
+.community-hero__enter,
+.community-hero__cta {
+  color: #ffffff;
+  background: var(--accent, var(--primary, #35568e));
+}
+
+/* Amber, olive, teal, terracotta: darker text for contrast */
+.community-hero[data-accent="amber"] .community-hero__enter,
+.community-hero[data-accent="amber"] .community-hero__cta,
+.community-hero[data-accent="olive"] .community-hero__enter,
+.community-hero[data-accent="olive"] .community-hero__cta,
+.community-hero[data-accent="teal"] .community-hero__enter,
+.community-hero[data-accent="teal"] .community-hero__cta,
+.community-hero[data-accent="terracotta"] .community-hero__enter,
+.community-hero[data-accent="terracotta"] .community-hero__cta {
+  color: #ffffff;
+  /* Force a darker shade of the accent so white text always reads */
+  background: color-mix(in srgb, var(--accent) 85%, #000 15%);
+}
+
+/* Dark mode: text stays white; force lighter accent for contrast */
+[data-theme="dark"] .community-hero__enter,
+[data-theme="dark"] .community-hero__cta {
+  color: #0b1120;
+  background: var(--accent, #93c5fd);
+}
+
+[data-theme="dark"] .community-hero[data-accent="amber"] .community-hero__enter,
+[data-theme="dark"] .community-hero[data-accent="olive"] .community-hero__enter,
+[data-theme="dark"] .community-hero[data-accent="teal"] .community-hero__enter,
+[data-theme="dark"] .community-hero[data-accent="terracotta"] .community-hero__enter,
+[data-theme="dark"] .community-hero[data-accent="amber"] .community-hero__cta,
+[data-theme="dark"] .community-hero[data-accent="olive"] .community-hero__cta,
+[data-theme="dark"] .community-hero[data-accent="teal"] .community-hero__cta,
+[data-theme="dark"] .community-hero[data-accent="terracotta"] .community-hero__cta {
+  color: #0b1120;
+  background: color-mix(in srgb, var(--accent) 90%, #ffffff 10%);
+}
+
+.community-hero__stat strong {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: var(--primary); /* Makes the numbers pop using the theme color */
+  margin-right: 4px;
+  letter-spacing: -0.02em;
+}
+
+/* ================================================================
+   FIX: Global Hub CTA Button (Explore Communities)
+   ================================================================ */
+.community-hero__enter,
+.community-hero__cta {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 8px !important;
+  
+  background-color: var(--primary, #35568e) !important;
+  color: #ffffff !important;
+  
+  padding: 12px 24px !important;
+  border-radius: 10px !important;
+  border: 1px solid transparent !important;
+  font-family: var(--font-body, sans-serif) !important;
+  font-size: 0.95rem !important;
+  font-weight: 600 !important;
+  text-decoration: none !important;
+  white-space: nowrap !important;
+  
+  box-shadow: 0 4px 12px rgba(53, 86, 142, 0.2) !important;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  cursor: pointer !important;
+}
+
+/* Ensure the text inside is always white and visible */
+.community-hero__enter span,
+.community-hero__cta span {
+  color: #ffffff !important;
+  display: inline-block !important;
+}
+
+/* Ensure the icon is white */
+.community-hero__enter i,
+.community-hero__cta i {
+  color: #ffffff !important;
+  font-size: 0.85rem !important;
+}
+
+/* Beautiful Hover State */
+.community-hero__enter:hover,
+.community-hero__cta:hover {
+  background-color: var(--primary-container, #4f6fa8) !important;
+  color: #ffffff !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 6px 16px rgba(53, 86, 142, 0.3) !important;
+}
+
+/* Fix for Dark Mode to ensure it stays visible */
+[data-theme="dark"] .community-hero__enter,
+[data-theme="dark"] .community-hero__cta {
+  background-color: #93c5fd !important;
+  color: #0b1120 !important;
+}
+
+[data-theme="dark"] .community-hero__enter span,
+[data-theme="dark"] .community-hero__cta span,
+[data-theme="dark"] .community-hero__enter i,
+[data-theme="dark"] .community-hero__cta i {
+  color: #0b1120 !important;
+}

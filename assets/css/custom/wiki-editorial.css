@@ -1,0 +1,613 @@
+/* ================================================================
+   Wiki Reading Companion
+   TOC rail, reading progress, oversized headings, pull quotes,
+   meta strip. Loaded only on wiki pages.
+   ================================================================ */
+
+/* ── 1. Reading progress bar ──────────────────────────────── */
+.reading-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: transparent;
+  z-index: 9999;
+  pointer-events: none;
+}
+
+.reading-progress__fill {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, var(--primary, #35568e) 0%, #7d0bd5 100%);
+  transition: width 0.08s linear;
+  opacity: 0;
+  will-change: width;
+}
+
+.reading-progress.is-active .reading-progress__fill {
+  opacity: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reading-progress__fill { transition: none; }
+}
+
+/* ── 2. Layout: article + TOC rail ────────────────────────── */
+.wiki-layout {
+  display: flex;
+  justify-content: center;
+  gap: 48px;
+  align-items: start;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* Let the card expand to fill the space left of the TOC */
+.wiki-layout .content-card {
+  flex: 1;
+  min-width: 0;
+  max-width: 100%;
+  padding: 0 24px !important; 
+}
+
+/* Constrain ONLY the reading text and headers to a comfortable width */
+.wiki-render,
+.wiki-meta-strip,
+.page-community-chip,
+.wiki-render > h1 {
+  max-width: 75ch;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.wiki-render {
+  max-width: none !important;
+}
+
+/* Ensure the title still looks prominent */
+.wiki-render > h1 {
+  font-size: 2.5rem;
+  margin-top: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+/* Remove extra constraints from the worker's wrapper */
+.wiki-render .lh-content-body {
+  max-width: 100%;
+  margin: 0;
+  padding-top: 1.5rem;
+  padding-bottom: 1.5rem;
+}
+
+/* ── 3. TOC rail — editorial, borderless ──────────────────── */
+.wiki-toc {
+  position: sticky;
+  top: 96px;
+  width: 220px;
+  flex-shrink: 0;
+  max-height: calc(100vh - 120px);
+  overflow-y: auto;
+  padding: 4px 0;
+  scrollbar-width: none;
+}
+
+.wiki-toc::-webkit-scrollbar { display: none; }
+
+.wiki-toc__label {
+  display: block;
+  font-family: var(--font-mono, "JetBrains Mono", monospace);
+  font-size: 0.66rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--outline, #747781);
+  margin-bottom: 14px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--border-subtle, rgba(4, 23, 72, 0.08));
+}
+
+.wiki-toc__nav {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.wiki-toc__link {
+  display: block;
+  padding: 7px 0 7px 12px;
+  font-size: 0.82rem;
+  line-height: 1.35;
+  color: var(--on-surface-variant, #434750);
+  text-decoration: none;
+  border-left: 1px solid var(--border-subtle, rgba(4, 23, 72, 0.08));
+  margin-left: 0;
+  transition: color 0.15s ease, border-color 0.15s ease, padding-left 0.15s ease;
+}
+
+.wiki-toc__link:hover {
+  color: var(--on-surface, #041748);
+  border-left-color: var(--outline-variant, #c4c6d1);
+}
+
+.wiki-toc__link.is-active {
+  color: var(--primary, #35568e);
+  font-weight: 600;
+  border-left-color: var(--primary, #35568e);
+  padding-left: 14px;
+}
+
+.wiki-toc__link--h3 {
+  padding-left: 24px;
+  font-size: 0.78rem;
+  color: var(--outline, #747781);
+}
+
+.wiki-toc__link--h3.is-active {
+  padding-left: 26px;
+}
+
+/* ── 4. Oversized chapter headings ────────────────────────── */
+.wiki-render h2 {
+  font-family: var(--font-display, "Plus Jakarta Sans", sans-serif);
+  font-size: 2.25rem;
+  line-height: 2.5rem;
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  color: var(--on-surface, #041748);
+  margin: 56px 0 20px;
+  padding-top: 32px;
+  border-top: 1px solid var(--border-subtle, rgba(4, 23, 72, 0.08));
+  position: relative;
+}
+
+.wiki-render h2:first-child {
+  margin-top: 0;
+  padding-top: 0;
+  border-top: none;
+}
+
+.wiki-render h3 {
+  font-size: 1.35rem;
+  line-height: 1.75rem;
+  font-weight: 700;
+  letter-spacing: -0.015em;
+  color: var(--on-surface, #041748);
+  margin: 40px 0 16px;
+}
+
+/* Chapter eyebrow — small numeral before h2 */
+.wiki-render h2::before {
+  content: "§";
+  position: absolute;
+  left: -28px;
+  top: 36px;
+  font-family: var(--font-mono, "JetBrains Mono", monospace);
+  font-size: 0.9rem;
+  font-weight: 400;
+  color: var(--outline-variant, #c4c6d1);
+  opacity: 0.7;
+}
+
+.wiki-render h2:first-child::before {
+  top: 4px;
+}
+
+/* ── 5. Editorial pull quotes ─────────────────────────────── */
+.wiki-render blockquote {
+  font-family: var(--font-editorial, "Merriweather", Georgia, serif);
+  font-size: 1.25rem;
+  line-height: 1.7;
+  font-weight: 300;
+  font-style: italic;
+  color: var(--on-surface, #041748);
+  margin: 32px 0;
+  padding: 4px 0 4px 28px;
+  border-left: 2px solid var(--primary, #35568e);
+  border-radius: 0;
+  background: transparent;
+}
+
+.wiki-render blockquote p {
+  margin: 0;
+  color: inherit;
+  font-size: inherit;
+  line-height: inherit;
+}
+
+.wiki-render blockquote cite {
+  display: block;
+  margin-top: 14px;
+  font-family: var(--font-mono, "JetBrains Mono", monospace);
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--outline, #747781);
+  font-style: normal;
+}
+
+/* ── 6. Meta strip under title ────────────────────────────── */
+.wiki-meta-strip {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px 18px;
+  padding: 20px 0;
+  margin-bottom: 40px;
+  border-bottom: 1px solid var(--border-subtle, rgba(4, 23, 72, 0.08));
+  font-size: 0.84rem;
+  color: var(--on-surface-variant, #434750);
+}
+
+.wiki-meta-strip__item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.wiki-meta-strip__item i {
+  font-size: 0.72rem;
+  opacity: 0.55;
+}
+
+.wiki-meta-strip__sep {
+  color: var(--outline-variant, #c4c6d1);
+  font-size: 0.6rem;
+}
+
+.wiki-meta-strip__author {
+  color: var(--on-surface, #041748);
+  font-weight: 600;
+}
+
+.wiki-meta-strip a {
+  color: var(--primary, #35568e);
+  font-weight: 600;
+  text-decoration: none;
+  transition: opacity 0.15s ease;
+}
+
+.wiki-meta-strip a:hover { opacity: 0.75; }
+
+/* ── 7. Article body breathing room ───────────────────────── */
+.wiki-render > p,
+.wiki-render .lh-text p {
+  font-size: 1rem;
+  line-height: 1.75;
+  color: var(--on-surface-variant, #434750);
+  margin-top: 0;
+  margin-bottom: 1.25rem;
+}
+
+.wiki-render > ul,
+.wiki-render > ol {
+  padding-left: 24px;
+  margin-bottom: 1.25rem;
+}
+
+.wiki-render > ul li,
+.wiki-render > ol li {
+  margin-bottom: 0.5rem;
+  line-height: 1.65;
+}
+
+.wiki-render > img,
+.wiki-render .lh-image-container {
+  margin: 32px 0;
+}
+
+.wiki-eyebrow {
+  padding-bottom: 20px;
+  margin-bottom: 24px;
+}
+
+.wiki-eyebrow__label {
+  font-family: var(--font-mono, "JetBrains Mono", monospace);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--outline, #747781);
+}
+
+/* ── Float the Back to Top button ───────────────────────── */
+.wiki-back-to-top {
+  position: fixed;
+  bottom: 30rem;
+  
+  /* THIS IS THE MAGIC LINE: */
+  /* It keeps it 2rem from the edge on mobile, but aligns it with 
+     the right side of the 1200px wiki-layout container on desktop. */
+  right: max(2rem, calc((60vw - 1200px) / 2 + 2rem));
+  
+  z-index: 100;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  background: var(--surface-container-lowest, #fff);
+  border: 1px solid var(--border-subtle, rgba(4, 23, 72, 0.1));
+  border-radius: 999px;
+  color: var(--on-surface-variant, #434750);
+  font-family: var(--font-mono, "JetBrains Mono", monospace);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  text-decoration: none;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  
+  /* Hidden by default */
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(10px);
+  transition: opacity 0.3s ease, transform 0.3s ease, background 0.2s ease;
+}
+
+.wiki-back-to-top:hover {
+  background: var(--surface-container, #f3f3ff);
+  color: var(--primary, #35568e);
+}
+
+/* This class is added by JS when scrolling down */
+.wiki-back-to-top.is-visible {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0);
+}
+
+/* On mobile, just keep it near the edge */
+@media (max-width: 1200px) {
+  .wiki-back-to-top {
+    right: 1rem;
+    bottom: 1rem;
+  }
+}
+
+.wiki-back-to-top i {
+  font-size: 0.7rem;
+  transition: transform 0.2s ease;
+}
+
+.wiki-back-to-top:hover i {
+  transform: translateY(-2px);
+}
+
+/* ── 8. Mobile Adjustments ────────────────────────────────── */
+@media (max-width: 1023px) {
+  .wiki-layout {
+    display: block;
+  }
+  .wiki-toc { 
+    display: none; 
+  }
+}
+
+@media (max-width: 900px) {
+  .wiki-render h2 {
+    font-size: 1.75rem;
+    line-height: 2rem;
+    margin: 40px 0 16px;
+    padding-top: 24px;
+  }
+  .wiki-render h2::before { display: none; }
+}
+
+@media (max-width: 768px) {
+  /* Force full width on mobile */
+  .wiki-layout {
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    padding: 0;
+    margin: 0;
+  }
+
+  .wiki-layout .content-card {
+    width: 100%;
+    max-width: 100%;
+    margin: 0;
+    padding: 0 16px !important;
+  }
+
+  .wiki-render,
+  .wiki-meta-strip,
+  .page-community-chip,
+  .wiki-render > h1 {
+    max-width: 100%;
+    margin-left: 0;
+    margin-right: 0;
+  }
+
+  /* Action row wraps gracefully */
+  .page-actions-row {
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+  .page-share-inline {
+    margin-left: 0 !important;
+    width: 100%;
+    justify-content: flex-start;
+  }
+}
+
+/* Hide the mobile toggle on desktop */
+@media (min-width: 769px) {
+  .mobile-alerts-toggle {
+    display: none;
+  }
+}
+
+/* ── Page Share Footer ───────────────────────────────────── */
+.page-share-bottom {
+  margin-top: 32px;
+  padding-top: 24px;
+  /* border-top: 1px solid var(--border-subtle, rgba(4, 23, 72, 0.08)); */
+  display: flex;
+  justify-content: flex-start;
+}
+
+.page-share-inline {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+/* The "Share this page" text */
+.page-share-inline__label {
+  font-family: var(--font-mono, "JetBrains Mono", monospace);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--outline, #747781);
+}
+
+/* The icon container */
+.page-share-inline__links {
+  display: flex;
+  gap: 8px;
+}
+
+/* Individual social buttons */
+.page-share-inline__links a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: var(--surface-container-low, #f3f3ff);
+  border: 1px solid var(--border-default, rgba(4, 23, 72, 0.1));
+  color: var(--on-surface-variant, #434750);
+  text-decoration: none;
+  font-size: 0.9rem;
+  transition: all 0.2s ease;
+}
+
+/* Hover effect */
+.page-share-inline__links a:hover {
+  background: var(--primary, #35568e);
+  border-color: var(--primary, #35568e);
+  color: #ffffff;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(53, 86, 142, 0.2);
+}
+
+/* ── Submit Page Preview ─────────────────────────────────── */
+.submit-preview {
+  background: var(--surface-container-lowest, #fff);
+  border: 1px solid var(--border-subtle, rgba(4, 23, 72, 0.08));
+  border-radius: var(--radius-xl, 12px);
+  padding: 32px;
+  margin-bottom: 24px;
+  box-shadow: 0 4px 12px rgba(4, 23, 72, 0.02);
+}
+
+.submit-preview .preview-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  background: var(--surface-container-low, #f3f3ff);
+  color: var(--primary, #35568e);
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  margin-bottom: 20px;
+}
+
+.submit-preview h1 {
+  font-family: var(--font-display, sans-serif);
+  font-size: 2.25rem;
+  font-weight: 700;
+  color: var(--on-surface, #041748);
+  margin: 0 0 16px;
+  line-height: 1.2;
+}
+
+.submit-preview .preview-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.submit-preview .preview-tags span {
+  font-family: var(--font-mono, monospace);
+  font-size: 0.7rem;
+  color: var(--outline, #747781);
+  background: var(--surface-container, #ebedff);
+  padding: 4px 8px;
+  border-radius: 6px;
+}
+
+.submit-preview .preview-divider {
+  border: none;
+  border-top: 1px solid var(--border-subtle, rgba(4, 23, 72, 0.08));
+  margin: 24px 0;
+}
+
+.submit-preview .preview-body {
+  font-size: 0.95rem;
+  line-height: 1.7;
+  color: var(--on-surface-variant, #434750);
+}
+
+.submit-preview .preview-body p {
+  margin-bottom: 1rem;
+}
+
+.submit-preview .text-muted {
+  color: var(--outline);
+  font-style: italic;
+}
+
+/* Fix the native button styling for the Edit action */
+.btn-edit-action,
+.btn-cancel-header {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background: var(--surface-container-lowest, #fff);
+  border: 1px solid var(--border-default, rgba(4, 23, 72, 0.1));
+  border-radius: 8px;
+  color: var(--on-surface, #041748);
+  font-family: inherit;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.02);
+}
+
+.btn-edit-action:hover,
+.btn-cancel-header:hover {
+  background: var(--surface-container-low, #f3f3ff);
+  border-color: var(--primary-container, #4f6fa8);
+  color: var(--primary, #35568e);
+}
+
+.btn-edit-action i,
+.btn-cancel-header i {
+  font-size: 0.9rem;
+}
+
+/* Lightbox */
+.md-image-lightbox {
+  position: fixed; inset: 0; z-index: 99999;
+  background: rgba(4, 23, 72, 0.9); backdrop-filter: blur(8px);
+  display: none; align-items: center; justify-content: center;
+}
+.md-image-lightbox.is-open { display: flex; }
+.md-image-lightbox__img { max-width: 90vw; max-height: 90vh; border-radius: 8px; object-fit: contain; }
+.md-image-lightbox__close {
+  position: absolute; top: 24px; right: 24px;
+  background: rgba(255,255,255,0.2); border: none; color: white;
+  width: 44px; height: 44px; border-radius: 50%; font-size: 1.5rem;
+  cursor: pointer; display: grid; place-items: center;
+}
+.md-image-lightbox__close:hover { background: rgba(255,255,255,0.3); }

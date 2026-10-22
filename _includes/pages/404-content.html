@@ -1,0 +1,54 @@
+<div class="ed-error">
+  <div class="ed-error__hero">
+    <div class="ed-error__eyebrow">
+      <span>Error · 404</span>
+    </div>
+    <h1 class="ed-error__title">This page wandered off.</h1>
+    <p class="ed-error__subtitle">
+      The page you're looking for doesn't exist, or it may have moved. Try one of the links below, or start from the beginning.
+    </p>
+
+    <div class="ed-error__actions">
+      <a href="{{ site.baseurl }}/" class="ed-error__btn ed-error__btn--primary">
+        <i class="fa-solid fa-house" aria-hidden="true"></i>
+        Back to home
+      </a>
+      <button type="button" onclick="history.back()" class="ed-error__btn">
+        <i class="fa-solid fa-arrow-left" aria-hidden="true"></i>
+        Go back
+      </button>
+    </div>
+  </div>
+
+  <div class="ed-error__list">
+    <div class="ed-error__list-header">
+      <span class="ed-error__list-label">Common causes</span>
+    </div>
+    <ul class="ed-error__list-items">
+      <li>A mistyped URL</li>
+      <li>An outdated bookmark</li>
+      <li>A broken link from another site</li>
+      <li>A page that was renamed or removed</li>
+    </ul>
+  </div>
+
+  <div class="ed-error__list">
+    <div class="ed-error__list-header">
+      <span class="ed-error__list-label">Where to next</span>
+    </div>
+    <div class="ed-error__link-row">
+      <a href="{{ site.baseurl }}/" class="ed-error__link">
+        <span>Community dashboard</span>
+        <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
+      </a>
+      <a href="{{ site.baseurl }}/marketplace.html" class="ed-error__link">
+        <span>Marketplace</span>
+        <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
+      </a>
+      <a href="{{ site.baseurl }}/submit.html" class="ed-error__link">
+        <span>Contribute</span>
+        <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
+      </a>
+    </div>
+  </div>
+</div>

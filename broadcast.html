@@ -1,0 +1,137 @@
+---
+layout: default
+title: Community Broadcast
+custom_stylesheets: [broadcast]
+robots: noindex, nofollow
+sitemap: false
+---
+<div class="broadcast-shell">
+    <section class="broadcast-command">
+        <section class="page-hero">
+            <div class="page-hero__meta">
+                <span class="page-hero__dot"></span>
+                <span class="page-hero__eyebrow">Community Alert Center</span>
+            </div>
+            <h1 class="page-hero__title">Send Broadcast</h1>
+            <p class="page-hero__subtitle">
+                Submit an announcement for your community. Approved messages trigger the notification bell.
+            </p>
+            <div class="page-hero__chips">
+                <span class="page-chip">
+                <i class="fa-solid fa-location-dot"></i> All communities
+                </span>
+                <span class="page-chip">
+                <i class="fa-regular fa-clock"></i> Auto-expires in 5 days
+                </span>
+                <span class="page-chip">
+                <i class="fa-solid fa-shield-halved"></i> Urgency-aware priority
+                </span>
+            </div>
+            </section>
+
+        <div class="broadcast-workbench">
+            <form id="broadcastForm" class="professional-form broadcast-form">
+                <input type="hidden" name="type" value="broadcast">
+                <input type="hidden" name="community_key" id="communityKeyInput" value="">
+                <input type="hidden" name="page_key" id="pageKeyInput" value="">
+
+                <div class="broadcast-expiry-banner" id="broadcastExpiryBanner" role="status" aria-live="polite">
+                    <div class="broadcast-expiry-banner__label">Visibility window</div>
+                    <div class="broadcast-expiry-banner__text">
+                        This broadcast will automatically expire in
+                        <strong id="broadcastExpiryTimer">5d 00h 00m</strong>
+                        after approval.
+                    </div>
+                </div>
+
+                <div class="form-row broadcast-grid">
+                    <div class="form-group">
+                        <label data-i18n="broadcast.target_community">Target Community</label>
+                        <div id="community-input-wrapper">
+                            <input type="text" id="condo" name="condo" class="modern-input"
+                                placeholder="Select a community..." required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label data-i18n="broadcast.urgency_level">Urgency Level</label>
+                        <div class="urgency-meter" id="urgencyMeter" data-urgency="medium">
+                        <div class="urgency-meter__header">
+                            <span class="urgency-meter__label" id="urgencyMeterLabel">Medium</span>
+                            <span class="urgency-meter__hint" id="urgencyMeterHint">Standard community notice</span>
+                        </div>
+                        <div class="urgency-meter__track">
+                            <div class="urgency-meter__fill" id="urgencyMeterFill" style="width: 45%"></div>
+                        </div>
+                        </div>
+                        <select name="alert_type" id="urgencySelect" class="modern-input urgency-select">
+                            <option value="low" data-i18n="broadcast.urgency_low">Low (Information)</option>
+                            <option value="medium" selected data-i18n="broadcast.urgency_medium">Medium (Notice)
+                            </option>
+                            <option value="high" data-i18n="broadcast.urgency_high">High (Urgent)</option>
+                            <option value="critical" data-i18n="broadcast.urgency_critical">Critical (Emergency)
+                            </option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label data-i18n="broadcast.subject">Subject</label>
+                    <input type="text" name="title" class="modern-input"
+                        data-i18n-placeholder="broadcast.subject_placeholder" placeholder="e.g., Scheduled Maintenance"
+                        data-char-limit="140" required>
+                </div>
+
+                <div class="form-group">
+                    <label data-i18n="broadcast.details">Announcement Details</label>
+                    <textarea name="content" rows="6" class="modern-input broadcast-textarea"
+                        data-i18n-placeholder="broadcast.details_placeholder"
+                        placeholder="Provide full details of the broadcast..." data-char-limit="2000"
+                        required></textarea>
+                </div>
+
+                <div class="form-actions">
+                <button type="button" class="btn btn--secondary" onclick="history.back()">Cancel</button>
+                <button type="submit" id="submitBtn" class="btn btn--primary btn--lg">
+                    <i class="fa-solid fa-paper-plane"></i>
+                    Submit for Review
+                </button>
+                </div>
+                <p id="broadcastError" class="submission-error-inline" role="alert" hidden></p>
+            </form>
+
+            <aside class="broadcast-live-card" aria-live="polite">
+                <div class="broadcast-live-card__header">
+                    <span id="liveUrgencyBadge" class="broadcast-live-card__badge urgency-medium">Medium</span>
+                    <span class="broadcast-live-card__ttl">Off-site in <strong id="broadcastExpiryTimerMirror">5d 00h
+                            00m</strong></span>
+                </div>
+                <h3 id="livePreviewTitle">Scheduled Maintenance</h3>
+                <p class="broadcast-live-card__community" id="livePreviewCondo">Select a community</p>
+                <p class="broadcast-live-card__body" id="livePreviewBody">Write your broadcast details to preview how
+                    this announcement will appear to residents.</p>
+                <div class="broadcast-live-card__footer">
+                    <i class="fa-solid fa-triangle-exclamation"></i>
+                    Content and urgency determine list priority.
+                </div>
+            </aside>
+        </div>
+    </section>
+</div>
+
+<script id="community-data" type="application/json">
+[
+    {% assign community_indices = site.pages | where_exp: "p", "p.path contains 'content/'" | where_exp: "p", "p.name == 'index.md' or p.name == 'index.html'" | sort: "condo" %}
+    {% for community in community_indices %}
+    {% assign path_parts = community.path | split: '/' %}
+    {% assign folder_slug = path_parts[1] %}
+    {
+        "name": {{ community.condo | default: community.title | jsonify }},
+        "slug": {{ folder_slug | jsonify }},
+        "key": {{ community.community_key | default: '' | jsonify }}
+    }{% unless forloop.last %},{% endunless %}
+    {% endfor %}
+]
+</script>
+
+<script src="{{ site.baseurl }}/assets/js/pages/broadcast-page.js"></script>

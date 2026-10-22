@@ -1,0 +1,367 @@
+/* ================================================================
+   Dark Mode — properly gated by data-theme="dark" OR system pref.
+   Never use :not([data-theme="light"]) — that matches unset state.
+   ================================================================ */
+
+/* ── Dark tokens — only apply when explicitly dark OR system dark ── */
+
+[data-theme="dark"] {
+  --surface:                   #0b1120;
+  --surface-container-lowest:  #131a2e;
+  --surface-container-low:     #1a2436;
+  --surface-container:         #1e293b;
+  --surface-container-high:    #293548;
+  --surface-container-highest: #334155;
+
+  --on-surface:                #e2e8f0;
+  --on-surface-variant:        #94a3b8;
+  --outline:                   #64748b;
+  --outline-variant:           #334155;
+
+  --border-subtle:             rgba(148, 163, 184, 0.10);
+  --border-default:            rgba(148, 163, 184, 0.18);
+  --border-strong:             rgba(148, 163, 184, 0.32);
+
+  --shadow-sm:  0 1px 4px rgba(0, 0, 0, 0.4);
+  --shadow-md:  0 4px 12px rgba(0, 0, 0, 0.5);
+  --shadow-lg:  0 8px 24px rgba(0, 0, 0, 0.6);
+  --shadow-xl:  0 12px 32px rgba(0, 0, 0, 0.7);
+}
+
+@media (prefers-color-scheme: dark) {
+  html:not([data-theme="light"]):not([data-theme="dark"]) {
+    --surface:                   #0b1120;
+    --surface-container-lowest:  #131a2e;
+    --surface-container-low:     #1a2436;
+    --surface-container:         #1e293b;
+    --surface-container-high:    #293548;
+    --surface-container-highest: #334155;
+
+    --on-surface:                #e2e8f0;
+    --on-surface-variant:        #94a3b8;
+    --outline:                   #64748b;
+    --outline-variant:           #334155;
+
+    --border-subtle:             rgba(148, 163, 184, 0.10);
+    --border-default:            rgba(148, 163, 184, 0.18);
+    --border-strong:             rgba(148, 163, 184, 0.32);
+  }
+}
+
+/* ── Explicit dark overrides (only fire on [data-theme="dark"]) ── */
+
+[data-theme="dark"] .sidebar {
+  background: rgba(19, 26, 46, 0.85) !important;
+}
+
+[data-theme="dark"] .site-header {
+  background: rgba(19, 26, 46, 0.9) !important;
+}
+
+[data-theme="dark"] .header-search,
+[data-theme="dark"] .header-icon-btn,
+[data-theme="dark"] .header-avatar {
+  background: var(--surface-container-low);
+  color: var(--on-surface-variant);
+}
+
+[data-theme="dark"] .stat-card,
+[data-theme="dark"] .dashboard__panel,
+[data-theme="dark"] .quick-action,
+[data-theme="dark"] .content-card {
+  background: var(--surface-container-lowest);
+  border-color: var(--border-subtle);
+}
+
+[data-theme="dark"] .wiki-render,
+[data-theme="dark"] .wiki-render p,
+[data-theme="dark"] .wiki-render li,
+[data-theme="dark"] .wiki-render h1,
+[data-theme="dark"] .wiki-render h2,
+[data-theme="dark"] .wiki-render h3,
+[data-theme="dark"] .wiki-render strong {
+  color: var(--on-surface) !important;
+}
+
+[data-theme="dark"] input,
+[data-theme="dark"] textarea,
+[data-theme="dark"] select {
+  background: var(--surface-container-low);
+  border-color: var(--border-default);
+  color: var(--on-surface);
+}
+
+[data-theme="dark"] code,
+[data-theme="dark"] pre {
+  background: var(--surface-container);
+  color: var(--on-surface);
+}
+
+/* ================================================================
+   Dark mode — Editorial primitives + new components
+   Ensures the editorial layout works as a peer, not an inverted theme.
+   ================================================================ */
+
+[data-theme="dark"] .ed-hero {
+  border-bottom-color: rgba(148, 163, 184, 0.14);
+}
+
+[data-theme="dark"] .ed-hero__title,
+[data-theme="dark"] .ed-hero__eyebrow,
+[data-theme="dark"] .ed-data__value,
+[data-theme="dark"] .ed-section__title,
+[data-theme="dark"] .ed-list__title,
+[data-theme="dark"] .ed-list__value {
+  color: #e2e8f0;
+}
+
+[data-theme="dark"] .ed-hero__subtitle,
+[data-theme="dark"] .ed-data__context,
+[data-theme="dark"] .ed-list__meta,
+[data-theme="dark"] .ed-inline__action {
+  color: #94a3b8;
+}
+
+[data-theme="dark"] .ed-data-grid,
+[data-theme="dark"] .ed-data,
+[data-theme="dark"] .ed-list,
+[data-theme="dark"] .ed-list__row,
+[data-theme="dark"] .ed-inline,
+[data-theme="dark"] .ed-rule {
+  border-color: rgba(148, 163, 184, 0.12);
+}
+
+[data-theme="dark"] .ed-list__row:hover {
+  background: rgba(148, 163, 184, 0.06);
+}
+
+[data-theme="dark"] .ed-list__index,
+[data-theme="dark"] .ed-list__arrow {
+  color: #475569;
+}
+
+[data-theme="dark"] .ed-list__row:hover .ed-list__arrow {
+  color: #93c5fd;
+}
+
+[data-theme="dark"] .ed-section__link {
+  color: #93c5fd;
+}
+
+[data-theme="dark"] .ed-inline__action:hover {
+  color: #93c5fd;
+}
+
+/* Marketplace editorial */
+[data-theme="dark"] .mp-hero-v2 {
+  border-bottom-color: rgba(148, 163, 184, 0.12);
+}
+
+[data-theme="dark"] .mp-hero-v2 h1 {
+  color: #e2e8f0;
+}
+
+[data-theme="dark"] .mp-hero-v2 p {
+  color: #94a3b8;
+}
+
+[data-theme="dark"] .mp-hero-v2::after {
+  background: #334155;
+}
+
+[data-theme="dark"] .mp-filter-row,
+[data-theme="dark"] .mp-category-row {
+  border-bottom-color: rgba(148, 163, 184, 0.12);
+}
+
+[data-theme="dark"] .mp-pill-v2,
+[data-theme="dark"] .mp-category-link {
+  color: #94a3b8;
+}
+
+[data-theme="dark"] .mp-pill-v2:hover,
+[data-theme="dark"] .mp-category-link:hover,
+[data-theme="dark"] .mp-pill-v2.active,
+[data-theme="dark"] .mp-category-link.active {
+  color: #93c5fd;
+}
+
+[data-theme="dark"] .mp-card-v2__media {
+  background: #1e293b;
+}
+
+[data-theme="dark"] .mp-card-v2__title,
+[data-theme="dark"] .mp-card-v2__price {
+  color: #e2e8f0;
+}
+
+[data-theme="dark"] .mp-card-v2__meta {
+  color: #94a3b8;
+}
+
+[data-theme="dark"] .mp-card-v2__category {
+  color: #64748b;
+}
+
+[data-theme="dark"] .mp-card-v2__heart {
+  background: rgba(30, 41, 59, 0.94);
+  color: #94a3b8;
+}
+
+/* Editor drawer */
+[data-theme="dark"] .drawer-section-card {
+  border-top-color: rgba(148, 163, 184, 0.12);
+}
+
+[data-theme="dark"] .drawer-section-card .section-header {
+  border-bottom-color: rgba(148, 163, 184, 0.12);
+}
+
+[data-theme="dark"] .drawer-section-card .sec-label {
+  color: #94a3b8;
+}
+
+[data-theme="dark"] .rich-toolbar {
+  border-top-color: rgba(148, 163, 184, 0.12);
+}
+
+[data-theme="dark"] .rich-toolbar button {
+  color: #94a3b8;
+}
+
+[data-theme="dark"] .rich-toolbar button:hover {
+  background: rgba(148, 163, 184, 0.1);
+  color: #e2e8f0;
+}
+
+[data-theme="dark"] .rich-toolbar button.is-active {
+  background: rgba(147, 197, 253, 0.15);
+  color: #93c5fd;
+}
+
+[data-theme="dark"] .editor-area {
+  color: #e2e8f0;
+}
+
+[data-theme="dark"] .section-settings-panel,
+[data-theme="dark"] .editor-accordion {
+  border-top-color: rgba(148, 163, 184, 0.12);
+}
+
+[data-theme="dark"] .editor-accordion__summary,
+[data-theme="dark"] .section-settings-panel .editor-accordion__summary {
+  color: #94a3b8;
+}
+
+[data-theme="dark"] .editor-accordion__content {
+  border-top-color: rgba(148, 163, 184, 0.12);
+}
+
+[data-theme="dark"] .drawer-header h2 {
+  color: #e2e8f0;
+}
+
+[data-theme="dark"] .drawer-view-switcher {
+  background: rgba(30, 41, 59, 0.6);
+}
+
+[data-theme="dark"] .drawer-view-btn {
+  color: #94a3b8;
+}
+
+[data-theme="dark"] .drawer-view-btn.active {
+  background: #1e293b;
+  color: #93c5fd;
+}
+
+[data-theme="dark"] .btn-add-sec {
+  border-color: rgba(148, 163, 184, 0.2);
+  color: #93c5fd;
+}
+
+[data-theme="dark"] .btn-add-sec:hover {
+  background: rgba(147, 197, 253, 0.08);
+  border-color: #93c5fd;
+  border-style: solid;
+}
+
+/* Wiki editorial */
+[data-theme="dark"] .wiki-render h2,
+[data-theme="dark"] .wiki-render h3 {
+  color: #e2e8f0;
+}
+
+[data-theme="dark"] .wiki-render h2 {
+  border-top-color: rgba(148, 163, 184, 0.12);
+}
+
+[data-theme="dark"] .wiki-render h2::before {
+  color: #334155;
+}
+
+[data-theme="dark"] .wiki-render > p,
+[data-theme="dark"] .wiki-render li {
+  color: #cbd5e1;
+}
+
+[data-theme="dark"] .wiki-render blockquote {
+  color: #e2e8f0;
+  border-left-color: #60a5fa;
+}
+
+[data-theme="dark"] .wiki-toc__label {
+  color: #94a3b8;
+  border-bottom-color: rgba(148, 163, 184, 0.14);
+}
+
+[data-theme="dark"] .wiki-toc__link {
+  color: #94a3b8;
+  border-left-color: rgba(148, 163, 184, 0.14);
+}
+
+[data-theme="dark"] .wiki-toc__link:hover {
+  color: #cbd5e1;
+  border-left-color: #475569;
+}
+
+[data-theme="dark"] .wiki-toc__link.is-active {
+  color: #93c5fd;
+  border-left-color: #60a5fa;
+}
+
+[data-theme="dark"] .wiki-meta-strip {
+  color: #94a3b8;
+  border-bottom-color: rgba(148, 163, 184, 0.14);
+}
+
+[data-theme="dark"] .wiki-meta-strip__author {
+  color: #e2e8f0;
+}
+
+[data-theme="dark"] .sidebar-nav__item > .sidebar-nav__icon {
+  color: #94a3b8;
+}
+
+[data-theme="dark"] .sidebar-nav__item:hover > .sidebar-nav__icon {
+  background: rgba(148, 163, 184, 0.12);
+  color: #cbd5e1;
+}
+
+[data-theme="dark"] .sidebar-nav__item.is-active > .sidebar-nav__icon {
+  background: linear-gradient(135deg,
+    #4f6fa8 0%,
+    #6a8cc4 100%);
+  color: #ffffff;
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.22) inset,
+    0 -1px 0 rgba(0, 0, 0, 0.3) inset,
+    0 2px 8px -2px rgba(79, 111, 168, 0.55);
+}
+
+[data-theme="dark"] .sidebar-nav__item.is-active {
+  background: rgba(79, 111, 168, 0.14);
+}
+
+[data-theme="dark"] .sidebar-nav__item.is-active > .sidebar-nav__label-text {
+  color: #93c5fd;
+}

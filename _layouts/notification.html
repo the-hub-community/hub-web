@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% include head.html %}
+</head>
+<body>
+    {% include header.html %}
+    
+    <div class="notification-container">
+        <article class="notification-card">
+            <div class="notification-header">
+                <div class="notification-header__meta">
+                    <span class="notification-badge" data-category="{{ page.notice_category | default: 'other' }}">
+                        {{ page.notice_category | capitalize | default: 'Notice' }}
+                    </span>
+                    <span class="notification-date">
+                        <i class="fa-regular fa-calendar"></i>
+                        {{ page.date | date: "%B %d, %Y" }}
+                    </span>
+                </div>
+                <h1 class="notification-title">{{ page.title }}</h1>
+                <p class="notification-condo">
+                    <i class="fa-solid fa-location-dot"></i>
+                    {{ page.condo }}
+                </p>
+            </div>
+
+            {% if page.layout == 'notification' and page.content %}
+            <div class="notification-screenshot-section">
+                {{ page.content }}
+            </div>
+            {% endif %}
+
+            <div class="notification-footer">
+                <p class="notification-disclaimer">
+                    <i class="fa-solid fa-circle-check"></i>
+                    This is a community-shared notice. Verify directly with official sources.
+                </p>
+            </div>
+        </article>
+    </div>
+
+    <style>
+        .notification-container {
+            max-width: 800px;
+            margin: 3rem auto;
+            padding: 2rem;
+        }
+
+        .notification-card {
+            background: var(--card-bg, #fff);
+            border: 1px solid var(--border, #e0e0e0);
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+
+        .notification-header {
+            margin-bottom: 2rem;
+            border-bottom: 2px solid var(--border, #e0e0e0);
+            padding-bottom: 1.5rem;
+        }
+
+        .notification-header__meta {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .notification-badge {
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.875rem;
+            text-transform: uppercase;
+        }
+
+        .notification-badge[data-category="safety"] {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .notification-badge[data-category="maintenance"] {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .notification-badge[data-category="policy"] {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .notification-badge[data-category="event"] {
+            background: #f3e8ff;
+            color: #6b21a8;
+        }
+
+        .notification-badge[data-category="other"] {
+            background: #f3f4f6;
+            color: #374151;
+        }
+
+        .notification-date {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--text-muted, #666);
+            font-size: 0.95rem;
+        }
+
+        .notification-title {
+            font-size: 2rem;
+            font-weight: 700;
+            margin: 1rem 0 0.5rem 0;
+            color: var(--text, #000);
+        }
+
+        .notification-condo {
+            color: var(--text-muted, #666);
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .notification-screenshot-section {
+            margin: 2rem 0;
+        }
+
+        .notification-screenshot-section img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+        }
+
+        .notification-screenshot-section p {
+            line-height: 1.8;
+            color: var(--text, #000);
+            margin-bottom: 1rem;
+        }
+
+        .notification-footer {
+            margin-top: 2rem;
+            padding-top: 1.5rem;
+            border-top: 2px solid var(--border, #e0e0e0);
+        }
+
+        .notification-disclaimer {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+            padding: 1rem;
+            background: var(--alert-bg, #f0f9ff);
+            border-left: 4px solid var(--alert-color, #0284c7);
+            border-radius: 4px;
+            color: var(--text, #000);
+            font-size: 0.95rem;
+        }
+
+        .notification-disclaimer i {
+            color: var(--alert-color, #0284c7);
+            margin-top: 2px;
+        }
+
+        @media (max-width: 768px) {
+            .notification-container {
+                padding: 1rem;
+            }
+
+            .notification-card {
+                padding: 1.5rem;
+            }
+
+            .notification-title {
+                font-size: 1.5rem;
+            }
+
+            .notification-header__meta {
+                gap: 0.5rem;
+            }
+        }
+    </style>
+
+    {% include footer.html %}
+</body>
+</html>

@@ -1,0 +1,149 @@
+/* ================================================================
+   Footer — aligned with main content column
+   ================================================================ */
+
+.site-footer {
+  margin-left: 256px;
+  /* padding: 0 32px 32px; */
+  margin-top: 16px;
+  background: transparent;
+  border-top: none;
+}
+
+.footer-inner {
+  /* max-width: 1240px; */
+  margin: 0;
+  padding: 16px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  flex-wrap: wrap;
+  background: var(--surface-container-low);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-2xl);
+}
+
+/* ── Logo ───────────────────────────────────────────────── */
+.footer-logo {
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.logo-image,
+.logo-image--footer {
+  display: block;
+  height: 26px;
+  width: auto;
+  max-width: 180px;
+  object-fit: contain;
+}
+
+/* ── Share links ────────────────────────────────────────── */
+.footer-share-links {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.footer-share-links a {
+  width: 34px;
+  height: 34px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-lg);
+  background: var(--surface-container-lowest);
+  color: var(--on-surface-variant);
+  text-decoration: none;
+  font-size: 0.85rem;
+  transition: all var(--duration-fast) var(--ease-out);
+}
+
+.footer-share-links a:hover {
+  background: var(--primary-container);
+  border-color: var(--primary-container);
+  color: var(--on-primary-container);
+  transform: translateY(-1px);
+}
+
+/* ── Nav links ──────────────────────────────────────────── */
+.footer-links {
+  display: inline-flex;
+  align-items: center;
+  gap: 24px;
+}
+
+.footer-links a {
+  color: var(--on-surface-variant);
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  font-weight: 500;
+  text-decoration: none;
+  transition: color var(--duration-fast) var(--ease-out);
+}
+
+.footer-links a:hover {
+  color: var(--primary);
+}
+
+/* ── Copyright ──────────────────────────────────────────── */
+.footer-copyright {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  color: var(--outline);
+  text-transform: uppercase;
+  flex-shrink: 0;
+}
+
+/* ── Mobile ─────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .site-footer {
+    margin-left: 0;
+    padding: 0 16px 24px;
+  }
+
+  .footer-inner {
+    flex-direction: column;
+    text-align: center;
+    gap: 16px;
+    padding: 16px;
+  }
+
+  .footer-links {
+    gap: 20px;
+  }
+
+  .logo-image--footer {
+    height: 22px;
+  }
+}
+
+/* Ensure Font Awesome brand glyphs render in footer share row */
+.footer-share-links a i,
+.footer-share-links a .fa-brands,
+.footer-share-links a .fa-solid {
+  font-family: "Font Awesome 6 Brands", "Font Awesome 6 Free" !important;
+  font-style: normal;
+  font-weight: 900;
+  display: inline-block;
+  line-height: 1;
+}
+
+/* Fix blank X icon on FA6 — allow alias fallback */
+.footer-share-links a i.fa-x-twitter::before {
+  content: "\e61b"; /* x-twitter glyph */
+}
+
+.logo-image--footer {
+  height: 32px;    /* was 26px — new wordmark is taller */
+  max-width: 240px;
+}
+
+@media (max-width: 768px) {
+  .logo-image--footer { height: 26px; }
+}

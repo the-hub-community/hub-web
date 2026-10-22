@@ -1,0 +1,85 @@
+/* ================================================================
+   Empty States — category-tinted placeholders
+   Uses new design tokens from tokens.css
+   ================================================================ */
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  min-height: 180px;
+  padding: 24px;
+  border-radius: var(--radius-xl);
+  text-align: center;
+  background: linear-gradient(135deg,
+    color-mix(in srgb, var(--category-accent, var(--primary)) 8%, var(--surface-container-low)),
+    color-mix(in srgb, var(--category-accent, var(--primary)) 3%, var(--surface-container-low)));
+  border: 1px dashed color-mix(in srgb, var(--category-accent, var(--primary)) 28%, transparent);
+  transition: background var(--duration-base) var(--ease-out);
+}
+
+.empty-state__icon {
+  width: 56px;
+  height: 56px;
+  display: grid;
+  place-items: center;
+  border-radius: var(--radius-2xl);
+  font-size: 1.6rem;
+  color: var(--category-accent, var(--primary));
+  background: color-mix(in srgb, var(--category-accent, var(--primary)) 12%, var(--surface-container-lowest));
+  box-shadow: 0 4px 12px color-mix(in srgb, var(--category-accent, var(--primary)) 18%, transparent);
+  animation: emptyFloat 3s ease-in-out infinite;
+}
+
+@keyframes emptyFloat {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+
+.empty-state__label {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: var(--on-surface);
+}
+
+.empty-state__hint {
+  color: var(--on-surface-variant);
+  font-size: 0.78rem;
+  font-weight: 500;
+}
+
+/* Category accents */
+.empty-state[data-category="Food"]           { --category-accent: #ec4899; }
+.empty-state[data-category="Parking"]        { --category-accent: #f59e0b; }
+.empty-state[data-category="Rentals"]        { --category-accent: #10b981; }
+.empty-state[data-category="Services"]       { --category-accent: #3b82f6; }
+.empty-state[data-category="Items for Sale"] { --category-accent: #8b5cf6; }
+.empty-state[data-category="General"]        { --category-accent: #64748b; }
+
+/* Inline (used inside wiki content) */
+.empty-state.empty-state--inline {
+  width: 100%;
+  max-width: 100%;
+  min-height: 120px;
+  padding: 16px;
+  border-radius: var(--radius-xl);
+  margin: 12px 0;
+}
+
+.empty-state.empty-state--inline .empty-state__icon {
+  width: 40px;
+  height: 40px;
+  font-size: 1.1rem;
+}
+
+.empty-state.empty-state--inline .empty-state__label {
+  font-size: 0.8rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .empty-state__icon { animation: none; }
+}

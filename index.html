@@ -1,0 +1,161 @@
+---
+layout: default
+title: Dashboard
+---
+
+{% assign communities = site.pages | where_exp: "p", "p.path contains 'content/'" | where_exp: "p", "p.name ==
+'index.md' or p.name == 'index.html'" %}
+{% assign community_count = communities | size %}
+{% assign page_count = site.pages | where_exp: "p", "p.path contains 'content/'" | size %}
+{% assign listing_count = site.pros | size %}
+
+<section class="dashboard-ed">
+
+  <!-- 1. Community hero (tinted card, replaces old text hero + data grid) -->
+  {% include community-hero.html %}
+
+  <!-- 2. Pulse strip — recent activity -->
+  {% include pulse-strip.html %}
+
+  <!-- 3. Two-column: communities + listings -->
+  <div class="ed-columns">
+    <div>
+      <section class="ed-section">
+        <div class="ed-section__header">
+          <h2 class="ed-section__title">Your communities</h2>
+          <a href="{{ site.baseurl }}/communities.html" class="ed-section__link">View all →</a>
+        </div>
+        <div class="ed-list">
+          {% assign communities = site.pages
+             | where_exp: "p", "p.path contains 'content/'"
+             | where_exp: "p", "p.name == 'index.md' or p.name == 'index.html'"
+             | sort: "title" %}
+          {% for c in communities %}
+            {% assign c_name = c.condo | default: c.title %}
+            {% assign c_slug = c_name | slugify %}
+           {% assign c_pages = site.pages | where: "condo", c_name | where_exp: "p", "p.name != 'index.md' and p.name != 'index.html'" | where_exp: "p", "p.layout != 'broadcast' and p.layout != 'notification'" %}
+            {% assign c_count = c_pages | size %}
+            <a href="{{ site.baseurl }}/content/{{ c_slug }}/" class="ed-list__row" data-community-slug="{{ c_slug }}">
+              <span class="ed-list__monogram" data-community-slug="{{ c_slug }}" aria-hidden="true">
+                {{ c_name | slice: 0 | upcase }}
+              </span>
+              <span class="ed-list__body">
+                <span class="ed-list__title">{{ c_name }}</span>
+                <span class="ed-list__meta">
+                  <span>{{ c_count }} page{% if c_count != 1 %}s{% endif %}</span>
+                  <span class="ed-list__meta-sep">·</span>
+                  <span>Resident-maintained</span>
+                </span>
+              </span>
+              <span class="ed-list__arrow"><i class="fa-solid fa-arrow-right"></i></span>
+            </a>
+          {% endfor %}
+        </div>
+      </section>
+    </div>
+
+    <div>
+      <section class="ed-section">
+        <div class="ed-section__header">
+          <h2 class="ed-section__title">Recent listings</h2>
+          <a href="{{ site.baseurl }}/marketplace.html" class="ed-section__link">Marketplace →</a>
+        </div>
+        <div class="ed-list">
+          {% for ad in site.pros limit: 5 %}
+            {% assign ad_img = ad.image_url | default: "" | split: "," | first | strip %}
+            <a href="{{ ad.url | relative_url }}" class="ed-list__row">
+              <span class="ed-list__thumb">
+                {% if ad_img != "" %}
+                  <img src="{{ ad_img | relative_url }}" alt="" loading="lazy">
+                {% else %}
+                  <i class="fa-solid fa-store" aria-hidden="true"></i>
+                {% endif %}
+              </span>
+              <span class="ed-list__body">
+                <span class="ed-list__title">{{ ad.title }}</span>
+                <span class="ed-list__meta">
+                  <span>{{ ad.target_community | default: ad.condo | default: "Nearby" }}</span>
+                </span>
+              </span>
+              <span class="ed-list__value">
+                {% if ad.price and ad.price != "" %}${{ ad.price }}{% else %}Contact for price{% endif %}
+              </span>
+            </a>
+          {% endfor %}
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <!-- 4. Value proposition -->
+  <section class="ed-value">
+    <div class="ed-value__header">
+      <span class="ed-value__eyebrow">How it works</span>
+      <h2 class="ed-value__title">Community knowledge, kept alive by residents.</h2>
+    </div>
+    <div class="ed-value__grid">
+      <div class="ed-value__card">
+        <span class="ed-value__num">01</span>
+        <h3 class="ed-value__title-sm">Contribute locally</h3>
+        <p class="ed-value__desc">Write a guide, post a listing, or send a neighbourhood notice. No account required — your device is your identity.</p>
+      </div>
+      <div class="ed-value__card">
+        <span class="ed-value__num">02</span>
+        <h3 class="ed-value__title-sm">Reviewed by neighbours</h3>
+        <p class="ed-value__desc">Every submission is read by fellow residents and checked by our system before it goes live. Quality, not volume.</p>
+      </div>
+      <div class="ed-value__card">
+        <span class="ed-value__num">03</span>
+        <h3 class="ed-value__title-sm">Kept for the long run</h3>
+        <p class="ed-value__desc">Every page is versioned and reviewed. What's useful stays; what's stale gets updated. Your local knowledge lasts.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5. Inline actions -->
+  <nav class="ed-inline" aria-label="Quick actions">
+    <a href="{{ site.baseurl }}/submit.html" class="ed-inline__action">
+      <i class="fa-solid fa-pen-to-square"></i> Write a guide
+    </a>
+    <a href="{{ site.baseurl }}/list-service.html" class="ed-inline__action">
+      <i class="fa-solid fa-tag"></i> Post a listing
+    </a>
+    <a href="{{ site.baseurl }}/broadcast.html" class="ed-inline__action">
+      <i class="fa-solid fa-bullhorn"></i> Send broadcast
+    </a>
+    <a href="{{ site.baseurl }}/status.html" class="ed-inline__action">
+      <i class="fa-solid fa-circle-check"></i> Track submission
+    </a>
+  </nav>
+
+</section>
+
+<script>
+  (function initDashboardGreeting() {
+    "use strict";
+    const titleEl = document.getElementById("ed-greeting-title");
+    const eyebrowEl = document.getElementById("ed-greeting-eyebrow");
+    if (!titleEl) return;
+
+    const hour = new Date().getHours();
+    let greeting = "Good evening.";
+    let eyebrow = "Welcome back";
+
+    if (hour >= 5 && hour < 12) {
+      greeting = "Good morning.";
+      eyebrow = "Fresh start";
+    } else if (hour >= 12 && hour < 18) {
+      greeting = "Good afternoon.";
+      eyebrow = "Mid-day check-in";
+    } else if (hour >= 18 && hour < 22) {
+      greeting = "Good evening.";
+      eyebrow = "Evening roundup";
+    } else {
+      greeting = "Welcome back.";
+      eyebrow = "Late night";
+    }
+
+    titleEl.textContent = greeting;
+    if (eyebrowEl) eyebrowEl.textContent = eyebrow;
+  })();
+</script>

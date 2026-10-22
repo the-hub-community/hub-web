@@ -1,0 +1,234 @@
+{% comment %} Mobile bottom navigation. Hidden on ≥769px. {% endcomment %}
+
+<nav class="mobile-tabbar" aria-label="Primary navigation">
+  <a
+    href="{{ '/' | relative_url }}"
+    class="mobile-tabbar__tab{% if page.url == '/' %} is-active{% endif %}"
+    aria-label="Dashboard"
+    {% if page.url == '/' %}aria-current="page"{% endif %}
+  >
+    <i class="fa-solid fa-table-cells-large" aria-hidden="true"></i>
+    <span>Home</span>
+  </a>
+
+{% assign first_community = site.pages
+   | where_exp: "p", "p.path contains 'content/'"
+   | where_exp: "p", "p.name == 'index.md' or p.name == 'index.html'"
+   | sort: "title"
+   | first %}
+
+{% assign wiki_href = '/submit.html' %}
+{% if current_condo %}
+  {% capture wiki_href %}/content/{{ current_condo | slugify }}/{% endcapture %}
+{% elsif first_community %}
+  {% capture wiki_href %}{{ first_community.url }}{% endcapture %}
+{% endif %}
+
+  <a
+    href="{{ wiki_href | relative_url }}"
+    class="mobile-tabbar__tab{% if page.url contains '/content/' %} is-active{% endif %}"
+    aria-label="Community Wiki"
+    {% if page.url contains '/content/' %}aria-current="page"{% endif %}
+  >
+    <i class="fa-solid fa-book" aria-hidden="true"></i>
+    <span>{% if current_condo or first_community %}Wiki{% else %}Start{% endif %}</span>
+  </a>
+
+  <button
+    type="button"
+    class="mobile-tabbar__tab mobile-tabbar__tab--center"
+    id="mobileTabbarContribute"
+    aria-label="Contribute"
+    aria-expanded="false"
+    aria-controls="mobile-contribute-sheet"
+  >
+    <span class="mobile-tabbar__center-icon">
+      <i class="fa-solid fa-plus" aria-hidden="true"></i>
+    </span>
+    <span>Contribute</span>
+  </button>
+
+  <a
+    href="{{ '/marketplace.html' | relative_url }}"
+    class="mobile-tabbar__tab{% if page.url contains 'marketplace' %} is-active{% endif %}"
+    aria-label="Marketplace"
+    {% if page.url contains 'marketplace' %}aria-current="page"{% endif %}
+  >
+    <i class="fa-solid fa-bag-shopping" aria-hidden="true"></i>
+    <span>Market</span>
+  </a>
+
+  <button
+    type="button"
+    class="mobile-tabbar__tab"
+    id="mobileTabbarMore"
+    aria-label="More navigation"
+  >
+    <i class="fa-solid fa-ellipsis" aria-hidden="true"></i>
+    <span>More</span>
+  </button>
+</nav>
+
+<div
+  class="mobile-contribute-sheet"
+  id="mobile-contribute-sheet"
+  aria-hidden="true"
+  role="dialog"
+  aria-modal="true"
+  aria-label="Contribute menu"
+>
+  <div class="mobile-contribute-sheet__backdrop" data-sheet-close></div>
+  <div class="mobile-contribute-sheet__panel">
+    <div class="mobile-contribute-sheet__handle" aria-hidden="true"></div>
+    <h2 class="mobile-contribute-sheet__title">What would you like to add?</h2>
+
+    <a href="{{ '/submit.html' | relative_url }}" class="mobile-contribute-sheet__option">
+      <span class="mobile-contribute-sheet__option-icon" aria-hidden="true">
+        <i class="fa-solid fa-pen-to-square"></i>
+      </span>
+      <span class="mobile-contribute-sheet__option-body">
+        <span class="mobile-contribute-sheet__option-title">Write a page</span>
+        <span class="mobile-contribute-sheet__option-desc">Share local knowledge or a guide</span>
+      </span>
+      <i class="fa-solid fa-chevron-right mobile-contribute-sheet__option-arrow" aria-hidden="true"></i>
+    </a>
+
+    <a href="{{ '/list-service.html' | relative_url }}" class="mobile-contribute-sheet__option">
+      <span class="mobile-contribute-sheet__option-icon" aria-hidden="true">
+        <i class="fa-solid fa-tag"></i>
+      </span>
+      <span class="mobile-contribute-sheet__option-body">
+        <span class="mobile-contribute-sheet__option-title">Post a listing</span>
+        <span class="mobile-contribute-sheet__option-desc">Sell, give away, or offer a service</span>
+      </span>
+      <i class="fa-solid fa-chevron-right mobile-contribute-sheet__option-arrow" aria-hidden="true"></i>
+    </a>
+
+    <a href="{{ '/broadcast.html' | relative_url }}" class="mobile-contribute-sheet__option">
+      <span class="mobile-contribute-sheet__option-icon" aria-hidden="true">
+        <i class="fa-solid fa-bullhorn"></i>
+      </span>
+      <span class="mobile-contribute-sheet__option-body">
+        <span class="mobile-contribute-sheet__option-title">Send a broadcast</span>
+        <span class="mobile-contribute-sheet__option-desc">Notify neighbours about something urgent</span>
+      </span>
+      <i class="fa-solid fa-chevron-right mobile-contribute-sheet__option-arrow" aria-hidden="true"></i>
+    </a>
+
+    <a href="{{ '/notification.html' | relative_url }}" class="mobile-contribute-sheet__option">
+      <span class="mobile-contribute-sheet__option-icon" aria-hidden="true">
+        <i class="fa-solid fa-bell"></i>
+      </span>
+      <span class="mobile-contribute-sheet__option-body">
+        <span class="mobile-contribute-sheet__option-title">Share a notice</span>
+        <span class="mobile-contribute-sheet__option-desc">Post an official notice with a screenshot</span>
+      </span>
+      <i class="fa-solid fa-chevron-right mobile-contribute-sheet__option-arrow" aria-hidden="true"></i>
+    </a>
+
+    <button type="button" class="mobile-contribute-sheet__cancel" data-sheet-close>Cancel</button>
+  </div>
+</div>
+
+<script>
+(function initMobileTabbar() {
+  "use strict";
+  if (window.__resiHubMobileTabbarLoaded) return;
+  window.__resiHubMobileTabbarLoaded = true;
+
+  const sheet = document.getElementById("mobile-contribute-sheet");
+  const openBtn = document.getElementById("mobileTabbarContribute");
+  const moreBtn = document.getElementById("mobileTabbarMore");
+  if (!sheet || !openBtn) return;
+
+  function openSheet() {
+    sheet.classList.add("is-open");
+    sheet.setAttribute("aria-hidden", "false");
+    openBtn.setAttribute("aria-expanded", "true");
+    document.body.classList.add("mobile-sheet-open");
+  }
+
+  function closeSheet() {
+    // Move focus out first so aria-hidden won't be blocked
+    if (sheet.contains(document.activeElement)) {
+      openBtn.focus();
+    }
+    sheet.classList.remove("is-open");
+    sheet.setAttribute("aria-hidden", "true");
+    openBtn.setAttribute("aria-expanded", "false");
+    document.body.classList.remove("mobile-sheet-open");
+  }
+
+  openBtn.addEventListener("click", () => {
+    sheet.classList.contains("is-open") ? closeSheet() : openSheet();
+  });
+  sheet.querySelectorAll("[data-sheet-close]").forEach((el) =>
+    el.addEventListener("click", closeSheet)
+  );
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && sheet.classList.contains("is-open")) closeSheet();
+  });
+
+  if (moreBtn) {
+    moreBtn.addEventListener("click", () => {
+      const sidebar = document.querySelector(".sidebar");
+      const overlay = document.getElementById("sidebarOverlay");
+      if (!sidebar) return;
+      sidebar.classList.toggle("is-open");
+      if (overlay) overlay.classList.toggle("is-active");
+    });
+  }
+})();
+
+(function initDrawerSwipeDismiss() {
+  "use strict";
+  if (window.__resiHubDrawerSwipeLoaded) return;
+  window.__resiHubDrawerSwipeLoaded = true;
+
+  function attach() {
+    const drawer = document.getElementById("editor-panel");
+    if (!drawer || drawer.dataset.swipeBound === "1") return;
+    drawer.dataset.swipeBound = "1";
+
+    let startY = 0;
+    let currentY = 0;
+    let dragging = false;
+    const HANDLE_HEIGHT = 60;
+
+    drawer.addEventListener("touchstart", (e) => {
+      // Only trigger from the top region of the sheet
+      const touch = e.touches[0];
+      if (touch.clientY > drawer.getBoundingClientRect().top + HANDLE_HEIGHT) return;
+      startY = touch.clientY;
+      currentY = startY;
+      dragging = true;
+      drawer.style.transition = "none";
+    }, { passive: true });
+
+    drawer.addEventListener("touchmove", (e) => {
+      if (!dragging) return;
+      currentY = e.touches[0].clientY;
+      const delta = Math.max(0, currentY - startY);
+      if (delta > 0) {
+        drawer.style.transform = `translateY(${delta}px)`;
+      }
+    }, { passive: true });
+
+    drawer.addEventListener("touchend", () => {
+      if (!dragging) return;
+      dragging = false;
+      drawer.style.transition = "";
+      drawer.style.transform = "";
+      const delta = currentY - startY;
+      if (delta > 120) {
+        // Trigger close
+        if (typeof window.togglePanel === "function") {
+          window.togglePanel();
+        }
+      }
+    });
+  }
+
+  document.addEventListener("DOMContentLoaded", attach);
+})();
+</script>

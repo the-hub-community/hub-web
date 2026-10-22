@@ -1,0 +1,115 @@
+/* ================================================================
+   Mobile Safe Areas & Dynamic Viewport Height
+   Loaded last. Overrides legacy 100vh where it matters.
+   ================================================================ */
+
+/* ── 1. Replace 100vh with 100dvh on mobile ───────────────── */
+@supports (height: 100dvh) {
+  @media (max-width: 768px) {
+    body,
+    .app-shell,
+    .main-content,
+    .sidebar,
+    .editor-drawer,
+    .cmd-palette,
+    .image-sheet {
+      /* If a rule above uses 100vh, override it here. */
+    }
+
+    body { min-height: 100dvh; }
+    .sidebar { height: 100dvh; }
+    .editor-drawer { height: 92dvh; max-height: 92dvh; }
+    .cmd-palette { height: 100dvh; }
+    .image-sheet { height: 100dvh; }
+  }
+}
+
+/* ── 2. Header respects notch ─────────────────────────────── */
+@supports (padding: env(safe-area-inset-top)) {
+  @media (max-width: 768px) {
+    .site-header {
+      padding-top: env(safe-area-inset-top);
+      height: calc(56px + env(safe-area-inset-top));
+    }
+
+    /* Content must clear both the fixed header AND the tab bar */
+    .app-shell {
+      padding-top: calc(56px + env(safe-area-inset-top)) !important;
+      padding-left: 0 !important;
+      padding-bottom: 0 !important;
+    }
+
+    .main-content {
+      padding-top: 16px !important;
+      padding-bottom: 24px !important;
+    }
+
+    /* Space for the mobile tab bar at the bottom of the scroll */
+    body {
+      padding-bottom: env(safe-area-inset-bottom);
+    }
+
+    body::after {
+      /* Extra padding to keep footer content clear of the tab bar */
+      content: "";
+      display: block;
+      height: calc(72px + env(safe-area-inset-bottom));
+      pointer-events: none;
+    }
+  }
+}
+
+/* ── 3. Bottom sheets and tab bars respect home indicator ─── */
+@supports (padding: env(safe-area-inset-bottom)) {
+  @media (max-width: 768px) {
+    .mobile-tabbar {
+      padding-bottom: calc(6px + env(safe-area-inset-bottom));
+    }
+
+    .mobile-contribute-sheet__panel {
+      padding-bottom: calc(16px + env(safe-area-inset-bottom));
+    }
+
+    .image-sheet__panel {
+      padding-bottom: calc(16px + env(safe-area-inset-bottom));
+    }
+
+    .editor-drawer .drawer-footer {
+      padding-bottom: calc(12px + env(safe-area-inset-bottom));
+    }
+  }
+}
+
+/* ── 4. Landscape phone: don't eat the whole screen ──────── */
+@media (max-width: 900px) and (orientation: landscape) and (max-height: 500px) {
+  .editor-drawer { height: 100dvh; max-height: 100dvh; border-radius: 0; }
+  .editor-drawer::before { display: none; }
+
+  .mobile-contribute-sheet { align-items: stretch; }
+  .mobile-contribute-sheet__panel { border-radius: 0; padding-top: 12px; }
+
+  .image-sheet { align-items: stretch; }
+  .image-sheet__panel { border-radius: 0; }
+}
+
+.swipe-wiki-hint {
+  position: fixed;
+  left: 50%;
+  bottom: calc(96px + env(safe-area-inset-bottom, 0px));
+  transform: translateX(-50%) translateY(8px);
+  padding: 8px 16px;
+  border-radius: 999px;
+  background: rgba(4, 23, 72, 0.88);
+  color: #fff;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  opacity: 0;
+  transition: opacity 0.24s ease, transform 0.24s ease;
+  pointer-events: none;
+  z-index: 1005;
+}
+.swipe-wiki-hint.is-visible {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}

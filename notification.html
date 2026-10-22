@@ -1,0 +1,141 @@
+---
+layout: default
+title: Share Community Notice
+custom_stylesheets: [broadcast]
+robots: noindex, nofollow
+sitemap: false
+---
+<div class="broadcast-shell">
+    <section class="broadcast-command">
+        <div class="broadcast-hero">
+            <div class="broadcast-hero__eyebrow">Community Alerts</div>
+            <div class="form-header">
+                <h1 data-i18n="notification.heading">Share Community Notice</h1>
+                <p data-i18n="notification.subheading">Share official notices you've received with a screenshot and description. Help keep your community informed.</p>
+            </div>
+            <div class="broadcast-hero__meta">
+                <span id="broadcastHeroCommunity"><i class="fa-solid fa-location-dot"></i> Community: All communities</span>
+                <span><i class="fa-regular fa-clock"></i> Auto-expires in 48 hours</span>
+                <span><i class="fa-solid fa-image"></i> Optional screenshot</span>
+            </div>
+        </div>
+
+        <div class="broadcast-workbench">
+            <form id="notificationForm" class="professional-form broadcast-form">
+                <input type="hidden" name="type" value="notification">
+                <input type="hidden" name="community_key" id="communityKeyInput" value="">
+                <input type="hidden" name="page_key" id="pageKeyInput" value="">
+
+                <div class="broadcast-expiry-banner" id="broadcastExpiryBanner" role="status" aria-live="polite">
+                    <div class="broadcast-expiry-banner__label">Visibility window</div>
+                    <div class="broadcast-expiry-banner__text">
+                        This notice will automatically expire in
+                        <strong id="broadcastExpiryTimer">48h 00m</strong>
+                        after approval.
+                    </div>
+                </div>
+
+                <div class="form-row broadcast-grid">
+                    <div class="form-group">
+                        <label data-i18n="notification.target_community">Target Community</label>
+                        <div id="community-input-wrapper">
+                            <select id="condo" name="condo" class="modern-input" required>
+                                <option value="">Select a community...</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label data-i18n="notification.category">Category</label>
+                        <select name="notice_category" id="categorySelect" class="modern-input urgency-select">
+                            <option value="maintenance" data-i18n="notification.category_maintenance">Maintenance</option>
+                            <option value="safety" selected data-i18n="notification.category_safety">Safety Alert</option>
+                            <option value="policy" data-i18n="notification.category_policy">Policy Update</option>
+                            <option value="event" data-i18n="notification.category_event">Event Notice</option>
+                            <option value="other" data-i18n="notification.category_other">Other</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label data-i18n="notification.screenshot">Screenshot</label>
+                    <div class="file-upload-wrapper">
+                        <div class="file-upload-zone" id="fileUploadZone">
+                            <i class="fa-solid fa-cloud-arrow-up"></i>
+                            <p data-i18n="notification.click_or_drag">Click or drag to upload screenshot</p>
+                            <span class="file-size-hint" data-i18n="notification.max_file_size">Max 5MB</span>
+                            <input type="file" id="screenshotInput" name="notice_screenshot" class="file-input" accept="image/*">
+                        </div>
+                        <div id="imagePreview" class="image-preview" style="display: none;">
+                            <img id="previewImage" src="" alt="Screenshot preview" class="preview-thumbnail">
+                            <button type="button" class="btn-remove-image" id="removeImageBtn" data-i18n="notification.remove_screenshot">Remove</button>
+                        </div>
+                    </div>
+                    <small class="form-hint" data-i18n="notification.screenshot_hint">Optional: add screenshot evidence if available</small>
+                </div>
+
+                <div class="form-group">
+                    <label data-i18n="notification.title">Notice Title</label>
+                    <input type="text" name="notice_title" class="modern-input" data-i18n-placeholder="notification.title_placeholder" placeholder="e.g., No dogs in school premise" data-char-limit="140" required maxlength="140">
+                    <small class="char-count"><span id="titleCount">0</span>/140</small>
+                </div>
+
+                <div class="form-group">
+                    <label data-i18n="notification.description">Notice Description</label>
+                    <textarea name="notice_message" id="messageTextarea" rows="6" class="modern-input broadcast-textarea" data-i18n-placeholder="notification.description_placeholder" placeholder="Summarize the key details from the notice (max 200 words)..." required maxlength="1000" data-char-limit="1500"></textarea>
+                    <small class="char-count"><span id="messageCount">0</span>/200 words</small>
+                </div>
+
+                <div class="form-group checkbox-group">
+                    <label>
+                        <input type="checkbox" name="verified_official" value="true">
+                        <span data-i18n="notification.verified_official">This is from an official notice/announcement</span>
+                    </label>
+                </div>
+
+                <div class="form-actions">
+                    <a href="{{ site.baseurl }}/" class="btn-cancel" data-i18n="common.cancel">Cancel</a>
+
+                    <button type="submit" id="submitBtn" class="btn-sync">
+                        <span id="btnText" data-i18n="notification.submit_for_review">Submit for Review</span>
+                    </button>
+                </div>
+                <p id="notificationError" class="submission-error-inline" role="alert" hidden></p>
+            </form>
+
+            <aside class="broadcast-live-card" aria-live="polite">
+                <div class="broadcast-live-card__header">
+                    <span id="liveCategoryBadge" class="broadcast-live-card__badge category-safety">Safety Alert</span>
+                    <span class="broadcast-live-card__ttl">Off-site in <strong id="broadcastExpiryTimerMirror">48h 00m</strong></span>
+                </div>
+                <div id="livePreviewImage" style="display: none; margin-bottom: 1rem;">
+                    <img id="livePreviewImg" alt="Notice screenshot" style="width: 100%; border-radius: 8px; max-height: 300px; object-fit: cover;">
+                </div>
+                <h3 id="livePreviewTitle">No dogs in school premise</h3>
+                <p class="broadcast-live-card__community" id="livePreviewCondo">Select a community</p>
+                <p class="broadcast-live-card__body" id="livePreviewBody">Provide details from the official notice...</p>
+                <div class="broadcast-live-card__footer">
+                    <i class="fa-solid fa-circle-check"></i>
+                    This notice will be visible to the community once approved.
+                </div>
+            </aside>
+        </div>
+    </section>
+</div>
+
+<script id="community-data" type="application/json">
+[
+    {% assign community_indices = site.pages | where_exp: "p", "p.path contains 'content/'" | where_exp: "p", "p.name == 'index.md' or p.name == 'index.html'" | sort: "condo" %}
+    {% for community in community_indices %}
+    {% assign path_parts = community.path | split: '/' %}
+    {% assign folder_slug = path_parts[1] %}
+    {
+        "name": {{ community.condo | default: community.title | jsonify }},
+        "slug": {{ folder_slug | jsonify }},
+        "key": {{ community.community_key | default: '' | jsonify }}
+    }{% unless forloop.last %},{% endunless %}
+    {% endfor %}
+]
+</script>
+
+<script src="{{ site.baseurl }}/assets/js/pages/notification-page.js"></script>

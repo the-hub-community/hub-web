@@ -1,0 +1,94 @@
+/* ================================================================
+   Sidebar Marks — monograms for communities, icons for pages
+   ================================================================ */
+
+/* Shared mark shell */
+.sidebar-nav__item-mark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 22px;
+  height: 22px;
+  margin-right: 10px;
+  border-radius: 6px;
+  font-family: var(--font-mono, "JetBrains Mono", monospace);
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  line-height: 1;
+  text-transform: uppercase;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+/* ── Community monogram ──────────────────────────────────── */
+.sidebar-nav__item-mark--community {
+  background: var(--accent-soft, var(--surface-container, #ebedff));
+  color: var(--accent, var(--on-surface-variant, #434750));
+  border: 1px solid var(--accent-line, transparent);
+}
+
+/* When the community row is active, invert the monogram */
+.sidebar-nav__item--community.is-active .sidebar-nav__item-mark--community {
+  background: var(--accent, var(--primary, #35568e));
+  color: #ffffff;
+  border-color: transparent;
+}
+
+/* ── Page type icon ──────────────────────────────────────── */
+.sidebar-nav__item-mark--page {
+  width: 18px;
+  height: 18px;
+  margin-right: 8px;
+  margin-left: 6px;
+  background: transparent;
+  border: none;
+  color: var(--outline-variant, #c4c6d1);
+}
+
+.sidebar-nav__item-mark--page svg {
+  width: 14px;
+  height: 14px;
+  display: block;
+}
+
+/* Active sub-page — icon inherits the community accent */
+.sidebar-nav__subpage.is-active .sidebar-nav__item-mark--page {
+  color: var(--accent, var(--primary, #35568e));
+}
+
+.sidebar-nav__subpage:hover .sidebar-nav__item-mark--page {
+  color: var(--on-surface-variant, #434750);
+}
+
+/* ── Adjust padding so marks align cleanly with labels ───── */
+.sidebar-nav__item--community {
+  gap: 0;
+  padding-left: 12px;
+}
+
+.sidebar-nav__subpage {
+  gap: 0;
+  padding-left: 6px;
+}
+
+/* ── Dark mode ───────────────────────────────────────────── */
+[data-theme="dark"] .sidebar-nav__item-mark--community {
+  background: rgba(148, 163, 184, 0.12);
+  border-color: rgba(148, 163, 184, 0.18);
+}
+
+[data-theme="dark"]
+  .sidebar-nav__item--community.is-active
+  .sidebar-nav__item-mark--community {
+  background: var(--accent, #93c5fd);
+  color: #0b1120;
+}
+
+[data-theme="dark"] .sidebar-nav__item-mark--page {
+  color: #64748b;
+}
+
+[data-theme="dark"] .sidebar-nav__subpage.is-active .sidebar-nav__item-mark--page {
+  color: var(--accent, #93c5fd);
+}

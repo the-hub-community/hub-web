@@ -1,0 +1,211 @@
+<!-- Comments Display Section -->
+<section class="comments-section" id="comments">
+  <div class="comments-container">
+    <h2 class="comments-title" data-i18n="comments.title">Community Discussions</h2>
+    
+    <div id="comments-loading" class="comments-loading">
+      <div class="spinner"></div>
+      <p data-i18n="comments.loading">Loading comments...</p>
+    </div>
+    
+    <div id="comments-list" class="comments-list" style="display: none;">
+      <!-- Comments will be populated here by JavaScript -->
+    </div>
+
+    <div id="comments-pagination" class="comments-pagination" style="display: none;">
+      <button id="comments-prev" class="comments-page-btn" type="button" data-i18n="comments.previous">Previous</button>
+      <span id="comments-page-info" class="comments-page-info">Page 1 of 1</span>
+      <button id="comments-next" class="comments-page-btn" type="button" data-i18n="comments.next">Next</button>
+    </div>
+    
+    <div id="comments-empty" class="comments-empty" style="display: none;">
+      <p data-i18n="comments.empty">No comments yet. Be the first to share your thoughts!</p>
+    </div>
+    
+    <div id="comments-error" class="comments-error" style="display: none;">
+      <p data-i18n="comments.error">Unable to load comments. Please try again later.</p>
+    </div>
+  </div>
+</section>
+
+<script>
+(function() {
+  const INITIAL_COMMENTS_COUNT = 4;
+  const COMMENTS_INCREMENT = 3;
+  let visibleCommentsCount = INITIAL_COMMENTS_COUNT;
+  const pageKey = "{{ page.page_key }}";
+  const communityKey = "{{ page.community_key }}";
+  const commentsList = document.getElementById("comments-list");
+  const tr = (key, fallback) => (typeof window.t === "function" ? window.t(key, fallback) : fallback);
+  let allComments = [];
+  
+  if (!pageKey || !communityKey) {
+    console.warn("Comments: page_key or community_key missing from frontmatter");
+    document.getElementById("comments").style.display = "none";
+    return;
+  }
+  
+    function setCommentsState(state) {
+    // Hide all states
+    document.getElementById("comments-loading").style.display = "none";
+    document.getElementById("comments-list").style.display = "none";
+    document.getElementById("comments-empty").style.display = "none";
+    document.getElementById("comments-error").style.display = "none";
+    
+    // Show requested state
+    if (state === "loading") document.getElementById("comments-loading").style.display = "flex";
+    if (state === "list") document.getElementById("comments-list").style.display = "flex";
+    if (state === "empty") document.getElementById("comments-empty").style.display = "block";
+    if (state === "error") document.getElementById("comments-error").style.display = "block";
+  }
+
+  async function loadComments() {
+    setCommentsState("loading");
+    
+    try {
+      const response = await fetch(
+        `${window.API_BASE || "https://hub-community-apis.dekumar-ca.workers.dev"}/api/comments?page_key=${encodeURIComponent(pageKey)}&community_key=${encodeURIComponent(communityKey)}`
+      );
+      
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+      const data = await response.json();
+      
+      if (!data.success) throw new Error(data.error || "Failed to load");
+      
+      const comments = (data.comments || []).slice().reverse();
+      allComments = comments;
+      visibleCommentsCount = INITIAL_COMMENTS_COUNT;
+      
+      if (comments.length === 0) {
+        setCommentsState("empty");
+      } else {
+        renderVisibleComments();
+        setCommentsState("list");
+      }
+    } catch (error) {
+      console.error("Error loading comments:", error);
+      setCommentsState("error");
+    }
+  }
+  
+  function escapeHtml(text) {
+    const div = document.createElement("div");
+    div.textContent = text;
+    return div.innerHTML;
+  }
+
+  function renderCommentCard(comment, opts = {}) {
+    // opts: { locale, pageKey, communityKey, tr }
+    const pageKey_ = opts.pageKey || pageKey;
+    const communityKey_ = opts.communityKey || communityKey;
+    const tr_ = opts.tr || tr;
+    const locale = opts.locale || (typeof window.getCurrentLanguage === "function" && window.getCurrentLanguage() === "fr" ? "fr-CA" : "en-CA");
+    const isAnon = comment.is_anonymous || !comment.author || comment.author.trim() === "" || comment.author === "Anonymous";
+    const isAdmin = comment.role === "admin";
+    const isModerator = comment.role === "moderator";
+    const displayName = isAnon ? tr_("comments.anonymous", "Anonymous") : escapeHtml(comment.author);
+    const initial = isAnon ? "?" : escapeHtml((comment.author || "?").charAt(0).toUpperCase());
+    const commentId = escapeHtml(comment.id || `${pageKey_}-${Date.parse(comment.submitted_at || Date.now())}`);
+    const textPreview = escapeHtml((comment.text || "").slice(0, 180));
+    const dateStr = comment.submitted_at ? new Date(comment.submitted_at).toLocaleDateString(locale, { year: "numeric", month: "short", day: "numeric" }) : "";
+    let cardClass = "comment-card";
+    if (isAnon) cardClass += " comment-card--anon";
+    if (isAdmin) cardClass += " comment-card--admin";
+    if (isModerator) cardClass += " comment-card--moderator";
+    return `
+      <div class="${cardClass}" data-ugc-type="comment" data-ugc-id="${commentId}" data-community-key="${escapeHtml(communityKey_)}" data-page-key="${escapeHtml(pageKey_)}" data-ugc-text="${textPreview}">
+        <div class="comment-card__avatar${isAnon ? " comment-card__avatar--anon" : ""}" aria-hidden="true">${initial}</div>
+        <div class="comment-card__body">
+          <div class="comment-card__meta comment-card__meta--row">
+            <span class="comment-card__author">${displayName}${isAnon ? ` <span class="comment-anon-badge">${tr_("comments.anon_badge", "Anon")}</span>` : ""}</span>
+            <span class="comment-card__date">${dateStr}</span>
+          </div>
+          <p class="comment-card__text comment-card__text--collapsed" role="button" tabindex="0" aria-expanded="false">${escapeHtml(comment.text)}</p>
+          <div class="comment-card__actions">
+            <button type="button" class="comment-card__report-bottom report-content-btn" aria-label="${escapeHtml(tr_("trust_safety.report_comment_aria", "Report this comment"))}" title="${escapeHtml(tr_("trust_safety.report_comment_title", "Report comment"))}">
+              <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>
+              ${tr_("trust_safety.report_action", "Report")}
+            </button>
+          </div>
+        </div>
+      </div>`;
+  }
+
+  window.renderCommentCard = renderCommentCard;
+
+  function renderVisibleComments() {
+    const language = typeof window.getCurrentLanguage === "function" ? window.getCurrentLanguage() : "en";
+    const locale = language === "fr" ? "fr-CA" : "en-CA";
+    const pageComments = allComments.slice(0, visibleCommentsCount);
+    commentsList.innerHTML = pageComments.map(comment => renderCommentCard(comment, { locale, pageKey, communityKey, tr })).join("");
+    attachCommentExpandBehavior(commentsList);
+    renderShowMore();
+  }
+
+  function renderShowMore() {
+    let showMoreBtn = document.getElementById("comments-show-more");
+    if (showMoreBtn) showMoreBtn.remove();
+    if (visibleCommentsCount < allComments.length) {
+      showMoreBtn = document.createElement("button");
+      showMoreBtn.id = "comments-show-more";
+      showMoreBtn.className = "comments-page-btn";
+      showMoreBtn.type = "button";
+      showMoreBtn.innerHTML = `<span class="show-more-text">${tr("comments.show_more", "Show More")}</span><span class="show-more-loader" style="display:none;margin-left:0.5em;"><span class="spinner" style="width:16px;height:16px;border-width:2px;"></span></span>`;
+      showMoreBtn.style.margin = "1rem auto 0 auto";
+      showMoreBtn.onclick = function() {
+        const loader = showMoreBtn.querySelector('.show-more-loader');
+        const text = showMoreBtn.querySelector('.show-more-text');
+        text.style.display = 'none';
+        loader.style.display = 'inline-block';
+        setTimeout(() => {
+          visibleCommentsCount += COMMENTS_INCREMENT;
+          renderVisibleComments();
+        }, 500); // Simulate loading
+      };
+      commentsList.parentNode.appendChild(showMoreBtn);
+    }
+  }
+
+  // Listen for commentPosted event to reload comments without full page reload
+  window.addEventListener("commentPosted", () => {
+    document.getElementById("comments-loading").style.display = "flex";
+    document.getElementById("comments-list").style.display = "none";
+    document.getElementById("comments-empty").style.display = "none";
+    document.getElementById("comments-error").style.display = "none";
+    loadComments();
+  });
+
+  // Pagination removed in favor of Show More
+
+  function attachCommentExpandBehavior(commentsList) {
+    const textEls = commentsList.querySelectorAll(".comment-card__text");
+    textEls.forEach(el => {
+      if (!el._expandHandlerAttached) {
+        function toggle() {
+          const expanded = el.classList.toggle("comment-card__text--collapsed");
+          el.setAttribute("aria-expanded", expanded ? "false" : "true");
+        }
+        el.addEventListener("click", toggle);
+        el.addEventListener("keydown", e => {
+          if (e.key === "Enter" || e.key === " ") { e.preventDefault(); toggle(); }
+        });
+        el._expandHandlerAttached = true;
+      }
+    });
+  }
+  window.attachCommentExpandBehavior = attachCommentExpandBehavior;
+
+  window.addEventListener("resiHub:languageChanged", () => {
+    if (allComments.length > 0) {
+      renderVisibleComments();
+    }
+  });
+  
+  // Load comments when DOM is ready
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", loadComments);
+  } else {
+    loadComments();
+  }
+})();
+</script>

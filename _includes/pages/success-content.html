@@ -1,0 +1,67 @@
+<div class="ed-error">
+  <div class="ed-error__hero">
+    <div class="ed-error__eyebrow">
+      <span class="ed-error__eyebrow-dot"></span>
+      <span>Submission received</span>
+    </div>
+    <h1 class="ed-error__title" data-i18n="success.heading">We've got it.</h1>
+    <p class="ed-error__subtitle" id="success-subtitle" data-i18n="success.subtitle">
+      Your submission is now under review.
+    </p>
+
+    <p class="ed-error__body" id="success-description" data-i18n="success.description">
+      Our team reviews every submission before it goes live. You'll be able to check the status using your reference number below.
+    </p>
+
+    <div class="submission-id-panel" id="success-submission-id-panel" hidden>
+      <div class="submission-id-row">
+        <code id="success-submission-id-value" class="submission-id-code"></code>
+        <button type="button" class="btn-copy-id" id="success-copy-id-btn">Copy</button>
+      </div>
+      <p class="submission-id-note">Save this number to check your submission status later.</p>
+    </div>
+
+    <div class="ed-error__actions" id="success-actions">
+      <a href="{{ site.baseurl }}/" class="ed-error__btn ed-error__btn--primary">
+        <i class="fa-solid fa-house" aria-hidden="true"></i>
+        Back to home
+      </a>
+      <a href="{{ site.baseurl }}/submit.html" class="ed-error__btn" id="success-submit-another">
+        <i class="fa-solid fa-plus" aria-hidden="true"></i>
+        Submit another
+      </a>
+    </div>
+  </div>
+
+  <div class="ed-error__list">
+    <div class="ed-error__list-header">
+      <span class="ed-error__list-label">What happens next</span>
+    </div>
+    <ul class="ed-error__list-items">
+      <li>Your submission is queued for review</li>
+      <li>A reviewer will look at it — usually within 24 hours</li>
+      <li>Once approved, it appears live on the site</li>
+      <li>You'll be able to check status anytime with your reference number</li>
+    </ul>
+  </div>
+
+  <div class="ed-error__list">
+    <div class="ed-error__list-header">
+      <span class="ed-error__list-label">While you wait</span>
+    </div>
+    <div class="ed-error__link-row">
+      <a href="{{ site.baseurl }}/" class="ed-error__link">
+        <span>Explore the dashboard</span>
+        <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
+      </a>
+      <a href="{{ site.baseurl }}/marketplace.html" class="ed-error__link">
+        <span>Browse the marketplace</span>
+        <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
+      </a>
+      <a href="{{ site.baseurl }}/status.html" class="ed-error__link">
+        <span>Check a submission status</span>
+        <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
+      </a>
+    </div>
+  </div>
+</div>

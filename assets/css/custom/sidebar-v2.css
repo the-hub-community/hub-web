@@ -1,0 +1,433 @@
+/* ================================================================
+   Sidebar — LIGHT LAVENDER, matches Stitch reference
+   ================================================================ */
+
+/* Kill every inherited decoration from style.css */
+.sidebar::before,
+.sidebar::after,
+.sidebar-nav::before,
+.sidebar-nav::after,
+.sidebar-info-card::before,
+.sidebar-info-card::after,
+.nav-section::before,
+.nav-section::after,
+.nav-section small::before {
+  content: none !important;
+  display: none !important;
+  background: none !important;
+  mask-image: none !important;
+  -webkit-mask-image: none !important;
+}
+
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  width: 256px;
+  background: rgba(243, 243, 255, 0.7);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  padding: 80px 16px 24px;
+  display: flex;
+  flex-direction: column;
+  z-index: 40;
+  border-right: none;
+  font-family: var(--font-body);
+  overflow: hidden;
+}
+
+.sidebar-nav {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  scrollbar-width: none;
+}
+
+.sidebar-nav::-webkit-scrollbar {
+  display: none;
+}
+
+/* ── Nav groups ──────────────────────────────────────── */
+.sidebar-nav__group {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.sidebar-nav__label {
+  display: block;
+  padding: 4px 16px 6px;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  line-height: 1rem;
+  letter-spacing: 0.04em;
+  font-weight: 500;
+  text-transform: uppercase;
+  color: var(--outline);
+}
+
+/* ── Nav items ───────────────────────────────────────── */
+.sidebar-nav__item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 16px;
+  border-radius: 12px;
+  color: var(--on-surface-variant);
+  font-size: 0.9375rem;
+  line-height: 1.5rem;
+  font-weight: 400;
+  text-decoration: none;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.sidebar-nav__item > i {
+  width: 20px;
+  font-size: 0.95rem !important;   /* was 0.82 */
+  font-weight: 400;                 /* lighter */
+  color: var(--on-surface-variant);
+  opacity: 0.85;                    /* slightly muted */
+  text-align: center;
+  flex-shrink: 0;
+  transition: color var(--duration-fast) var(--ease-out),
+              opacity var(--duration-fast) var(--ease-out);
+}
+
+.sidebar-nav__item:hover > i {
+  color: var(--on-surface);
+  opacity: 1;
+}
+
+
+
+.sidebar-nav__item:hover>i {
+  color: var(--on-surface);
+}
+
+/* Active state — slate blue container, white text */
+.sidebar-nav__item.is-active {
+  background: var(--primary-container);
+  color: var(--on-primary-container);
+  font-weight: 600;
+}
+
+.sidebar-nav__item.is-active > i {
+  color: var(--on-primary-container);
+  opacity: 1;
+}
+
+/* Badge (red pill for count) */
+.sidebar-nav__badge {
+  margin-left: auto;
+  background: var(--secondary-fixed);
+  color: var(--on-secondary-fixed);
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  line-height: 0.875rem;
+  letter-spacing: 0.06em;
+  font-weight: 600;
+  padding: 2px 6px;
+  border-radius: 999px;
+  min-width: 20px;
+  text-align: center;
+}
+
+/* Community item — compact */
+.sidebar-nav__item--community {
+  padding: 6px 16px;
+  font-size: 0.8125rem;
+  line-height: 1.25rem;
+  border-radius: 8px;
+  justify-content: space-between;
+}
+
+.sidebar-nav__count {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  line-height: 1rem;
+  letter-spacing: 0.04em;
+  font-weight: 500;
+  color: var(--outline);
+  margin-left: auto;
+}
+
+.sidebar-nav__item--community.is-active .sidebar-nav__count {
+  color: var(--on-primary-container);
+  opacity: 0.85;
+}
+
+/* ── Bottom info card ────────────────────────────────── */
+.sidebar-info-card {
+  margin-top: 16px;
+  padding: 16px;
+  background: var(--surface-container);
+  border-radius: 12px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.03);
+}
+
+.sidebar-info-card__head {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 4px;
+}
+
+.sidebar-info-card__head i {
+  color: var(--primary);
+  font-size: 1rem;
+}
+
+.sidebar-info-card__title {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  line-height: 1rem;
+  letter-spacing: 0.04em;
+  font-weight: 600;
+  color: var(--primary);
+}
+
+.sidebar-info-card__text {
+  margin: 0;
+  font-size: 0.8125rem;
+  line-height: 1.25rem;
+  color: var(--on-surface-variant);
+}
+
+/* ── Mobile ──────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .sidebar {
+    left: -280px;
+    width: 280px;
+    z-index: 200;
+    transition: left 0.3s ease;
+  }
+
+  .sidebar.is-open {
+    left: 0;
+  }
+}
+
+/* Kill any leftover pseudo-element decorations */
+.sidebar *::before,
+.sidebar *::after,
+.sidebar::before,
+.sidebar::after {
+  /* Exception: allow the info-card icons and nav-badge */
+}
+
+.sidebar-nav::before,
+.sidebar-nav::after,
+.sidebar-brand-block::before,
+.sidebar-brand-block::after,
+.sidebar-nav__group::before,
+.sidebar-nav__group::after,
+.sidebar-nav__item::before,
+.sidebar-nav__item::after {
+  content: none !important;
+  display: none !important;
+  background: none !important;
+  mask-image: none !important;
+  -webkit-mask-image: none !important;
+  opacity: 0 !important;
+}
+
+/* Ensure the info card has no decoration */
+.sidebar-info-card::before,
+.sidebar-info-card::after {
+  content: none !important;
+  display: none !important;
+}
+
+/* ── Sub-pages under the active community ─────────────────── */
+.sidebar-nav__subpages {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  margin: 2px 0 8px 14px;
+  padding-left: 10px;
+  border-left: 1px solid var(--border-subtle, rgba(100, 116, 139, 0.18));
+}
+
+.sidebar-nav__subpage {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 8px;
+  border-radius: 8px;
+  color: var(--on-surface-variant, #64748b);
+  font-size: 0.8125rem;
+  line-height: 1.3;
+  text-decoration: none;
+  transition: background 0.12s ease, color 0.12s ease;
+  overflow: hidden;
+}
+
+.sidebar-nav__subpage > span {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sidebar-nav__subpage i {
+  font-size: 0.72rem;
+  opacity: 0.6;
+  flex-shrink: 0;
+}
+
+.sidebar-nav__subpage:hover {
+  background: var(--surface-container-low, #f8fafc);
+  color: var(--on-surface, #0f172a);
+}
+
+.sidebar-nav__subpage.is-active {
+  background: color-mix(in srgb, var(--primary) 10%, transparent);
+  color: var(--primary);
+  font-weight: 600;
+}
+
+.sidebar-nav__subpage.is-active i {
+  opacity: 1;
+}
+
+/* Sidebar nav icon refinements */
+.sidebar-nav__item > i {
+  width: 22px;
+  font-size: 1rem !important;
+  color: var(--on-surface-variant);
+  opacity: 0.75;
+  transition: color 0.15s ease, opacity 0.15s ease, transform 0.15s ease;
+}
+
+.sidebar-nav__item:hover > i {
+  opacity: 1;
+  transform: scale(1.05);
+}
+
+.sidebar-nav__item.is-active > i {
+  opacity: 1;
+  color: var(--on-primary-container);
+}
+
+/* Section label gets a small accent */
+.sidebar-nav__label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.sidebar-nav__label::before {
+  content: "";
+  display: inline-block;
+  width: 3px;
+  height: 10px;
+  border-radius: 2px;
+  background: var(--primary);
+  opacity: 0.5;
+}
+
+/* Community section header gets a different accent */
+.sidebar-nav__group--communities .sidebar-nav__label::before {
+  background: var(--outline-variant);
+  opacity: 0.6;
+}
+
+/* ================================================================
+   Sidebar icon chips — professional, subtle gloss on active
+   ================================================================ */
+
+/* Icon container */
+.sidebar-nav__item > .sidebar-nav__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  flex-shrink: 0;
+  background: transparent;
+  color: var(--on-surface-variant, #64748b);
+  transition:
+    background 180ms cubic-bezier(0.16, 1, 0.3, 1),
+    color 180ms cubic-bezier(0.16, 1, 0.3, 1),
+    transform 180ms cubic-bezier(0.16, 1, 0.3, 1);
+  position: relative;
+}
+
+.sidebar-nav__item > .sidebar-nav__icon i {
+  font-size: 0.88rem;
+  line-height: 1;
+}
+
+/* Hover — the icon chip lifts slightly */
+.sidebar-nav__item:hover > .sidebar-nav__icon {
+  background: var(--surface-container, #ebedff);
+  transform: scale(1.04);
+}
+
+/* Active — gradient fill, gloss highlight, white icon */
+.sidebar-nav__item.is-active > .sidebar-nav__icon {
+  background: linear-gradient(135deg,
+    var(--primary, #35568e) 0%,
+    #4f6fa8 100%);
+  color: #ffffff;
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.25) inset,
+    0 -1px 0 rgba(0, 0, 0, 0.12) inset,
+    0 2px 6px -2px rgba(53, 86, 142, 0.45);
+  transform: scale(1.02);
+}
+
+/* Gloss highlight — subtle top sheen */
+.sidebar-nav__item.is-active > .sidebar-nav__icon::before {
+  content: "";
+  position: absolute;
+  top: 2px;
+  left: 3px;
+  right: 3px;
+  height: 40%;
+  border-radius: 6px;
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.28) 0%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  pointer-events: none;
+}
+
+/* Label text — same as before */
+.sidebar-nav__item .sidebar-nav__label-text {
+  flex: 1;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Restore alignment — gap was on the <a>, now on the icon + text */
+.sidebar-nav__item {
+  gap: 12px;
+  padding: 6px 12px;
+  min-height: 40px;
+}
+
+/* Active item — remove the old full-blue background, keep it subtle */
+.sidebar-nav__item.is-active {
+  background: color-mix(in srgb, var(--primary) 8%, transparent);
+  color: var(--primary, #35568e);
+  font-weight: 600;
+}
+
+.sidebar-nav__item.is-active > .sidebar-nav__label-text {
+  color: var(--primary, #35568e);
+}
+
+/* Override the old icon rules that were targeting <i> directly */
+.sidebar-nav__item > i {
+  display: none;
+}
+
+/* Community rows and sub-pages keep their existing mark system —
+   only the main nav gets the new chip treatment. */

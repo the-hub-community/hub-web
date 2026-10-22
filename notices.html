@@ -1,0 +1,262 @@
+---
+layout: default
+title: Community Notices
+---
+
+{% assign communities = site.pages | where_exp: "p", "p.path contains 'content/'" | where_exp: "p", "p.name == 'index.md' or p.name == 'index.html'" | sort: "condo" %}
+{% assign all_alerts = site.pages | where: "layout", "broadcast" | sort: 'date' | reverse %}
+
+<div class="wiki-layout" style="max-width: 800px; display: block; margin: 0 auto; padding-top: 2rem;">
+  <div class="page-hero" style="margin-bottom: 2rem;">
+    <div class="page-hero__meta">
+      <span class="page-hero__dot"></span>
+      <span class="page-hero__eyebrow">Alert Center</span>
+    </div>
+    <h1 class="page-hero__title" id="pageTitle">Active Notices</h1>
+    <p class="page-hero__subtitle" id="pageSubtitle">
+      All current alerts and broadcasts.
+    </p>
+  </div>
+
+  <!-- Filter Dropdown -->
+  <div style="display: flex; gap: 1rem; margin-bottom: 2rem;">
+    <select id="communityFilter" class="modern-input" style="width: 280px; padding: 10px 14px; border-radius: 8px; border: 1px solid var(--border-default); background: var(--surface-container-lowest);">
+      <option value="">All Communities</option>
+      {% for c in communities %}
+        {% assign c_name = c.condo | default: c.title %}
+        <option value="{{ c_name | slugify }}">{{ c_name }}</option>
+      {% endfor %}
+    </select>
+  </div>
+
+  <!-- Alerts List -->
+  <div class="wiki-alerts" id="noticeList" style="margin-top: 0;">
+    {% assign now_ts = 'now' | date: '%s' %}
+    {% assign alert_ttl_seconds = 432000 %}
+    {% assign visible_count = 0 %}
+
+    {% for alert in all_alerts %}
+      {% assign alert_ts = alert.date | date: '%s' %}
+      {% assign alert_age = now_ts | minus: alert_ts %}
+      
+      {% if alert_age >= 0 and alert_age <= alert_ttl_seconds %}
+        {% assign visible_count = visible_count | plus: 1 %}
+        {% assign expires_ts = alert_ts | plus: alert_ttl_seconds %}
+        {% assign remaining_seconds = expires_ts | minus: now_ts %}
+        {% assign remaining_hours_total = remaining_seconds | divided_by: 3600 %}
+        {% assign remaining_days = remaining_hours_total | divided_by: 24 %}
+        {% assign remaining_hours = remaining_hours_total | modulo: 24 %}
+        {% assign alert_urgency = alert.urgency | default: 'low' %}
+        
+        {% case alert_urgency %}
+          {% when 'critical' %}{% assign urgency_label = 'Critical alert' %}
+          {% when 'high' %}{% assign urgency_label = 'Urgent notice' %}
+          {% when 'medium' %}{% assign urgency_label = 'Community notice' %}
+          {% else %}{% assign urgency_label = 'Notice' %}
+        {% endcase %}
+        
+        <!-- Added data-community here for JS filtering -->
+        <details class="wiki-alert" data-urgency="{{ alert_urgency }}" data-community="{{ alert.condo | slugify }}">
+            <summary class="wiki-alert__summary">
+                <span class="wiki-alert__live" aria-hidden="true">
+                    <span class="wiki-alert__dot"></span>
+                </span>
+                <span class="wiki-alert__title">{{ alert.title }}</span>
+                <span class="wiki-alert__meta">
+                    <span class="wiki-alert__meta-label">{{ urgency_label }}</span>
+                    <span class="wiki-alert__meta-sep">·</span>
+                    <span class="wiki-alert__meta-time">
+                        {% if remaining_days > 0 %}
+                        {{ remaining_days }}d {{ remaining_hours }}h left
+                        {% else %}
+                        {{ remaining_hours }}h left
+                        {% endif %}
+                    </span>
+                </span>
+                <span class="wiki-alert__chevron" aria-hidden="true">
+                    <i class="fa-solid fa-chevron-down"></i>
+                </span>
+            </summary>
+
+            <div class="wiki-alert__body">
+                <div class="wiki-alert__content">
+                    {{ alert.content | markdownify }}
+                </div>
+                <div class="wiki-alert__footer">
+                    <span class="wiki-alert__date">
+                        <i class="fa-regular fa-calendar" aria-hidden="true"></i>
+                        {{ alert.date | date: "%B %-d, %Y" }}
+                    </span>
+                    <a class="wiki-alert__link" href="{{ alert.url | relative_url }}">
+                        Read full notice
+                        <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
+                    </a>
+                </div>
+            </div>
+        </details>
+      {% endif %}
+    {% endfor %}
+  </div>
+  
+  <!-- Pagination Controls -->
+  <div id="noticePagination" style="display: none; gap: 0.5rem; justify-content: center; align-items: center; margin-top: 2rem;"></div>
+  
+  <!-- Back Button -->
+  <div style="margin-top: 3rem; padding-top: 2rem; border-top: 1px solid var(--border-subtle);" id="backButtonContainer">
+    <!-- Populated by JS -->
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const urlParams = new URLSearchParams(window.location.search);
+  const initialCondoSlug = urlParams.get('condo') || '';
+  
+  const filterSelect = document.getElementById('communityFilter');
+  const allAlerts = Array.from(document.querySelectorAll('.wiki-alert'));
+  const pagination = document.getElementById('noticePagination');
+  const pageTitle = document.getElementById('pageTitle');
+  const pageSubtitle = document.getElementById('pageSubtitle');
+  const backBtnContainer = document.getElementById('backButtonContainer');
+  
+  const itemsPerPage = 10;
+  let currentPage = 1;
+  let filteredAlerts = [];
+
+  // 1. Initialize Dropdown
+  if (filterSelect) {
+    filterSelect.value = initialCondoSlug;
+    
+    // If a community is selected in the URL, update the UI text
+    if (initialCondoSlug) {
+      const selectedText = filterSelect.options[filterSelect.selectedIndex].text;
+      pageSubtitle.textContent = `All current alerts and broadcasts for ${selectedText}.`;
+      backBtnContainer.innerHTML = `
+        <a href="/content/${initialCondoSlug}/" class="btn btn--secondary">
+          <i class="fa-solid fa-arrow-left"></i> Back to ${selectedText}
+        </a>`;
+    } else {
+      backBtnContainer.innerHTML = `
+        <a href="/communities.html" class="btn btn--secondary">
+          <i class="fa-solid fa-arrow-left"></i> Back to Communities
+        </a>`;
+    }
+
+    // Handle dropdown change
+    filterSelect.addEventListener('change', function() {
+      if (this.value) {
+        window.location.href = `/notices.html?condo=${this.value}`;
+      } else {
+        window.location.href = `/notices.html`;
+      }
+    });
+  }
+
+  // 2. Filter Logic
+  function applyFilter() {
+    const filterValue = filterSelect.value;
+    
+    // Filter the array of all alerts
+    filteredAlerts = allAlerts.filter(alert => {
+      if (!filterValue) return true; // Show all
+      return alert.dataset.community === filterValue;
+    });
+
+    // Hide everything first
+    allAlerts.forEach(alert => alert.style.display = 'none');
+    
+    // Reset to page 1
+    currentPage = 1;
+    
+    if (filteredAlerts.length === 0) {
+      // Handle empty state
+      const list = document.getElementById('noticeList');
+      if (!list.querySelector('.empty-state')) {
+        const empty = document.createElement('div');
+        empty.className = 'empty-state';
+        empty.innerHTML = `<div class="empty-state__icon"><i class="fa-solid fa-bell-slash"></i></div><p class="empty-state__label">No active notices</p><small class="empty-state__hint">Everything is quiet here right now.</small>`;
+        list.appendChild(empty);
+      }
+      pagination.style.display = 'none';
+      return;
+    } else {
+      const existingEmpty = document.querySelector('.empty-state');
+      if (existingEmpty) existingEmpty.remove();
+    }
+
+    // 3. Pagination Logic
+    const totalPages = Math.ceil(filteredAlerts.length / itemsPerPage);
+    
+    if (totalPages > 1) {
+      pagination.style.display = 'flex';
+    } else {
+      pagination.style.display = 'none';
+    }
+
+    renderPage(currentPage, totalPages);
+  }
+
+  function renderPage(page, totalPages) {
+    const start = (page - 1) * itemsPerPage;
+    const end = start + itemsPerPage;
+    
+    // Show only the items for the current page
+    filteredAlerts.slice(start, end).forEach(alert => {
+      alert.style.display = ''; 
+    });
+
+    if (totalPages > 1) {
+      renderControls(page, totalPages);
+    }
+  }
+
+  function renderControls(page, totalPages) {
+    pagination.innerHTML = '';
+    
+    // Prev button
+    const prevBtn = document.createElement('button');
+    prevBtn.className = 'btn btn--secondary btn--sm';
+    prevBtn.textContent = '← Previous';
+    prevBtn.disabled = page === 1;
+    prevBtn.addEventListener('click', () => {
+      if (page > 1) {
+        currentPage--;
+        applyFilterPaginationOnly();
+      }
+    });
+    pagination.appendChild(prevBtn);
+
+    // Page indicator
+    const indicator = document.createElement('span');
+    indicator.style.padding = '0 1rem';
+    indicator.style.fontSize = '0.85rem';
+    indicator.style.fontWeight = '600';
+    indicator.textContent = `Page ${page} of ${totalPages}`;
+    pagination.appendChild(indicator);
+
+    // Next button
+    const nextBtn = document.createElement('button');
+    nextBtn.className = 'btn btn--secondary btn--sm';
+    nextBtn.textContent = 'Next →';
+    nextBtn.disabled = page === totalPages;
+    nextBtn.addEventListener('click', () => {
+      if (page < totalPages) {
+        currentPage++;
+        applyFilterPaginationOnly();
+      }
+    });
+    pagination.appendChild(nextBtn);
+  }
+
+  function applyFilterPaginationOnly() {
+    const totalPages = Math.ceil(filteredAlerts.length / itemsPerPage);
+    allAlerts.forEach(alert => alert.style.display = 'none');
+    renderPage(currentPage, totalPages);
+  }
+
+  // Run on load
+  if (filterSelect) {
+    applyFilter();
+  }
+});
+</script>

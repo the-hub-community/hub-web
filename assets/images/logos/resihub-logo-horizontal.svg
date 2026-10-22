@@ -1,0 +1,46 @@
+<svg width="920" height="240" viewBox="0 0 920 240" fill="none" xmlns="http://www.w3.org/2000/svg"
+    role="img" aria-labelledby="title desc">
+    <title id="title">The Hub Collective Horizontal Logo</title>
+    <desc id="desc">Modern circular community emblem and wordmark.</desc>
+    <defs>
+        <linearGradient id="hubCore" x1="24" y1="24" x2="216" y2="216"
+            gradientUnits="userSpaceOnUse">
+            <stop offset="0" stop-color="#10B981" />
+            <stop offset="1" stop-color="#14B8A6" />
+        </linearGradient>
+        <linearGradient id="hubRing" x1="44" y1="44" x2="196" y2="196"
+            gradientUnits="userSpaceOnUse">
+            <stop offset="0" stop-color="#A7F3D0" />
+            <stop offset="1" stop-color="#67E8F9" />
+        </linearGradient>
+    </defs>
+
+    <g transform="translate(8 8)">
+        <circle cx="108" cy="108" r="96" fill="url(#hubCore)" />
+        <circle cx="108" cy="108" r="56" fill="url(#hubRing)" />
+        <circle cx="108" cy="108" r="30" fill="#F8FAFC" />
+
+        <g stroke="#D1FAE5" stroke-width="8" stroke-linecap="round">
+            <path d="M108 66V36" />
+            <path d="M144 87L170 72" />
+            <path d="M144 129L170 144" />
+            <path d="M108 150V180" />
+            <path d="M72 129L46 144" />
+            <path d="M72 87L46 72" />
+        </g>
+
+        <circle cx="108" cy="24" r="12" fill="#D1FAE5" />
+        <circle cx="181" cy="66" r="12" fill="#CCFBF1" />
+        <circle cx="181" cy="150" r="12" fill="#99F6E4" />
+        <circle cx="108" cy="192" r="12" fill="#A7F3D0" />
+        <circle cx="35" cy="150" r="12" fill="#CCFBF1" />
+        <circle cx="35" cy="66" r="12" fill="#99F6E4" />
+    </g>
+
+    <g transform="translate(260 0)">
+        <text x="0" y="114" fill="#0F172A" font-family="Poppins, Montserrat, Segoe UI, sans-serif"
+            font-weight="800" font-size="58" letter-spacing="-1.2">The Hub Collective</text>
+        <text x="3" y="160" fill="#475569" font-family="Poppins, Montserrat, Segoe UI, sans-serif"
+            font-weight="600" font-size="25" letter-spacing="2.4">COMMUNITY NETWORK</text>
+    </g>
+</svg>

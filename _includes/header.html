@@ -1,0 +1,45 @@
+<header class="site-header">
+  <div class="header-inner">
+
+    <!-- LEFT: Avatar logo + ResiHub + version -->
+    <div class="header-left">
+      <a href="{{ '/' | relative_url }}" class="header-brand" aria-label="The Hub Community home">
+        <img
+          src="{{ '/assets/images/logos/the-hub-community-mark.svg' | relative_url }}"
+          alt=""
+          class="header-brand-mark"
+          aria-hidden="true"
+        >
+        <span class="header-brand-name">The Hub Community</span>
+        <span class="header-brand-version">v1.0</span>
+      </a>
+    </div>
+
+    <!-- CENTER: Search bar -->
+    <div class="header-center">
+      <button type="button" class="header-search" data-cmdk-open aria-label="Open search">
+        <i class="fa-solid fa-magnifying-glass"></i>
+        <span class="header-search__text">Search guides, listings, notices…</span>
+        <kbd class="header-search__kbd">⌘K</kbd>
+      </button>
+    </div>
+
+    <!-- RIGHT: Community switcher + accessibility + Contribute + avatar -->
+    <div class="header-right">
+      <button type="button" class="header-icon-btn" aria-label="Accessibility settings">
+        <i class="fa-solid fa-universal-access"></i>
+      </button>
+
+      <a href="{{ '/submit.html' | relative_url }}" class="header-contribute">
+        <i class="fa-solid fa-plus"></i>
+        <span>Contribute</span>
+      </a>
+
+      <!-- ONLY ONE AVATAR -->
+      <a href="{{ site.baseurl }}/my-submissions.html" class="header-user-avatar" aria-label="My submissions">
+        <span aria-hidden="true">D</span>
+      </a>
+    </div>
+
+  </div>
+</header>

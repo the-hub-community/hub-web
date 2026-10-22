@@ -1,0 +1,163 @@
+<aside class="sidebar" id="appSidebar">
+
+  <nav class="sidebar-nav" id="sideNav">
+
+    <!-- Main nav -->
+    <div class="sidebar-nav__group">
+    <a href="{{ site.baseurl }}/" class="sidebar-nav__item {% if page.url == '/' %}is-active{% endif %}" {% if page.url == '/' %}aria-current="page"{% endif %}>
+      <span class="sidebar-nav__icon" aria-hidden="true">
+        <i class="fa-solid fa-table-cells-large"></i>
+      </span>
+      <span class="sidebar-nav__label-text">Dashboard</span>
+    </a>
+
+    <a href="{{ site.baseurl }}/general/daily-updates.html"
+       class="sidebar-nav__item {% if page.url contains 'daily-updates' %}is-active{% endif %}"
+       {% if page.url contains 'daily-updates' %}aria-current="page"{% endif %}>
+      <span class="sidebar-nav__icon" aria-hidden="true">
+        <i class="fa-solid fa-tower-cell"></i>
+      </span>
+      <span class="sidebar-nav__label-text">Daily Updates</span>
+    </a>
+
+    {% if current_condo %}
+    <a href="{{ site.baseurl }}/marketplace.html?community={{ current_condo | slugify }}"
+       class="sidebar-nav__item {% if page.url contains 'marketplace' %}is-active{% endif %}">
+      <span class="sidebar-nav__icon" aria-hidden="true">
+        <i class="fa-solid fa-shop"></i>
+      </span>
+      <span class="sidebar-nav__label-text">Marketplace</span>
+    </a>
+    {% else %}
+    <a href="{{ site.baseurl }}/marketplace.html"
+       class="sidebar-nav__item {% if page.url contains 'marketplace' %}is-active{% endif %}">
+      <span class="sidebar-nav__icon" aria-hidden="true">
+        <i class="fa-solid fa-shop"></i>
+      </span>
+      <span class="sidebar-nav__label-text">Marketplace</span>
+    </a>
+    {% endif %}
+
+    <!-- <a href="{{ site.baseurl }}/marketplace.html"
+       class="sidebar-nav__item {% if page.url contains 'marketplace' %}is-active{% endif %}"
+       {% if page.url contains 'marketplace' %}aria-current="page"{% endif %}>
+      <span class="sidebar-nav__icon" aria-hidden="true">
+        <i class="fa-solid fa-shop"></i>
+      </span>
+      <span class="sidebar-nav__label-text">Marketplace</span>
+    </a> -->
+
+    <!-- <a href="{{ site.baseurl }}/my-submissions.html"
+       class="sidebar-nav__item {% if page.url == '/my-submissions.html' %}is-active{% endif %}"
+       {% if page.url == '/my-submissions.html' %}aria-current="page"{% endif %}>
+      <span class="sidebar-nav__icon" aria-hidden="true">
+        <i class="fa-regular fa-file-lines"></i>
+      </span>
+      <span class="sidebar-nav__label-text">My Submissions</span>
+      <span class="sidebar-nav__badge" id="navSubmissionCount" hidden>0</span>
+    </a> -->
+
+    <a href="{{ site.baseurl }}/broadcast.html"
+       class="sidebar-nav__item {% if page.url contains 'broadcast' %}is-active{% endif %}"
+       {% if page.url contains 'broadcast' %}aria-current="page"{% endif %}>
+      <span class="sidebar-nav__icon" aria-hidden="true">
+        <i class="fa-solid fa-bullhorn"></i>
+      </span>
+      <span class="sidebar-nav__label-text">Neighbourhood Alerts</span>
+    </a>
+
+    <a href="{{ site.baseurl }}/status.html"
+       class="sidebar-nav__item {% if page.url == '/status.html' %}is-active{% endif %}"
+       {% if page.url == '/status.html' %}aria-current="page"{% endif %}>
+      <span class="sidebar-nav__icon" aria-hidden="true">
+        <i class="fa-solid fa-circle-check"></i>
+      </span>
+      <span class="sidebar-nav__label-text">Track submissions</span>
+    </a>
+
+    <a href="{{ site.baseurl }}/settings.html"
+       class="sidebar-nav__item {% if page.url == '/settings.html' %}is-active{% endif %}"
+       {% if page.url == '/settings.html' %}aria-current="page"{% endif %}>
+      <span class="sidebar-nav__icon" aria-hidden="true">
+        <i class="fa-solid fa-gear"></i>
+      </span>
+      <span class="sidebar-nav__label-text">Settings</span>
+    </a>
+  </div>
+
+    <!-- Communities -->
+    <!-- Communities -->
+    <div class="sidebar-nav__group sidebar-nav__group--communities">
+      <span class="sidebar-nav__label">Communities</span>
+      {% assign community_indices = site.pages
+      | where_exp: "p", "p.path contains 'content/'"
+      | where_exp: "p", "p.name == 'index.md' or p.name == 'index.html'" %}
+      {% for c in community_indices %}
+      {% assign c_name = c.condo | default: c.title %}
+      {% assign c_slug = c_name | slugify %}
+      {% assign c_pages = site.pages | where: "condo", c_name | where_exp: "p", "p.name != 'index.md' and p.name != 'index.html'" | where_exp: "p", "p.layout != 'broadcast' and p.layout != 'notification'" %}
+      {% assign c_count = c_pages | size %}
+      {% assign is_current = false %}
+      {% if current_condo == c_name %}{% assign is_current = true %}{% endif %}
+
+      <a href="{{ site.baseurl }}/content/{{ c_slug }}/"
+        class="sidebar-nav__item sidebar-nav__item--community {% if is_current %}is-active{% endif %}"
+        data-community-slug="{{ c_slug }}">
+        <span>{{ c_name }}</span>
+        <span class="sidebar-nav__count">{{ c_count }}</span>
+      </a>
+
+      {% if is_current %}
+      {% assign community_pages = site.pages | where: "condo", c_name | sort: "title" %}
+      {% capture subpages_html %}
+      {% for p in community_pages %}
+      {% assign p_name = p.name | default: '' %}
+      {% assign p_path = p.path | default: '' %}
+      {% if p_path contains 'content/' and p_name != 'index.md' and p_name != 'index.html' %}
+      {% unless p_path contains '/broadcasts/' or p_path contains '/notifications/' or p_path contains '/_data/' %}
+      <a href="{{ p.url | relative_url }}" class="sidebar-nav__subpage{% if page.url == p.url %} is-active{% endif %}"
+        title="{{ p.title | default: p.name | replace: '.md', '' }}">
+        <i class="fa-regular fa-file-lines" aria-hidden="true"></i>
+        <span>{{ p.title | default: p.name | replace: '.md', '' | replace: '-', ' ' }}</span>
+      </a>
+      {% endunless %}
+      {% endif %}
+      {% endfor %}
+      {% endcapture %}
+      {% assign subpages_trimmed = subpages_html | strip %}
+      {% if subpages_trimmed != '' %}
+      <div class="sidebar-nav__subpages">
+        {{ subpages_html }}
+      </div>
+      {% endif %}
+      {% endif %}
+      {% endfor %}
+    </div>
+
+  </nav>
+
+  <!-- Bottom card -->
+  <div class="sidebar-info-card">
+    <div class="sidebar-info-card__head">
+      <i class="fa-solid fa-circle-check"></i>
+      <span class="sidebar-info-card__title">Anonymous by default</span>
+    </div>
+    <p class="sidebar-info-card__text">
+     Your submissions are tracked on this device.
+     <a href="{{ site.baseurl }}/privacy.html">How it works</a>
+   </p>
+  </div>
+
+</aside>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    try {
+      const subs = JSON.parse(localStorage.getItem('resihub_submissions') || '[]');
+      if (subs.length > 0) {
+        const badge = document.getElementById('navSubmissionCount');
+        if (badge) { badge.textContent = subs.length; badge.hidden = false; }
+      }
+    } catch { }
+  });
+</script>

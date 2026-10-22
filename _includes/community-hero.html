@@ -1,0 +1,83 @@
+{% comment %}
+Community Hero Card
+Tinted per-community, shows live stats inline.
+{% endcomment %}
+
+{% assign hero_name = current_condo %}
+{% assign hero_slug = nil %}
+
+{% if hero_name == nil or hero_name == "" %}
+  <!-- GLOBAL HUB STATE (Root Page) -->
+  <section class="community-hero community-hero--global">
+    <div class="community-hero__glow" aria-hidden="true"></div>
+    <div class="community-hero__body">
+      <div class="community-hero__eyebrow">
+        <span class="community-hero__dot" aria-hidden="true"></span>
+        <span class="community-hero__eyebrow-text">The Hub Collective</span>
+      </div>
+      <h1 class="community-hero__title" id="ed-greeting-title">Welcome back.</h1>
+      <p class="community-hero__subtitle">
+        Connecting neighbourhoods through shared knowledge, local exchange, and community alerts.
+      </p>
+      <div class="community-hero__stats">
+        <span class="community-hero__stat"><strong>{{ community_count }}</strong> Communities</span>
+        <span class="community-hero__stat-sep">·</span>
+        <span class="community-hero__stat"><strong>{{ page_count }}</strong> Pages</span>
+        <span class="community-hero__stat-sep">·</span>
+        <span class="community-hero__stat"><strong>{{ listing_count }}</strong> Listings</span>
+      </div>
+    </div>
+    
+    <!-- GLOBAL CTA -->
+    <a href="{{ site.baseurl }}/communities.html" class="community-hero__enter">
+      <span>Explore Communities</span>
+      <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
+    </a>
+  </section>
+
+{% else %}
+  <!-- COMMUNITY SPECIFIC STATE (e.g., /content/elm-drive/) -->
+  {% assign hero_slug = hero_name | slugify %}
+  
+  {% assign hero_page_count = site.pages | where: "condo", hero_name | where_exp: "p", "p.path contains 'content/'" | where_exp: "p", "p.name != 'index.md' and p.name != 'index.html'" | size %}
+  {% assign hero_listing_count = 0 %}
+  {% for ad in site.pros %}
+    {% assign ad_comm = ad.target_community | default: ad.condo %}
+    {% if ad_comm == hero_name %}{% assign hero_listing_count = hero_listing_count | plus: 1 %}{% endif %}
+  {% endfor %}
+  {% assign hero_alert_count = 0 %}
+  {% assign now_ts = 'now' | date: '%s' %}
+  {% assign alert_ttl = 432000 %}
+  {% for a in site.pages %}
+    {% if a.layout == 'broadcast' and a.condo == hero_name %}
+      {% assign a_ts = a.date | date: '%s' %}
+      {% assign a_age = now_ts | minus: a_ts %}
+      {% if a_age >= 0 and a_age <= alert_ttl %}{% assign hero_alert_count = hero_alert_count | plus: 1 %}{% endif %}
+    {% endif %}
+  {% endfor %}
+
+  <section class="community-hero" data-community-slug="{{ hero_slug }}">
+    <div class="community-hero__glow" aria-hidden="true"></div>
+    <div class="community-hero__body">
+      <div class="community-hero__eyebrow">
+        <span class="community-hero__dot" aria-hidden="true"></span>
+        <span class="community-hero__eyebrow-text">{{ hero_name }}</span>
+      </div>
+      <h1 class="community-hero__title" id="ed-greeting-title">Good evening.</h1>
+      <p class="community-hero__subtitle">Your neighbourhood, kept current by the people in it.</p>
+      <div class="community-hero__stats">
+        <span class="community-hero__stat"><strong>{{ hero_page_count }}</strong> pages</span>
+        <span class="community-hero__stat-sep">·</span>
+        <span class="community-hero__stat"><strong>{{ hero_listing_count }}</strong> listings</span>
+        <span class="community-hero__stat-sep">·</span>
+        <span class="community-hero__stat"><strong>{{ hero_alert_count }}</strong> alerts</span>
+      </div>
+    </div>
+    
+    <!-- COMMUNITY CTA -->
+    <a href="{{ site.baseurl }}/marketplace.html?community={{ hero_slug }}" class="community-hero__enter">
+      <span>Local Marketplace</span>
+      <i class="fa-solid fa-shop" aria-hidden="true"></i>
+    </a>
+  </section>
+{% endif %}

@@ -1,0 +1,32 @@
+<footer class="site-footer">
+        <div class="footer-inner">
+            <div class="footer-logo">
+                <img src="{{ '/assets/images/logos/the-hub-community-logo.svg' | relative_url }}"
+                    alt="The Hub Community"
+                    class="logo-image logo-image--footer">
+            </div>
+            <div class="footer-share-links" aria-label="Follow The Hub Community">
+                <a data-share-platform="whatsapp" href="#" data-share-platform="whatsapp" target="_blank" rel="noopener noreferrer" aria-label="Share on WhatsApp">
+                    <i class="fa-brands fa-whatsapp"></i>
+                </a>
+                <a data-share-platform="facebook" href="#" data-share-platform="facebook" target="_blank" rel="noopener noreferrer" aria-label="Share on Facebook">
+                    <i class="fa-brands fa-facebook-f"></i>
+                </a>
+                <a data-share-platform="x" href="#" target="_blank" data-share-platform="twitter" rel="noopener noreferrer" aria-label="Share on X">
+                    <i class="fa-brands fa-x-twitter"></i>
+                </a>
+                <a data-share-platform="linkedin" href="#" target="_blank" data-share-platform="linkedin" rel="noopener noreferrer" aria-label="Share on LinkedIn">
+                    <i class="fa-brands fa-linkedin-in"></i>
+                </a>
+            </div>
+            <div class="footer-links">
+                <a href="{{ site.baseurl }}/" data-i18n="footer.dashboard">Dashboard</a>
+                <a href="{{ site.baseurl }}/submit.html" data-i18n="footer.contribute">Contribute</a>
+                <a href="{{ site.baseurl }}/privacy.html" data-i18n="footer.privacy">Privacy</a>
+                <a href="{{ site.baseurl }}/terms.html" data-i18n="footer.terms">Terms</a>
+            </div>
+            <div class="footer-copyright">
+                &copy; {{ "now" | date: "%Y" }} The Hub Community v1.0
+            </div>
+        </div>
+    </footer>

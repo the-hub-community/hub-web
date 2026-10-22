@@ -1,0 +1,38 @@
+ 
+<div class="ad-detail-view">
+    <div class="ad-detail-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <button onclick="history.back()" class="btn-sync" style="padding: 5px 15px;">
+            <i class="fa-solid fa-arrow-left"></i> Back
+        </button>
+        <h2 style="margin: 0;">{{ page.title }}</h2>
+    </div>
+
+    <div class="ad-detail-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px;">
+        <div class="ad-image-column">
+            {% if page.image_url %}
+                <img src="{{ page.image_url }}" style="width: 100%; border-radius: 12px; border: 1px solid #eee;">
+            {% else %}
+                <div class="detail-placeholder {{ page.category | slugify | default: 'general' }}" 
+                     style="height: 300px; display: flex; align-items: center; justify-content: center; border-radius: 12px; background: #f0f7ff;">
+                    <i class="fa-solid fa-shop" style="font-size: 5rem; color: #007bff; opacity: 0.3;"></i>
+                </div>
+            {% endif %}
+        </div>
+
+        <div class="ad-info-column">
+            <div style="background: #f8f9fa; padding: 20px; border-radius: 12px;">
+                <span class="ad-price" style="font-size: 2rem; color: #28a745; font-weight: bold;">${{ page.price }}</span>
+                <p style="margin-top: 15px;"><strong>Community:</strong> {{ page.target_community }}</p>
+                <p><strong>Category:</strong> {{ page.category }}</p>
+                <hr style="border: 0; border-top: 1px solid #eee; margin: 20px 0;">
+                <div class="description-text">
+                    {{ content }}
+                </div>
+                <div class="contact-box" style="margin-top: 30px; padding: 15px; background: #e7f3ff; border-radius: 8px;">
+                    <h4 style="margin: 0 0 10px 0;">Contact Details</h4>
+                    <p style="margin: 0; font-weight: 600;">{{ page.contact }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

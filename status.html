@@ -1,0 +1,64 @@
+---
+layout: default
+title: Check Submission Status
+---
+
+<main class="main-content">
+  <div class="status-shell">
+    <div class="page-hero">
+      <div class="page-hero__meta">
+        <span class="page-hero__dot"></span>
+        <span class="page-hero__eyebrow">Submission Tracker</span>
+      </div>
+      <h1 class="page-hero__title">Check Submission Status</h1>
+      <p class="page-hero__subtitle">
+        Track the latest state of your page, listing, or broadcast using its submission ID.
+      </p>
+    </div>
+
+    <form id="statusLookupForm" class="status-form">
+      <div class="status-form__field">
+        <label for="submissionIdInput">Submission ID</label>
+        <input
+          type="text"
+          id="submissionIdInput"
+          name="submission_id"
+          placeholder="page-abc123xyz"
+          autocomplete="off"
+          spellcheck="false"
+        >
+      </div>
+
+      <button type="submit" class="status-form__submit">
+        <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
+        Check Status
+      </button>
+    </form>
+
+    <div id="statusLookupError" class="status-error" hidden></div>
+
+    <div id="statusResult" class="status-result" hidden>
+      <div id="statusBadge" class="status-badge"></div>
+      <p id="statusDescription" class="status-description"></p>
+    </div>
+
+    <div class="status-share">
+      <div class="status-share__label">Share this page</div>
+      <div class="status-share__links">
+        <a data-share-platform="whatsapp" href="#" target="_blank" rel="noopener" aria-label="Share on WhatsApp">
+          <i class="fa-brands fa-whatsapp"></i>
+        </a>
+        <a data-share-platform="facebook" href="#" target="_blank" rel="noopener" aria-label="Share on Facebook">
+          <i class="fa-brands fa-facebook-f"></i>
+        </a>
+        <a data-share-platform="x" href="#" target="_blank" rel="noopener" aria-label="Share on X">
+          <i class="fa-brands fa-x-twitter"></i>
+        </a>
+        <a data-share-platform="linkedin" href="#" target="_blank" rel="noopener" aria-label="Share on LinkedIn">
+          <i class="fa-brands fa-linkedin-in"></i>
+        </a>
+      </div>
+    </div>
+  </div>
+  <script src="{{ site.baseurl }}/assets/js/pages/status-page.js"></script>
+</main>

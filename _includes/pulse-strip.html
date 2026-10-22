@@ -1,0 +1,66 @@
+{% comment %}
+Pulse Strip — recent activity across wiki pages, broadcasts, listings.
+Hidden entirely if there's nothing fresh in the last 30 days.
+{% endcomment %}
+
+{% assign pulse_now = 'now' | date: '%s' %}
+{% assign pulse_window = 2592000 %}
+
+{% assign pulse_all = site.pages | concat: site.pros %}
+{% assign pulse_sorted = pulse_all | sort: 'date' | reverse %}
+
+{% capture pulse_markup %}
+  {% assign rendered = 0 %}
+  {% for item in pulse_sorted %}
+    {% if rendered >= 4 %}{% break %}{% endif %}
+
+    {% assign item_ts = item.date | date: '%s' %}
+    {% assign item_age = pulse_now | minus: item_ts %}
+    {% if item_age < 0 or item_age > pulse_window %}{% continue %}{% endif %}
+
+    {% assign item_kind = nil %}
+    {% assign item_dot = nil %}
+
+    {% if item.path contains '/content/' and item.name != 'index.md' and item.name != 'index.html' and item.layout != 'broadcast' and item.layout != 'notification' %}
+      {% assign item_kind = 'Page' %}
+      {% assign item_dot = '#35568e' %}
+    {% elsif item.layout == 'broadcast' %}
+      {% assign item_kind = 'Alert' %}
+      {% assign item_dot = '#ba1a1a' %}
+    {% elsif item.collection == 'pros' %}
+      {% assign item_kind = 'Listing' %}
+      {% assign item_dot = '#86198f' %}
+    {% endif %}
+
+    {% if item_kind %}
+      {% assign rendered = rendered | plus: 1 %}
+      {% assign age_hours = item_age | divided_by: 3600 %}
+      {% assign age_days = age_hours | divided_by: 24 %}
+
+      <a href="{{ item.url | relative_url }}" class="pulse-card">
+        <span class="pulse-card__dot" style="--pulse-dot: {{ item_dot }}" aria-hidden="true"></span>
+        <span class="pulse-card__kind">{{ item_kind }}</span>
+        <span class="pulse-card__title">{{ item.title }}</span>
+        <span class="pulse-card__meta">
+          {% if age_hours < 1 %}just now
+          {% elsif age_hours < 24 %}{{ age_hours }}h ago
+          {% else %}{{ age_days }}d ago
+          {% endif %}
+        </span>
+      </a>
+    {% endif %}
+  {% endfor %}
+{% endcapture %}
+
+{% assign pulse_trimmed = pulse_markup | strip %}
+{% if pulse_trimmed != '' %}
+  <section class="pulse">
+    <header class="pulse__header">
+      <h2 class="pulse__title">What's new</h2>
+      <span class="pulse__meta">Last 30 days</span>
+    </header>
+    <div class="pulse__track">
+      {{ pulse_markup }}
+    </div>
+  </section>
+{% endif %}

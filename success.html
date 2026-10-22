@@ -1,0 +1,35 @@
+---
+layout: default
+title: Submission Received
+robots: noindex, nofollow
+sitemap: false
+---
+
+{% include pages/success-content.html %}
+
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const params = new URLSearchParams(window.location.search);
+    const submissionId = params.get("submission_id");
+    
+    if (submissionId) {
+      const panel = document.getElementById("success-submission-id-panel");
+      const valueEl = document.getElementById("success-submission-id-value");
+      const copyBtn = document.getElementById("success-copy-id-btn");
+      
+      if (panel && valueEl) {
+        valueEl.textContent = submissionId;
+        panel.hidden = false;
+      }
+      
+      if (copyBtn) {
+        copyBtn.addEventListener("click", () => {
+          navigator.clipboard.writeText(submissionId).then(() => {
+            copyBtn.textContent = "Copied!";
+            setTimeout(() => { copyBtn.textContent = "Copy"; }, 2000);
+          });
+        });
+      }
+    }
+  });
+</script>

@@ -1,0 +1,602 @@
+/* ================================================================
+   Wiki Alerts — stacked, urgency-coded notices
+   ================================================================ */
+
+.wiki-alerts {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin: 0 0 32px;
+}
+
+/* ── Container ────────────────────────────────────────────── */
+.wiki-alert {
+  position: relative;
+  border-radius: 14px;
+  background: var(--surface-container-lowest, #ffffff);
+  border: 1px solid var(--border-subtle, rgba(4, 23, 72, 0.08));
+  overflow: hidden;
+  /* Urgency tokens — overridden per data-urgency below */
+  --alert-accent: #64748b;
+  --alert-soft: rgba(100, 116, 139, 0.06);
+  --alert-ring: rgba(100, 116, 139, 0.18);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.wiki-alert:hover {
+  border-color: var(--alert-ring);
+  box-shadow: 0 2px 12px -4px rgba(4, 23, 72, 0.06);
+}
+
+/* Urgency variants */
+.wiki-alert[data-urgency="low"] {
+  --alert-accent: #64748b;
+  --alert-soft: rgba(100, 116, 139, 0.05);
+  --alert-ring: rgba(100, 116, 139, 0.20);
+}
+.wiki-alert[data-urgency="medium"] {
+  --alert-accent: #35568e;
+  --alert-soft: rgba(53, 86, 142, 0.06);
+  --alert-ring: rgba(53, 86, 142, 0.22);
+}
+.wiki-alert[data-urgency="high"] {
+  --alert-accent: #f59e0b;
+  --alert-soft: rgba(245, 158, 11, 0.08);
+  --alert-ring: rgba(245, 158, 11, 0.28);
+}
+.wiki-alert[data-urgency="critical"] {
+  --alert-accent: #ba1a1a;
+  --alert-soft: rgba(186, 26, 26, 0.06);
+  --alert-ring: rgba(186, 26, 26, 0.24);
+}
+
+/* Left urgency rail */
+.wiki-alert::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  background: var(--alert-accent);
+  z-index: 1;
+}
+
+/* ── Summary row ──────────────────────────────────────────── */
+.wiki-alert__summary {
+  display: grid;
+  grid-template-columns: auto 1fr auto auto;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 18px 14px 22px;
+  background: var(--alert-soft);
+  cursor: pointer;
+  list-style: none;
+  font-family: inherit;
+  transition: background 0.15s ease;
+}
+
+.wiki-alert__summary::-webkit-details-marker { display: none; }
+
+.wiki-alert__summary:hover {
+  background: color-mix(in srgb, var(--alert-accent) 10%, transparent);
+}
+
+/* Live indicator dot */
+.wiki-alert__live {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+}
+
+.wiki-alert__dot {
+  display: block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--alert-accent);
+  box-shadow: 0 0 0 0 var(--alert-accent);
+  animation: wikiAlertPulse 2s ease-in-out infinite;
+}
+
+@keyframes wikiAlertPulse {
+  0%, 100% {
+    opacity: 1;
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--alert-accent) 40%, transparent);
+  }
+  50% {
+    opacity: 0.7;
+    box-shadow: 0 0 0 5px color-mix(in srgb, var(--alert-accent) 0%, transparent);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .wiki-alert__dot { animation: none; }
+}
+
+/* Title */
+.wiki-alert__title {
+  font-family: var(--font-display, "Plus Jakarta Sans", sans-serif);
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: -0.015em;
+  color: var(--on-surface, #041748);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+}
+
+/* Meta: urgency label + time */
+.wiki-alert__meta {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-mono, "JetBrains Mono", monospace);
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  color: var(--alert-accent);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.wiki-alert__meta-label {
+  text-transform: uppercase;
+}
+
+.wiki-alert__meta-sep {
+  opacity: 0.5;
+}
+
+.wiki-alert__meta-time {
+  color: var(--outline, #747781);
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  text-transform: none;
+}
+
+/* Chevron */
+.wiki-alert__chevron {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  color: var(--outline, #747781);
+  font-size: 0.72rem;
+  flex-shrink: 0;
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), color 0.15s ease;
+}
+
+.wiki-alert[open] .wiki-alert__chevron {
+  transform: rotate(180deg);
+  color: var(--alert-accent);
+}
+
+/* ── Body (expanded) ──────────────────────────────────────── */
+.wiki-alert__body {
+  padding: 18px 22px 20px;
+  background: var(--surface-container-lowest, #ffffff);
+  border-top: 1px solid var(--border-subtle, rgba(4, 23, 72, 0.08));
+}
+
+.wiki-alert__content {
+  font-size: 0.94rem;
+  line-height: 1.65;
+  color: var(--on-surface-variant, #434750);
+  max-width: 68ch;
+}
+
+.wiki-alert__content > :first-child { margin-top: 0; }
+.wiki-alert__content > :last-child { margin-bottom: 0; }
+
+.wiki-alert__content p { margin: 0 0 12px; }
+.wiki-alert__content a {
+  color: var(--primary, #35568e);
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+/* Footer */
+.wiki-alert__footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: 1px solid var(--border-subtle, rgba(4, 23, 72, 0.06));
+}
+
+.wiki-alert__date {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-mono, "JetBrains Mono", monospace);
+  font-size: 0.7rem;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  color: var(--outline, #747781);
+}
+
+.wiki-alert__date i {
+  font-size: 0.7rem;
+  opacity: 0.6;
+}
+
+.wiki-alert__link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--primary, #35568e);
+  text-decoration: none;
+  transition: opacity 0.15s ease, gap 0.15s ease;
+}
+
+.wiki-alert__link:hover {
+  opacity: 0.8;
+  gap: 9px;
+}
+
+.wiki-alert__link i {
+  font-size: 0.7rem;
+}
+
+/* ── Mobile ───────────────────────────────────────────────── */
+@media (max-width: 640px) {
+  .wiki-alert__summary {
+    grid-template-columns: auto 1fr auto;
+    grid-template-rows: auto auto;
+    gap: 8px 10px;
+    padding: 12px 14px 12px 18px;
+  }
+
+  .wiki-alert__title {
+    font-size: 0.94rem;
+    white-space: normal;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .wiki-alert__meta {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    font-size: 0.62rem;
+    padding-left: 22px;
+  }
+
+  .wiki-alert__chevron {
+    grid-row: 1;
+    grid-column: 3;
+  }
+
+  .wiki-alert__body {
+    padding: 14px 18px 16px;
+  }
+
+  .wiki-alert__content {
+    font-size: 0.88rem;
+  }
+
+  .wiki-alert__footer {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+}
+
+/* ── Dark mode ────────────────────────────────────────────── */
+[data-theme="dark"] .wiki-alert {
+  background: var(--surface-container-lowest, #131a2e);
+  border-color: rgba(148, 163, 184, 0.14);
+}
+
+[data-theme="dark"] .wiki-alert[data-urgency="low"]      { --alert-accent: #94a3b8; --alert-soft: rgba(148, 163, 184, 0.06); }
+[data-theme="dark"] .wiki-alert[data-urgency="medium"]   { --alert-accent: #7dd3fc; --alert-soft: rgba(125, 211, 252, 0.06); }
+[data-theme="dark"] .wiki-alert[data-urgency="high"]     { --alert-accent: #fbbf24; --alert-soft: rgba(251, 191, 36, 0.07); }
+[data-theme="dark"] .wiki-alert[data-urgency="critical"] { --alert-accent: #fca5a5; --alert-soft: rgba(252, 165, 165, 0.06); }
+
+[data-theme="dark"] .wiki-alert__title { color: #e2e8f0; }
+[data-theme="dark"] .wiki-alert__meta-time { color: #94a3b8; }
+[data-theme="dark"] .wiki-alert__body {
+  background: var(--surface-container-lowest, #131a2e);
+  border-top-color: rgba(148, 163, 184, 0.12);
+}
+[data-theme="dark"] .wiki-alert__content { color: #cbd5e1; }
+[data-theme="dark"] .wiki-alert__footer {
+  border-top-color: rgba(148, 163, 184, 0.10);
+}
+[data-theme="dark"] .wiki-alert__date { color: #64748b; }
+[data-theme="dark"] .wiki-alert__link { color: #93c5fd; }
+
+/* ================================================================
+   Broadcast detail page
+   ================================================================ */
+
+.broadcast-page {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 20px 0 48px;
+  --alert-accent: #35568e;
+  --alert-soft: rgba(53, 86, 142, 0.06);
+}
+
+.broadcast-page[data-urgency="low"]      { --alert-accent: #64748b; --alert-soft: rgba(100, 116, 139, 0.05); }
+.broadcast-page[data-urgency="medium"]   { --alert-accent: #35568e; --alert-soft: rgba(53, 86, 142, 0.06); }
+.broadcast-page[data-urgency="high"]     { --alert-accent: #f59e0b; --alert-soft: rgba(245, 158, 11, 0.08); }
+.broadcast-page[data-urgency="critical"] { --alert-accent: #ba1a1a; --alert-soft: rgba(186, 26, 26, 0.06); }
+
+.broadcast-page__hero {
+  padding: 24px 0 32px;
+  border-bottom: 1px solid var(--border-subtle, rgba(4, 23, 72, 0.08));
+  margin-bottom: 32px;
+}
+
+.broadcast-page__eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-mono, "JetBrains Mono", monospace);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--alert-accent);
+  margin-bottom: 16px;
+}
+
+.broadcast-page__dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--alert-accent);
+  animation: broadcastPulse 2s ease-in-out infinite;
+}
+
+@keyframes broadcastPulse {
+  0%, 100% { opacity: 1; box-shadow: 0 0 0 0 color-mix(in srgb, var(--alert-accent) 40%, transparent); }
+  50%      { opacity: 0.7; box-shadow: 0 0 0 5px color-mix(in srgb, var(--alert-accent) 0%, transparent); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .broadcast-page__dot { animation: none; }
+}
+
+.broadcast-page__title {
+  font-family: var(--font-display, "Plus Jakarta Sans", sans-serif);
+  font-size: clamp(1.75rem, 4vw, 2.5rem);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+  color: var(--on-surface, #041748);
+  margin: 0 0 16px;
+  max-width: 20ch;
+}
+
+.broadcast-page__meta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.86rem;
+  color: var(--on-surface-variant, #434750);
+  flex-wrap: wrap;
+}
+
+.broadcast-page__sep {
+  color: var(--outline-variant, #c4c6d1);
+}
+
+.broadcast-page__body {
+  font-size: 1rem;
+  line-height: 1.75;
+  color: var(--on-surface-variant, #434750);
+  max-width: 68ch;
+  margin-bottom: 48px;
+}
+
+.broadcast-page__body > :first-child { margin-top: 0; }
+.broadcast-page__body > :last-child  { margin-bottom: 0; }
+
+.broadcast-page__body p { margin: 0 0 1rem; }
+.broadcast-page__body h2 {
+  font-family: var(--font-display, "Plus Jakarta Sans", sans-serif);
+  font-size: 1.35rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--on-surface, #041748);
+  margin: 32px 0 16px;
+}
+
+.broadcast-page__body a {
+  color: var(--primary, #35568e);
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.broadcast-page__footer {
+  padding-top: 24px;
+  border-top: 1px solid var(--border-subtle, rgba(4, 23, 72, 0.08));
+}
+
+.broadcast-page__back {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--primary, #35568e);
+  text-decoration: none;
+  transition: gap 0.15s ease;
+}
+
+.broadcast-page__back:hover {
+  gap: 12px;
+}
+
+.broadcast-page__back i {
+  font-size: 0.72rem;
+}
+
+/* Mobile */
+@media (max-width: 640px) {
+  .broadcast-page {
+    padding: 12px 0 32px;
+  }
+
+  .broadcast-page__title {
+    font-size: 1.6rem;
+  }
+
+  .broadcast-page__body {
+    font-size: 0.94rem;
+  }
+}
+
+/* Dark mode */
+[data-theme="dark"] .broadcast-page__hero,
+[data-theme="dark"] .broadcast-page__footer {
+  border-color: rgba(148, 163, 184, 0.12);
+}
+
+[data-theme="dark"] .broadcast-page__title {
+  color: #e2e8f0;
+}
+
+[data-theme="dark"] .broadcast-page__body,
+[data-theme="dark"] .broadcast-page__meta {
+  color: #94a3b8;
+}
+
+[data-theme="dark"] .broadcast-page__body h2 {
+  color: #e2e8f0;
+}
+
+[data-theme="dark"] .broadcast-page__back {
+  color: #93c5fd;
+}
+
+[data-theme="dark"] .broadcast-page[data-urgency="low"]      { --alert-accent: #94a3b8; }
+[data-theme="dark"] .broadcast-page[data-urgency="medium"]   { --alert-accent: #7dd3fc; }
+[data-theme="dark"] .broadcast-page[data-urgency="high"]     { --alert-accent: #fbbf24; }
+[data-theme="dark"] .broadcast-page[data-urgency="critical"] { --alert-accent: #fca5a5; }
+
+/* ── View All Alerts Button ──────────────────────────────── */
+.wiki-alerts__view-all {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: 12px;
+  margin-top: 4px;
+  background: var(--surface-container-low, #f3f3ff);
+  border: 1px dashed var(--border-default, rgba(4, 23, 72, 0.1));
+  border-radius: 12px;
+  font-family: var(--font-mono, "JetBrains Mono", monospace);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--primary, #35568e);
+  text-decoration: none;
+  transition: all 0.15s ease;
+}
+
+.wiki-alerts__view-all:hover {
+  background: color-mix(in srgb, var(--primary) 8%, transparent);
+  border-color: var(--primary);
+  border-style: solid;
+}
+
+/* Mobile Collapsible Alerts */
+.mobile-alerts-wrapper {
+  display: none; /* Hidden on desktop */
+}
+
+@media (max-width: 768px) {
+  .mobile-alerts-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 12px;
+    width: 100%;
+    padding: 14px 16px;
+    background: var(--surface-container-lowest, #fff);
+    border: 1px solid var(--border-default, rgba(0,0,0,0.1));
+    border-radius: 12px;
+    font-family: var(--font-display, sans-serif);
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--on-surface, #000);
+    cursor: pointer;
+    margin-bottom: 24px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+  }
+  
+  .mobile-alerts-badge {
+    background: var(--error, #dc2626);
+    color: white;
+    padding: 2px 8px;
+    border-radius: 99px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    line-height: 1.2;
+  }
+
+  /* Force the alerts to hide unless the .is-open class is present */
+  #wikiAlertsContainer:not(.is-open) {
+    display: none !important;
+  }
+  
+  #wikiAlertsContainer.is-open {
+    display: flex !important;
+  }
+}
+
+.mobile-alerts-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 12px;
+  width: 100%;
+  padding: 14px 16px;
+  background: var(--surface-container-lowest, #fff);
+  border: 1px solid var(--border-default, rgba(0,0,0,0.1));
+  border-radius: 12px;
+  font-family: var(--font-display, sans-serif);
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--on-surface, #000);
+  cursor: pointer;
+  margin-bottom: 24px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+}
+
+.mobile-alerts-badge {
+  background: var(--error, #dc2626);
+  color: white;
+  padding: 2px 8px;
+  border-radius: 99px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+/* Hide the mobile toggle on desktop screens */
+@media (min-width: 769px) {
+  .mobile-alerts-toggle {
+    display: none !important;
+  }
+}

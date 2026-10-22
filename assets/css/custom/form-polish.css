@@ -1,0 +1,220 @@
+/* ================================================================
+   Form Polish — counters, chips, modals, locked fields
+   Uses new design tokens from tokens.css
+   ================================================================ */
+
+/* ── Character counters ────────────────────────────────── */
+.char-count {
+  display: block;
+  margin-top: 6px;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  color: var(--on-surface-variant);
+  text-align: right;
+  transition: color var(--duration-fast) var(--ease-out);
+  min-height: 1em;
+}
+
+.char-count.is-warn { color: #f59e0b; }
+.char-count.is-over { color: var(--error); font-weight: 700; }
+
+/* ── Locked fields ─────────────────────────────────────── */
+.field-locked,
+.condo-input-locked {
+  position: relative;
+  background: var(--surface-container-low) !important;
+  cursor: not-allowed !important;
+  color: var(--on-surface-variant) !important;
+  padding-right: 40px !important;
+  border-color: var(--outline-variant) !important;
+}
+
+.field-locked::after {
+  content: "\f023";
+  font-family: "Font Awesome 6 Free";
+  font-weight: 900;
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--outline);
+  font-size: 0.85rem;
+  pointer-events: none;
+}
+
+.field-locked-helper {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 6px;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  color: var(--outline);
+}
+
+/* ── AI suggestion chip ───────────────────────────────── */
+.ai-suggestion-chip {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 10px;
+  padding: 10px 12px;
+  border-radius: var(--radius-xl);
+  background: linear-gradient(135deg, #fef3c7, #fde68a);
+  border: 1px solid #fcd34d;
+  font-size: 0.82rem;
+  color: #78350f;
+  animation: chipSlideDown 0.3s var(--ease-out);
+}
+
+@keyframes chipSlideDown {
+  from { opacity: 0; transform: translateY(-6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.ai-suggestion-chip__icon { font-size: 1rem; }
+.ai-suggestion-chip__text { flex: 1; line-height: 1.35; }
+
+.ai-suggestion-chip__apply {
+  border: 1px solid #d97706;
+  background: var(--surface-container-lowest);
+  color: #92400e;
+  padding: 4px 10px;
+  border-radius: var(--radius-lg);
+  font-weight: 700;
+  font-size: 0.72rem;
+  cursor: pointer;
+  transition: background var(--duration-fast) var(--ease-out);
+}
+.ai-suggestion-chip__apply:hover { background: #fef3c7; }
+
+.ai-suggestion-chip__dismiss {
+  background: none;
+  border: none;
+  font-size: 1.2rem;
+  color: #b45309;
+  cursor: pointer;
+  padding: 0 4px;
+  line-height: 1;
+}
+
+/* ── Success modal ────────────────────────────────────── */
+.success-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 100000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: rgba(4, 23, 72, 0.55);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  animation: modalFadeIn 0.2s var(--ease-out);
+}
+
+@keyframes modalFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.success-modal-card {
+  width: min(92vw, 460px);
+  background: var(--surface-container-lowest);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-2xl);
+  padding: 28px 24px 24px;
+  text-align: center;
+  box-shadow: var(--shadow-xl);
+  animation: modalPopIn 0.4s var(--ease-spring);
+}
+
+@keyframes modalPopIn {
+  from { transform: scale(0.85); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+.success-modal-card__icon {
+  width: 64px;
+  height: 64px;
+  margin: 0 auto 16px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: linear-gradient(135deg, #10b981, #059669);
+  color: var(--on-primary);
+  font-size: 1.8rem;
+  font-weight: 900;
+  box-shadow: 0 8px 24px rgba(16, 185, 129, 0.35);
+}
+
+.success-modal-card h3 {
+  margin: 0 0 8px;
+  font-family: var(--font-display);
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--on-surface);
+}
+
+.success-modal-card p {
+  margin: 0 0 16px;
+  color: var(--on-surface-variant);
+  font-size: 0.94rem;
+  line-height: 1.5;
+}
+
+.success-modal-card__id {
+  display: inline-block;
+  padding: 6px 12px;
+  margin-bottom: 16px;
+  background: var(--surface-container-low);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-lg);
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  color: var(--on-surface-variant);
+}
+
+.success-modal-card__actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+.success-modal-card__actions > * {
+  flex: 1;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-xl);
+  font-weight: 700;
+  font-size: 0.86rem;
+  text-decoration: none;
+  transition: transform var(--duration-fast) var(--ease-out),
+              box-shadow var(--duration-fast) var(--ease-out);
+}
+
+.success-modal-card__actions .btn-secondary {
+  background: var(--surface-container-low);
+  color: var(--on-surface-variant);
+  border: 1px solid var(--border-default);
+}
+
+.success-modal-card__actions .btn-primary {
+  background: var(--primary-container);
+  color: var(--on-primary-container);
+  border: none;
+  box-shadow: var(--shadow-md);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .success-modal-card,
+  .success-modal-card__icon,
+  .success-modal-overlay,
+  .ai-suggestion-chip { animation: none; }
+}

@@ -1,0 +1,67 @@
+# Site Settings
+title: The Hub Community
+description: Community knowledge, notices, and marketplace listings for connected local hubs.
+baseurl: ""
+url: "https://lab-community.pages.dev"
+logo: "/assets/images/logos/resihub-logo-horizontal.svg"
+default_social_image: "/assets/images/logos/resihub-logo-horizontal.svg"
+
+# API Configuration
+api_base_url: "https://hub-community-apis.dekumar-ca.workers.dev"
+
+plugins:
+  - jekyll-feed
+  - jekyll-seo-tag
+  - jekyll-sitemap
+
+# 1. Define the Marketplace Collection
+collections:
+  pros:
+    output: true
+    permalink: /marketplace/:name/
+
+kramdown:
+  input: GFM
+  syntax_highlighter: rouge
+  hard_wrap: false
+  # This ensures Kramdown doesn't get confused by raw HTML blocks
+  parse_block_html: true
+
+# 2. Ensure Jekyll includes your content
+include: [content, assets]
+
+# 3. Exclude SCSS processing entirely - copy CSS files as static assets only
+exclude:
+  - assets/css/style.scss
+  - assets/css/**/*.scss
+
+# Disable SASS processing for assets/css
+sass:
+  skip_defaults: true
+
+# theme: jekyll-theme-cayman
+
+# Resource mode flags
+# mode: dev|prod
+# expose_client_js: if false, client JS tags are omitted (UI interactivity will break)
+# expose_debug_bindings: controls window debug/transitional globals
+resources:
+  mode: dev
+  expose_client_js: true
+  expose_debug_bindings: true
+
+defaults:
+  - scope:
+      path: ""
+    values:
+      image: "/assets/images/logos/resihub-logo-horizontal.svg"
+      seo_type: website
+  - scope:
+      path: "content"
+    values:
+      seo_type: article
+  - scope:
+      path: ""
+      type: pros
+    values:
+      seo_type: product

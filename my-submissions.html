@@ -1,0 +1,48 @@
+---
+layout: default
+title: My Submissions
+---
+<main class="main-content">
+  <div class="status-shell">
+    <div class="page-hero">
+      <div class="page-hero__meta">
+        <span class="page-hero__dot"></span>
+        <span class="page-hero__eyebrow">Your Activity</span>
+      </div>
+      <h1 class="page-hero__title">My Submissions</h1>
+      <p class="page-hero__subtitle">Pages, listings, and notices you've submitted from this device.</p>
+    </div>
+
+    <div id="submissionsList" class="status-result" style="display: none;">
+      <!-- Populated by JS -->
+    </div>
+    
+    <div id="noSubmissions" class="empty-state" style="display: none;">
+      <div class="empty-state__icon"><i class="fa-regular fa-file-lines"></i></div>
+      <p class="empty-state__label">No submissions yet</p>
+      <small class="empty-state__hint">When you contribute to the community, your tracking IDs will appear here.</small>
+    </div>
+  </div>
+</main>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const subs = JSON.parse(localStorage.getItem("resiHubSubmissions") || "[]");
+  const list = document.getElementById("submissionsList");
+  const empty = document.getElementById("noSubmissions");
+  
+  if (subs.length === 0) {
+    empty.style.display = "block";
+    return;
+  }
+  
+  list.style.display = "block";
+  list.innerHTML = `<ul class="ed-error__list-items">` + subs.map(id => `
+    <li style="margin-bottom: 12px;">
+      <a href="/status.html?submission_id=${id}" style="color: var(--primary); text-decoration: underline; font-family: var(--font-mono);">
+        ${id}
+      </a>
+    </li>
+  `).join("") + `</ul>`;
+});
+</script>

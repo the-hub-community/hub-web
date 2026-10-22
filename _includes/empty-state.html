@@ -1,0 +1,20 @@
+{% comment %}
+Reusable empty state with category icon.
+Usage: {% include empty-state.html category="Food" label="No photos yet" %}
+{% endcomment %}
+<div class="empty-state" data-category="{{ include.category | default: 'General' }}">
+  <div class="empty-state__icon" aria-hidden="true">
+    {% case include.category %}
+      {% when 'Food' %}<i class="fa-solid fa-utensils"></i>
+      {% when 'Parking' %}<i class="fa-solid fa-car"></i>
+      {% when 'Rentals' %}<i class="fa-solid fa-key"></i>
+      {% when 'Services' %}<i class="fa-solid fa-wrench"></i>
+      {% when 'Items for Sale' %}<i class="fa-solid fa-box-open"></i>
+      {% else %}<i class="fa-solid fa-store"></i>
+    {% endcase %}
+  </div>
+  <p class="empty-state__label">{{ include.label | default: 'Nothing here yet' }}</p>
+  {% if include.hint %}
+    <small class="empty-state__hint">{{ include.hint }}</small>
+  {% endif %}
+</div>

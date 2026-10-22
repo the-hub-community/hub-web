@@ -1,0 +1,187 @@
+/* ================================================================
+   Community Color System
+   Tints identify community context. They never decorate.
+   Applied via data-accent attribute (set by community-color.js).
+   ================================================================ */
+
+/* ── Light palette ──────────────────────────────────────────── */
+[data-accent="amber"]      { --accent: #b45309; --accent-soft: rgba(180, 83, 9, 0.12);   --accent-line: rgba(180, 83, 9, 0.28); }
+[data-accent="olive"]      { --accent: #4d7c0f; --accent-soft: rgba(77, 124, 15, 0.12);  --accent-line: rgba(77, 124, 15, 0.28); }
+[data-accent="teal"]       { --accent: #0f766e; --accent-soft: rgba(15, 118, 110, 0.12); --accent-line: rgba(15, 118, 110, 0.28); }
+[data-accent="sky"]        { --accent: #0369a1; --accent-soft: rgba(3, 105, 161, 0.12);  --accent-line: rgba(3, 105, 161, 0.28); }
+[data-accent="navy"]       { --accent: #1e40af; --accent-soft: rgba(30, 64, 175, 0.12);  --accent-line: rgba(30, 64, 175, 0.28); }
+[data-accent="plum"]       { --accent: #86198f; --accent-soft: rgba(134, 25, 143, 0.12); --accent-line: rgba(134, 25, 143, 0.28); }
+[data-accent="terracotta"] { --accent: #c2410c; --accent-soft: rgba(194, 65, 12, 0.12);  --accent-line: rgba(194, 65, 12, 0.28); }
+[data-accent="forest"]     { --accent: #166534; --accent-soft: rgba(22, 101, 52, 0.12);  --accent-line: rgba(22, 101, 52, 0.28); }
+
+/* ── Dark palette ───────────────────────────────────────────── */
+[data-theme="dark"][data-accent="amber"]      { --accent: #fbbf24; --accent-soft: rgba(251, 191, 36, 0.14);  --accent-line: rgba(251, 191, 36, 0.32); }
+[data-theme="dark"][data-accent="olive"]      { --accent: #bef264; --accent-soft: rgba(190, 242, 100, 0.14); --accent-line: rgba(190, 242, 100, 0.32); }
+[data-theme="dark"][data-accent="teal"]       { --accent: #5eead4; --accent-soft: rgba(94, 234, 212, 0.14);  --accent-line: rgba(94, 234, 212, 0.32); }
+[data-theme="dark"][data-accent="sky"]        { --accent: #7dd3fc; --accent-soft: rgba(125, 211, 252, 0.14); --accent-line: rgba(125, 211, 252, 0.32); }
+[data-theme="dark"][data-accent="navy"]       { --accent: #93c5fd; --accent-soft: rgba(147, 197, 253, 0.14); --accent-line: rgba(147, 197, 253, 0.32); }
+[data-theme="dark"][data-accent="plum"]       { --accent: #e9d5ff; --accent-soft: rgba(233, 213, 255, 0.14); --accent-line: rgba(233, 213, 255, 0.32); }
+[data-theme="dark"][data-accent="terracotta"] { --accent: #fdba74; --accent-soft: rgba(253, 186, 116, 0.14); --accent-line: rgba(253, 186, 116, 0.32); }
+[data-theme="dark"][data-accent="forest"]     { --accent: #86efac; --accent-soft: rgba(134, 239, 172, 0.14); --accent-line: rgba(134, 239, 172, 0.32); }
+
+/* ══════════════════════════════════════════════════════════════
+   Application — 4 core locations
+   ══════════════════════════════════════════════════════════════ */
+
+/* ── 1. Community chip on wiki pages ───────────────────────── */
+.page-community-chip[data-accent] {
+  background: var(--accent-soft);
+  color: var(--accent);
+  border: 1px solid var(--accent-line);
+  border-radius: 999px;
+  padding: 6px 14px 6px 12px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  margin-bottom: 20px;
+}
+
+.page-community-chip[data-accent] i {
+  color: var(--accent);
+  font-size: 0.78rem;
+}
+
+/* Fallback when no accent */
+.page-community-chip:not([data-accent]) {
+  background: var(--surface-container-low, #f3f3ff);
+  color: var(--on-surface-variant, #434750);
+  border: 1px solid var(--border-subtle, rgba(4, 23, 72, 0.08));
+  border-radius: 999px;
+  padding: 6px 14px 6px 12px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  margin-bottom: 20px;
+}
+
+/* ── 2. Dashboard community rows ──────────────────────────── */
+.ed-list__row[data-accent] .ed-list__index {
+  color: var(--accent);
+  font-weight: 700;
+}
+
+.ed-list__row[data-accent] .ed-list__title {
+  position: relative;
+  padding-left: 14px;
+}
+
+.ed-list__row[data-accent] .ed-list__title::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 3px;
+  height: 14px;
+  border-radius: 2px;
+  background: var(--accent);
+}
+
+/* ── 3. Sidebar active community item ─────────────────────── */
+.sidebar-nav__item--community[data-accent].is-active {
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+.sidebar-nav__item--community[data-accent].is-active .sidebar-nav__count {
+  color: var(--accent);
+  opacity: 0.9;
+}
+
+/* Left edge indicator on the active community in the sidebar */
+.sidebar-nav__item--community[data-accent].is-active::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 3px;
+  height: 20px;
+  border-radius: 0 2px 2px 0;
+  background: var(--accent);
+}
+
+.sidebar-nav__item--community[data-accent] {
+  position: relative;
+}
+
+/* ── 4. Header community switcher dot ─────────────────────── */
+.header-community[data-accent] .header-community__dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--accent);
+  margin-right: 6px;
+  vertical-align: middle;
+  flex-shrink: 0;
+}
+
+/* ── 5. Marketplace category pills (static palette) ──────── */
+.mp-category-link[data-category-color="furniture"]  { --cat: #c2410c; --cat-soft: rgba(194, 65, 12, 0.10); }
+.mp-category-link[data-category-color="bicycles"]   { --cat: #166534; --cat-soft: rgba(22, 101, 52, 0.10); }
+.mp-category-link[data-category-color="kids"]       { --cat: #b45309; --cat-soft: rgba(180, 83, 9, 0.10); }
+.mp-category-link[data-category-color="tools"]      { --cat: #4d7c0f; --cat-soft: rgba(77, 124, 15, 0.10); }
+.mp-category-link[data-category-color="books"]      { --cat: #4338ca; --cat-soft: rgba(67, 56, 202, 0.10); }
+.mp-category-link[data-category-color="services"]   { --cat: #be123c; --cat-soft: rgba(190, 18, 60, 0.10); }
+.mp-category-link[data-category-color="food"]       { --cat: #86198f; --cat-soft: rgba(134, 25, 143, 0.10); }
+
+.mp-category-link[data-category-color] {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.mp-category-link[data-category-color]::before {
+  content: "";
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--cat);
+  opacity: 0.7;
+  transition: opacity 0.15s ease;
+}
+
+.mp-category-link[data-category-color].active::before,
+.mp-category-link[data-category-color]:hover::before {
+  opacity: 1;
+}
+
+.mp-category-link[data-category-color].active {
+  color: var(--cat);
+}
+
+/* ── 6. Status pills ──────────────────────────────────────── */
+.status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-family: var(--font-mono, "JetBrains Mono", monospace);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.status-pill--pending   { background: rgba(245, 158, 11, 0.14); color: #92400e; }
+.status-pill--approved  { background: rgba(16, 185, 129, 0.14); color: #047857; }
+.status-pill--flagged   { background: rgba(239, 68, 68, 0.14);  color: #991b1b; }
+.status-pill--draft     { background: var(--surface-container, #ebedff); color: var(--on-surface-variant, #434750); }
+.status-pill--published { background: rgba(53, 86, 142, 0.14);  color: #35568e; }
+
+[data-theme="dark"] .status-pill--pending   { background: rgba(251, 191, 36, 0.16); color: #fcd34d; }
+[data-theme="dark"] .status-pill--approved  { background: rgba(16, 185, 129, 0.16); color: #6ee7b7; }
+[data-theme="dark"] .status-pill--flagged   { background: rgba(239, 68, 68, 0.16);  color: #fca5a5; }
+[data-theme="dark"] .status-pill--published { background: rgba(147, 197, 253, 0.16); color: #93c5fd; }
