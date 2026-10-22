@@ -35,10 +35,17 @@ layout: default
 {% assign cta_label = "Contact Seller" %}
 {% assign cta_icon = "fa-solid fa-message" %}
 
+{% assign is_email = false %}
+{% if contact_lower contains "@" and contact_lower contains "." %}
+  {% unless contact_lower contains " " %}
+    {% assign is_email = true %}
+  {% endunless %}
+{% endif %}
+
 {% if raw_contact == "" %}
   {% assign cta_href = "#" %}
   {% assign cta_label = "Contact Unavailable" %}
-{% elsif contact_lower contains "@" and contact_lower contains "." and contact_lower contains " " == false %}
+{% elsif is_email %}
   {% assign cta_href = "mailto:" | append: raw_contact %}
   {% assign cta_label = "Email Seller" %}
   {% assign cta_icon = "fa-solid fa-envelope" %}
