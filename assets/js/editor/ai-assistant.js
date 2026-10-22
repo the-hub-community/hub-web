@@ -9,16 +9,16 @@
   const AI_ENDPOINTS = {
     titleSuggestions:
       window.ResiHubApi?.ENDPOINTS?.aiTitleSuggestions ||
-      "https://hub-community-apis.dekumar-ca.workers.dev/api/ai/suggestions/title",
+      "https://hub-worker-api.dekumar-ca.workers.dev/api/ai/suggestions/title",
     contentQuality:
       window.ResiHubApi?.ENDPOINTS?.aiContentQuality ||
-      "https://hub-community-apis.dekumar-ca.workers.dev/api/ai/suggestions/content-quality",
+      "https://hub-worker-api.dekumar-ca.workers.dev/api/ai/suggestions/content-quality",
     autoTags:
       window.ResiHubApi?.ENDPOINTS?.aiAutoTags ||
-      "https://hub-community-apis.dekumar-ca.workers.dev/api/ai/suggestions/auto-tags",
+      "https://hub-worker-api.dekumar-ca.workers.dev/api/ai/suggestions/auto-tags",
     spellcheck:
       window.ResiHubApi?.ENDPOINTS?.aiSpellcheck ||
-      "https://hub-community-apis.dekumar-ca.workers.dev/api/ai/suggestions/spellcheck",
+      "https://hub-worker-api.dekumar-ca.workers.dev/api/ai/suggestions/spellcheck",
   };
 
   let activeSection = null;

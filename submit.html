@@ -307,7 +307,7 @@ document.addEventListener('DOMContentLoaded', function() {
       }
 
       try {
-        const endpoint = window.ResiHubApi?.ENDPOINTS?.submit || "https://hub-community-apis.dekumar-ca.workers.dev/api/submit";
+        const endpoint = window.ResiHubApi?.ENDPOINTS?.submit || "https://hub-worker-api.dekumar-ca.workers.dev/api/submit";
         const response = await fetch(endpoint, {
           method: "POST",
           body: formData

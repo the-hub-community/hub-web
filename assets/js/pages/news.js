@@ -42,7 +42,7 @@
     window.ResiHubApi.ENDPOINTS &&
     window.ResiHubApi.ENDPOINTS.newsLatest
       ? window.ResiHubApi.ENDPOINTS.newsLatest
-      : "https://hub-community-apis.dekumar-ca.workers.dev/api/news/latest";
+      : "https://hub-worker-api.dekumar-ca.workers.dev/api/news/latest";
 
   function setStatus(message) {
     statusBar.textContent = message || "";
@@ -98,11 +98,11 @@
         '<article class="news-card news-card--skeleton" aria-hidden="true">' +
           '<div class="skeleton-img"></div>' +
           '<div class="news-card__body">' +
-            '<div class="skeleton-line skeleton-line--short"></div>' +
-            '<div class="skeleton-line skeleton-line--full"></div>' +
-            '<div class="skeleton-line skeleton-line--mid"></div>' +
+          '<div class="skeleton-line skeleton-line--short"></div>' +
+          '<div class="skeleton-line skeleton-line--full"></div>' +
+          '<div class="skeleton-line skeleton-line--mid"></div>' +
           "</div>" +
-        "</article>",
+          "</article>",
       );
     }
     grid.innerHTML = cards.join("");
@@ -115,9 +115,11 @@
 
     grid.innerHTML =
       '<div class="news-empty-state">' +
-        '<div class="news-empty-state__icon"><i class="fa-regular fa-newspaper"></i></div>' +
-        '<div class="news-empty-state__msg">' + escapeHtml(message) + "</div>" +
-        retry +
+      '<div class="news-empty-state__icon"><i class="fa-regular fa-newspaper"></i></div>' +
+      '<div class="news-empty-state__msg">' +
+      escapeHtml(message) +
+      "</div>" +
+      retry +
       "</div>";
 
     if (allowRetry) {
@@ -141,24 +143,36 @@
     var source = article.source ? escapeHtml(article.source) : "News Desk";
     var age = formatAge(article.publishedAt);
     var title = escapeHtml(article.title || "Untitled headline");
-    var description = escapeHtml(article.description || "No summary available.");
+    var description = escapeHtml(
+      article.description || "No summary available.",
+    );
     var safeUrl = escapeHtml(article.url || "#");
 
     return (
       '<article class="news-card">' +
-        '<div class="news-card__img-wrap">' + imageHtml + "</div>" +
-        '<div class="news-card__body">' +
-          '<div class="news-card__meta">' +
-            '<span class="news-card__source">' + source + "</span>" +
-            '<span class="news-card__dot">•</span>' +
-            '<span class="news-card__age">' + age + "</span>" +
-          "</div>" +
-          '<h4 class="news-card__title">' + title + "</h4>" +
-          '<p class="news-card__desc">' + description + "</p>" +
-          '<a class="news-card__link" href="' +
-            safeUrl +
-            '" target="_blank" rel="noopener noreferrer">Read article <span class="news-card__link-arrow">→</span></a>' +
-        "</div>" +
+      '<div class="news-card__img-wrap">' +
+      imageHtml +
+      "</div>" +
+      '<div class="news-card__body">' +
+      '<div class="news-card__meta">' +
+      '<span class="news-card__source">' +
+      source +
+      "</span>" +
+      '<span class="news-card__dot">•</span>' +
+      '<span class="news-card__age">' +
+      age +
+      "</span>" +
+      "</div>" +
+      '<h4 class="news-card__title">' +
+      title +
+      "</h4>" +
+      '<p class="news-card__desc">' +
+      description +
+      "</p>" +
+      '<a class="news-card__link" href="' +
+      safeUrl +
+      '" target="_blank" rel="noopener noreferrer">Read article <span class="news-card__link-arrow">→</span></a>' +
+      "</div>" +
       "</article>"
     );
   }

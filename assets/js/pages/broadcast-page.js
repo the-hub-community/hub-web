@@ -353,7 +353,7 @@ document.getElementById("broadcastForm").onsubmit = async (e) => {
   formData.set("type", "broadcast");
   const submitEndpoint =
     window.ResiHubApi?.ENDPOINTS?.broadcast ||
-    "https://hub-community-apis.dekumar-ca.workers.dev/api/broadcast";
+    "https://hub-worker-api.dekumar-ca.workers.dev/api/broadcast";
   const submissionId = ensurePageKey();
   if (submissionId) {
     if (pageKeyInput) {

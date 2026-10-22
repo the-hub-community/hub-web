@@ -8,7 +8,7 @@ import {
 
 const SUBMIT_ENDPOINT =
   window.ResiHubApi?.ENDPOINTS?.submit ||
-  "https://hub-community-apis.dekumar-ca.workers.dev/api/submit";
+  "https://hub-worker-api.dekumar-ca.workers.dev/api/submit";
 const SUBMIT_TIMEOUT_MS = 30000;
 const REPO_DETAIL_PATTERN =
   /(api\.github\.com|github\.com\/|\brepos\/[A-Za-z0-9_.-]+\/[A-Za-z0-9_.-]+)/i;

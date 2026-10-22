@@ -93,7 +93,7 @@
   const mobileQuery = window.matchMedia("(max-width: 768px)");
   const commentsEndpoint =
     window.ResiHubApi?.ENDPOINTS?.comments ||
-    `${window.API_BASE || "https://hub-community-apis.dekumar-ca.workers.dev"}/api/comments`;
+    `${window.API_BASE || "https://hub-worker-api.dekumar-ca.workers.dev"}/api/comments`;
 
   function setMobileFormExpanded(expanded) {
     formToggle.setAttribute("aria-expanded", expanded ? "true" : "false");
