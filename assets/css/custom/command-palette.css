@@ -292,3 +292,30 @@ body.cmd-palette-open {
     border-radius: 0;
   }
 }
+
+/* Mobile Close Button */
+.cmd-palette__close-btn {
+  display: none; /* Hidden on desktop */
+  background: transparent;
+  border: none;
+  color: var(--outline);
+  font-size: 1.5rem;
+  padding: 8px;
+  margin-left: -8px;
+  cursor: pointer;
+  line-height: 1;
+}
+
+@media (max-width: 768px) {
+  /* Hide the ESC hint on mobile */
+  .cmd-palette__kbd {
+    display: none !important;
+  }
+  
+  /* Show the X button on mobile */
+  .cmd-palette__close-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+}

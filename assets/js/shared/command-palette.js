@@ -118,6 +118,8 @@
     root.classList.remove("is-open");
     document.body.classList.remove("cmd-palette-open");
 
+    if (input) input.blur();
+
     // Restore focus BEFORE hiding the palette from assistive tech,
     // otherwise Chrome blocks the aria-hidden change.
     if (state.lastFocused && state.lastFocused.focus) {

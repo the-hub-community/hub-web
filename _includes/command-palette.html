@@ -1,20 +1,24 @@
-<div id="cmd-palette" class="cmd-palette" aria-hidden="true" role="dialog" aria-modal="true" aria-label="Command palette">
+<div id="cmd-palette" class="cmd-palette" aria-hidden="true" role="dialog" aria-modal="true"
+  aria-label="Command palette">
   <div class="cmd-palette__backdrop" data-cmdk-close="true"></div>
   <div class="cmd-palette__panel" role="combobox" aria-expanded="true" aria-haspopup="listbox">
     <div class="cmd-palette__input-row">
       <i class="fa-solid fa-magnifying-glass cmd-palette__search-icon" aria-hidden="true"></i>
-      <input
-        type="text"
-        id="cmd-palette-input"
-        class="cmd-palette__input"
-        placeholder="Search pages, listings, actions…"
-        data-i18n-placeholder="command_palette.placeholder"
-        autocomplete="off"
-        spellcheck="false"
-        aria-controls="cmd-palette-results"
-        aria-autocomplete="list"
-      >
-      <kbd class="cmd-palette__kbd">ESC</kbd>
+      <input type="text" id="cmd-palette-input" class="cmd-palette__input"
+        placeholder="Search pages, listings, actions…" data-i18n-placeholder="command_palette.placeholder"
+        autocomplete="off" spellcheck="false" aria-controls="cmd-palette-results" aria-autocomplete="list">
+      <div class="cmd-palette__input-row">
+        <i class="fa-solid fa-magnifying-glass cmd-palette__search-icon" aria-hidden="true"></i>
+        <input type="text" id="cmd-palette-input" class="cmd-palette__input"
+          placeholder="Search pages, listings, actions…" data-i18n-placeholder="command_palette.placeholder"
+          autocomplete="off" spellcheck="false" aria-controls="cmd-palette-results" aria-autocomplete="list">
+        <!-- Desktop ESC Hint -->
+        <kbd class="cmd-palette__kbd">ESC</kbd>
+        <!-- Mobile Close Button -->
+        <button type="button" class="cmd-palette__close-btn" data-cmdk-close="true" aria-label="Close search">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
     </div>
 
     <div id="cmd-palette-results" class="cmd-palette__results" role="listbox" aria-label="Search results">
