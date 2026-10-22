@@ -452,4 +452,52 @@ export function initThemeNav() {
   initWikiLanguageContent();
   initAlertDrawerLanguageContent();
   initMarkdownImageLightbox();
+  initGlobalLightbox();
+}
+function initGlobalLightbox() {
+  // Create the lightbox HTML dynamically
+  if (!document.getElementById("global-lightbox")) {
+    const lb = document.createElement("div");
+    lb.id = "global-lightbox";
+    lb.className = "global-lightbox";
+    lb.innerHTML = `
+      <div class="global-lightbox__backdrop"></div>
+      <button class="global-lightbox__close" aria-label="Close image">&times;</button>
+      <img class="global-lightbox__img" src="" alt="Enlarged image">
+    `;
+    document.body.appendChild(lb);
+
+    const img = lb.querySelector(".global-lightbox__img");
+    const close = lb.querySelector(".global-lightbox__close");
+    const backdrop = lb.querySelector(".global-lightbox__backdrop");
+
+    const closeLightbox = () => {
+      lb.classList.remove("is-open");
+      document.body.style.overflow = "";
+    };
+
+    close.addEventListener("click", closeLightbox);
+    backdrop.addEventListener("click", closeLightbox);
+
+    // Close on Escape key
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape" && lb.classList.contains("is-open"))
+        closeLightbox();
+    });
+
+    // Listen for clicks on ANY content image
+    document.addEventListener("click", (e) => {
+      const targetImg = e.target.closest(
+        ".detail-gallery__hero img, .wiki-render img, .lh-content-body img",
+      );
+
+      // Don't trigger if clicking the avatar or icons
+      if (!targetImg || targetImg.closest(".comment-card")) return;
+
+      e.preventDefault();
+      img.src = targetImg.src;
+      lb.classList.add("is-open");
+      document.body.style.overflow = "hidden"; // Prevent background scrolling
+    });
+  }
 }
