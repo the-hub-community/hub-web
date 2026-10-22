@@ -7,7 +7,7 @@ logo: "/assets/images/logos/resihub-logo-horizontal.svg"
 default_social_image: "/assets/images/logos/resihub-logo-horizontal.svg"
 
 # API Configuration
-api_base_url: "https://hub-worker-api.dekumar-ca.workers.dev"
+api_base_url: "https://hub-community-apis.dekumar-ca.workers.dev"
 
 plugins:
   - jekyll-feed

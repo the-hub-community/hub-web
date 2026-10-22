@@ -14,10 +14,10 @@
   const AI_ENDPOINTS = {
     titleSuggestions:
       window.ResiHubApi?.ENDPOINTS?.aiTitleSuggestions ||
-      "https://hub-worker-api.dekumar-ca.workers.dev/api/ai/suggestions/title",
+      "https://hub-community-apis.dekumar-ca.workers.dev/api/ai/suggestions/title",
     contentQuality:
       window.ResiHubApi?.ENDPOINTS?.aiContentQuality ||
-      "https://hub-worker-api.dekumar-ca.workers.dev/api/ai/suggestions/content-quality",
+      "https://hub-community-apis.dekumar-ca.workers.dev/api/ai/suggestions/content-quality",
   };
 
   async function fetchJson(url, options = {}) {

@@ -3,7 +3,7 @@
 
   var REPORT_ENDPOINT =
     window.ResiHubApi?.ENDPOINTS?.reportContent ||
-    (window.API_BASE || "https://hub-worker-api.dekumar-ca.workers.dev") +
+    (window.API_BASE || "https://hub-community-apis.dekumar-ca.workers.dev") +
       "/api/reports";
 
   var REASONS = [

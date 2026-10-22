@@ -64,7 +64,7 @@
     
     try {
       const response = await fetch(
-        `${window.API_BASE || "https://hub-worker-api.dekumar-ca.workers.dev"}/api/comments?page_key=${encodeURIComponent(pageKey)}&community_key=${encodeURIComponent(communityKey)}`
+        `${window.API_BASE || "https://hub-community-apis.dekumar-ca.workers.dev"}/api/comments?page_key=${encodeURIComponent(pageKey)}&community_key=${encodeURIComponent(communityKey)}`
       );
       
       if (!response.ok) throw new Error(`HTTP ${response.status}`);

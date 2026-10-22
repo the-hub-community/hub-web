@@ -1,4 +1,4 @@
-api_base_url: "https://hub-worker-api.dekumar-ca.workers.dev"
+api_base_url: "https://hub-community-apis.dekumar-ca.workers.dev"
 
 resources:
   mode: prod

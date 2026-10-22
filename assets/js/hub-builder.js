@@ -856,7 +856,7 @@ async function handleFormSubmit(e) {
 
     const submitEndpoint =
       window.ResiHubApi?.ENDPOINTS?.submit ||
-      "https://hub-worker-api.dekumar-ca.workers.dev/api/submit";
+      "https://hub-community-apis.dekumar-ca.workers.dev/api/submit";
 
     const response = await fetch(submitEndpoint, {
       method: "POST",

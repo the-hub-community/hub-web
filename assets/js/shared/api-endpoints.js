@@ -3,7 +3,8 @@
 
   // Override at runtime by setting window.RESIHUB_API_BASE before this script.
   var baseUrl = String(
-    window.RESIHUB_API_BASE || "https://hub-worker-api.dekumar-ca.workers.dev",
+    window.RESIHUB_API_BASE ||
+      "https://hub-community-apis.dekumar-ca.workers.dev",
   )
     .trim()
     .replace(/\/+$/, "");
@@ -13,7 +14,7 @@
 
   var PUBLIC_WORKER_BASE = String(
     window.RESIHUB_PUBLIC_API_BASE ||
-      "https://resihub-image-uploader.dekumar-ca.workers.dev",
+      "https://hub-community-apis.dekumar-ca.workers.dev",
   ).replace(/\/+$/, "");
 
   var endpoints = {
@@ -23,8 +24,7 @@
     broadcast: baseUrl + "/api/submit",
     submissionStatus: statusBaseUrl + "/api/submission-status",
 
-    // Public routes — hit the image-uploader directly.
-    // The gateway only forwards /api/submit, so these must bypass it.
+    // Public routes - handled by the API Gateway (hub-community-apis)
     comments: baseUrl + "/api/comments",
     newsLatest: baseUrl + "/api/news/latest",
     aiTitleSuggestions: baseUrl + "/api/ai/suggestions/title",
