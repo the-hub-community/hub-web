@@ -2,7 +2,7 @@
 layout: marketplace-item
 title: "Solid Oak Writing Desk"
 price: "150"
-contact: "Sarah M. (555-0192)"
+contact: "Elm Drive Resident"
 target_community: "Elm Drive"
 condo: "Elm Drive"
 category: "Furniture & Home"

@@ -2,7 +2,7 @@
 layout: marketplace-item
 title: "High School Math Tutoring"
 price: "40"
-contact: "David L. (david.tutor@example.com)"
+contact: "Elm Drive Resident"
 target_community: "Elm Drive"
 condo: "Elm Drive"
 category: "Services"

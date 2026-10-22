@@ -29,7 +29,7 @@ A living directory of neighborhood services, community hubs, and local initiativ
 {% if seo_path == '/index.html' %}
 {% assign seo_path = '/' %}
 {% endif %}
-{% assign seo_canonical_url = page.canonical_url | default: seo_path | prepend: 'https://lab-community.pages.dev' %}
+{% assign seo_canonical_url = page.canonical_url | default: seo_path | absolute_url %}
 
 {% assign seo_image_candidate = page.og_image | default: page.image | default: page.image_url %}
 {% assign seo_image_default = '/assets/images/social/og-default.png' %}

@@ -4,7 +4,7 @@ description: Community knowledge, notices, and marketplace listings for connecte
 baseurl: ""
 url: "https://hub-web.dekumar-ca.workers.dev"
 logo: "/assets/images/logos/resihub-logo-horizontal.svg"
-default_social_image: "/assets/images/logos/resihub-logo-horizontal.svg"
+default_social_image: "/assets/images/logos/the-hub-community-mark.png"
 
 # API Configuration
 api_base_url: "https://hub-community-apis.dekumar-ca.workers.dev"
