@@ -193,15 +193,19 @@ async function handleDrawerSubmit(e) {
         sec.querySelector(".video-input")?.value || "",
       );
       const alignValue = sec.querySelector(".align-select")?.value || "center";
+      const videoAlignValue =
+        sec.querySelector(".video-align-select")?.value || "center"; // <-- ADD THIS
 
       fd.append(`section_text_${count}`, markdownContent);
       fd.append(`section_video_${count}`, videoUrl);
       fd.append(`section_align_${count}`, alignValue);
+      fd.append(`section_video_align_${count}`, videoAlignValue);
 
       const sectionData = {
         text: markdownContent,
         video: videoUrl,
         align: alignValue,
+        videoAlign: videoAlignValue,
       };
 
       // ── Multi-image picker ─────────────────────────────────
