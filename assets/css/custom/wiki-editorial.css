@@ -658,3 +658,20 @@
 .global-lightbox__close:hover {
   background: rgba(255, 255, 255, 0.2);
 }
+
+/* Fix Community Chip spacing on Mobile */
+@media (max-width: 768px) {
+  .page-community-chip {
+    margin-top: 10px !important;
+    margin-bottom: 24px !important;
+    display: inline-flex !important;
+    /* Ensures it doesn't stretch full width */
+    width: auto !important; 
+  }
+  
+  /* Ensure the meta strip below it has proper spacing */
+  .wiki-meta-strip {
+    margin-top: 0 !important;
+    padding-top: 16px !important;
+  }
+}
