@@ -4,7 +4,7 @@ title: "Beginner Photography Basics"
 condo: "Beginner Photography Basics"
 community_key: "comm-beginner-photography-basics"
 page_key: "page-mvlcuwwl-2i09y2ox"
-date: 2026-10-23T20:22:58.001Z
+date: 2026-10-23T20:35:01.579Z
 ---
 
 # Beginner Photography Basics
@@ -36,7 +36,7 @@ Watch this YouTube reference for visual steps: https://www.youtube.com/watch?v=-
 <div class="lh-video-container"><iframe src="https://www.youtube.com/embed/WA8JGwnxjBw" allowfullscreen></iframe></div>
 
 <div class="lh-text">
-"Understanding the Exposure Triangle" by PhotoPills: This video is directly aligned with the page's focus. It explains how aperture affects depth of field (bokeh vs. sharpness), shutter speed controls motion (freezing action vs. blur), and ISO impacts noise. The video includes timestamps for easy navigation.
+“Understanding the Exposure Triangle” by PhotoPills: This video is directly aligned with the page’s focus. It explains how aperture affects depth of field (bokeh vs. sharpness), shutter speed controls motion (freezing action vs. blur), and ISO impacts noise. The video includes timestamps for easy navigation.
 </div>
 <div class="lh-clear"></div>
 </div>
@@ -45,7 +45,7 @@ Watch this YouTube reference for visual steps: https://www.youtube.com/watch?v=-
 <div class="lh-video-container"><iframe src="https://www.youtube.com/embed/fCAcSbObbE0" allowfullscreen></iframe></div>
 
 <div class="lh-text">
-"Exposure Triangle Tutorial" by Atelic (via The Phoblographer): A quick, visual tutorial that explains the relationship between the three settings and how adjusting one can compensate for another to get a balanced exposure.
+“Exposure Triangle Tutorial” by Atelic (via The Phoblographer): A quick, visual tutorial that explains the relationship between the three settings and how adjusting one can compensate for another to get a balanced exposure.
 </div>
 <div class="lh-clear"></div>
 </div>
@@ -54,7 +54,7 @@ Watch this YouTube reference for visual steps: https://www.youtube.com/watch?v=-
 
 
 <div class="lh-text">
-Tony Northrup's In-Depth Camera Settings Tutorial: This is a more detailed demonstration. It shows how the elements of the Exposure Triangle work with light and even compares different shooting modes, including Aperture Priority.- The article mentions the tutorial is by Tony Northrup. You can find his tutorials on the Tony &amp; Chelsea Northrup YouTube Channel.
+Tony Northrup’s In-Depth Camera Settings Tutorial: This is a more detailed demonstration. It shows how the elements of the Exposure Triangle work with light and even compares different shooting modes, including Aperture Priority.- The article mentions the tutorial is by Tony Northrup. You can find his tutorials on the Tony &amp; Chelsea Northrup YouTube Channel.
 </div>
 <div class="lh-clear"></div>
 </div>
@@ -63,14 +63,15 @@ Tony Northrup's In-Depth Camera Settings Tutorial: This is a more detailed demon
 <div class="lh-video-container"><iframe src="https://www.youtube.com/embed/-WfNjc2QDaE." allowfullscreen></iframe></div>
 
 <div class="lh-text">
-Composition &amp; LightingThe page also highlights the "Rule of Thirds" and the importance of light direction.
+Composition &amp; LightingThe page also highlights the “Rule of Thirds” and the importance of light direction.
 
-- "Top 10 Composition Tips" by Chris Bray: This video covers the Rule of Thirds, leading lines, and background considerations—directly relevant to the page's advice. It is part of a free 10-part photography course.
+- “Top 10 Composition Tips” by Chris Bray: This video covers the Rule of Thirds, leading lines, and background considerations—directly relevant to the page’s advice. It is part of a free 10-part photography course.
+
 - YouTube URL (Course Playlist): The page provides a direct link to the full course playlist.
 
-A Special Note on the Page's Existing ReferenceYour page already links to this video:&nbsp;
+A Special Note on the Page’s Existing ReferenceYour page already links to this video:&nbsp;
 
-- This specific video is also cited in an open courseware resource as a reference for "Camera basics, principles and practices" and related photography principles.
+- This specific video is also cited in an open courseware resource as a reference for “Camera basics, principles and practices” and related photography principles.
 
 A General Beginner Resource- B&amp;H Photo Video YouTube Channel: The search results mention that the official YouTube channel of B&amp;H Photo is a recommended resource for beginners learning about their equipment.
 
