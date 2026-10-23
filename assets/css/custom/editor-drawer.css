@@ -1646,3 +1646,27 @@
     font-size: 0.95rem;
   }
 }
+
+/* ================================================================
+   FINAL MOBILE FOOTER OVERRIDE (Side-by-side buttons)
+   ================================================================ */
+@media screen and (max-width: 768px) {
+  #editor-panel .drawer-footer {
+    flex-direction: row !important; /* Forces side-by-side */
+    justify-content: space-between !important;
+    padding: 16px !important;
+    padding-bottom: calc(16px + env(safe-area-inset-bottom, 0px)) !important;
+    gap: 12px !important;
+    background: var(--surface-container-lowest) !important;
+    border-top: 1px solid var(--border-subtle) !important;
+  }
+
+  #editor-panel .drawer-footer .btn-cancel,
+  #editor-panel .drawer-footer .btn-sync {
+    flex: 1 !important; /* Both take 50% width */
+    height: 48px !important; /* Standard thumb-friendly height */
+    margin: 0 !important;
+    border-radius: 8px !important;
+    font-size: 0.95rem !important;
+  }
+}

@@ -277,7 +277,7 @@ export function saveDraft() {
     "#drawer-sections-container .drawer-section-card",
   );
   const draft = {
-    condo: document.getElementById("condo")?.value || "",
+    community: document.getElementById("community")?.value || "",
     title: document.getElementById("title")?.value || "",
     sections: [],
   };
