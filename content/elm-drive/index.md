@@ -4,7 +4,7 @@ title: "Welcome to Elm Drive"
 condo: "Elm Drive"
 community_key: "comm-elm-drive"
 page_key: "page-elm-drive-home"
-date: 2026-10-22T21:12:18.162Z
+date: 2026-10-23T02:16:12.439Z
 ---
 
 # Welcome to Elm Drive
@@ -24,8 +24,8 @@ Whether you are looking for the best local coffee shop, need to borrow a tool, o
 
 <div class="lh-section">
 
-<div class="lh-align-right"><figure class="lh-image-container">
-<img src="https://pub-b0e952c65fd94549b83646f95f2b354b.r2.dev/update-1792703536690-sec1-img0-photo_1511497584788_876760111969.avif" alt="Elm Drive" class="lh-fluid-img">
+<div class="lh-align-center"><figure class="lh-image-container">
+<img src="https://pub-b0e952c65fd94549b83646f95f2b354b.r2.dev/update-1792703536690-sec1-img0-photo_1511497584788_876760111969.avif" alt="Welcome to Elm Drive" class="lh-fluid-img">
 </figure></div>
 <div class="lh-text">
 Getting AroundWe are just a short walk from the central transit station and a 15-minute drive to the highway. The neighborhood features wide sidewalks and dedicated bike lanes, making it perfect for families and commuters alike.
