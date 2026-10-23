@@ -2,7 +2,7 @@ import { initThemeNav, toggleAlertFeed } from "./layout/theme-nav.js";
 import {
   addNewSection,
   addSectionToDrawer,
-  addTag,
+  // addTag,
   initDrawer,
   insertFormat,
   openContributionDrawer,
@@ -113,7 +113,7 @@ function bindLegacyGlobals() {
   window.togglePanel = togglePanel;
   window.addNewSection = addNewSection;
 
-  window.addTag = addTag;
+  // window.addTag = addTag;
   window.switchMode = switchMode;
   window.openContributionDrawer = openContributionDrawer;
   window.insertFormat = insertFormat;
