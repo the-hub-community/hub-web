@@ -124,7 +124,9 @@ async function handleDrawerSubmit(e) {
   );
 
   try {
-    const condo = document.getElementById("condo")?.value?.trim();
+    const condo =
+      document.getElementById("condo")?.value?.trim() ||
+      document.getElementById("community")?.value?.trim();
     const title = document.getElementById("title")?.value?.trim();
     const type = document.getElementById("type")?.value?.trim() || "wiki";
     const currentPagePath = (document.body?.dataset?.pagePath || "").trim();

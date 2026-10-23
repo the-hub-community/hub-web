@@ -415,7 +415,8 @@ export function prepareEdit() {
 // ── Panel Toggle & Accessibility ───────────────────────────────
 export function togglePanel(mode = "create") {
   const currentCondo = (document.body?.dataset?.pageCondo || "").trim();
-  const condoInput = document.getElementById("condo");
+  const condoInput =
+    document.getElementById("condo") || document.getElementById("community");
   const titleInput = document.getElementById("title");
   const typeInput = document.getElementById("type");
   const sectionsContainer = document.getElementById(
