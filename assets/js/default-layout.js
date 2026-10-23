@@ -2,12 +2,8 @@ import { initThemeNav, toggleAlertFeed } from "./layout/theme-nav.js";
 import {
   addNewSection,
   addSectionToDrawer,
-  // addTag,
   initDrawer,
-  insertFormat,
-  openContributionDrawer,
   prepareEdit,
-  switchMode,
   togglePanel,
 } from "./editor/drawer.js";
 import {
@@ -113,13 +109,7 @@ function bindLegacyGlobals() {
   window.togglePanel = togglePanel;
   window.addNewSection = addNewSection;
 
-  // window.addTag = addTag;
-  window.switchMode = switchMode;
-  window.openContributionDrawer = openContributionDrawer;
-  window.insertFormat = insertFormat;
-
   if (shouldExposeDebugBindings()) {
-    // Transitional bindings for debugging and legacy script compatibility.
     window.addSectionToDrawer = addSectionToDrawer;
     window.normalizeEditorHtml = normalizeEditorHtml;
     window.deepCleanHTML = deepCleanHTML;
