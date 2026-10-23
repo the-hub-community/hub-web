@@ -1,7 +1,7 @@
 ---
 layout: default
 title: "Everyday AI"
-condo: "ai-world"
+condo: "AI World"
 community_key: "comm-ai-world"
 page_key: "page-mvkenghw-plt42927"
 date: 2026-10-23T03:25:41.184Z
