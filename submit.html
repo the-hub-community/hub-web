@@ -185,18 +185,18 @@ sitemap: false
 </main>
 
 <script>
-  document.addEventListener('DOMContentLoaded', function () {
+document.addEventListener('DOMContentLoaded', function () {
 
-    // 1. Populate Community Dropdown
-    const select = document.getElementById('thcCommunitySelect');
-    const newGroup = document.getElementById('newCommunityGroup');
+  // 1. Populate Community Dropdown
+  const select = document.getElementById('thcCommunitySelect');
+  const newGroup = document.getElementById('newCommunityGroup');
 
-    if (select) {
-      const communities = [
-        {% assign community_indices = site.pages | where_exp: "p", "p.path contains 'content/'" | where_exp: "p", "p.name == 'index.md' or p.name == 'index.html'" | sort: "condo" %}
-    {% for c in community_indices %}
-    { slug: { { c.path | split: '/' | slice: 1 | first | jsonify } }, name: { { c.condo | default: c.title | jsonify } } } {% unless forloop.last %}, {% endunless %}
-    {% endfor %}
+  if (select) {
+    const communities = [
+      {% assign community_indices = site.pages | where_exp: "p", "p.path contains 'content/'" | where_exp: "p", "p.name == 'index.md' or p.name == 'index.html'" | sort: "condo" %}
+      {% for c in community_indices %}
+        { slug: {{ c.path | split: '/' | slice: 1 | first | jsonify }}, name: {{ c.condo | default: c.title | jsonify }} }{% unless forloop.last %},{% endunless %}
+      {% endfor %}
     ];
 
     select.innerHTML = '';
@@ -223,8 +223,7 @@ sitemap: false
     window.ResiHubImagePicker.mount(pickerEl);
   }
 
-  // 3. Paste Sanitizer (Strips fonts, keeps bold/italic/lists)
-  // 3. Paste Sanitizer (Keeps bold/italic/lists, removes all fonts/styles)
+  // 3. Paste Sanitizer
   const editor = document.querySelector('.editor-area');
   if (editor) {
     editor.addEventListener('paste', (e) => {
@@ -240,20 +239,17 @@ sitemap: false
       const tempDiv = document.createElement('div');
       tempDiv.innerHTML = html;
 
-      // Unwrap tags that mess up our layout (pre, code, font, span)
       tempDiv.querySelectorAll('pre, code, font, span').forEach(el => {
         const textNode = document.createTextNode(el.textContent);
         el.parentNode.replaceChild(textNode, el);
       });
 
-      // Remove all inline styles and classes
       tempDiv.querySelectorAll('*').forEach(el => {
         el.removeAttribute('style');
         el.removeAttribute('class');
         el.removeAttribute('id');
       });
 
-      // Insert the cleaned HTML
       document.execCommand('insertHTML', false, tempDiv.innerHTML);
     });
   }
@@ -294,7 +290,6 @@ sitemap: false
       html += `<div class="preview-tags">${tagArray.map(t => `<span>#${escapeHtml(t)}</span>`).join('')}</div>`;
     }
 
-    // Add Image Preview if selected
     const images = pickerEl && window.ResiHubImagePicker ? window.ResiHubImagePicker.getImages(pickerEl) : [];
     if (images.length > 0) {
       const align = document.getElementById('wizard-image-align')?.value || 'center';
@@ -327,7 +322,7 @@ sitemap: false
   document.querySelectorAll('.submit-back').forEach(btn => btn.addEventListener('click', () => showStep(btn.dataset.back)));
   steps.forEach(s => s.addEventListener('click', () => showStep(s.dataset.step)));
 
-  // 5. Toolbar Commands (Bold, Italic, Indent, etc.)
+  // 5. Toolbar Commands
   document.addEventListener('click', (e) => {
     const btn = e.target.closest('.editor-toolbar button[data-cmd]');
     if (!btn) return;
@@ -336,7 +331,41 @@ sitemap: false
     document.querySelector('.editor-area')?.focus();
   });
 
-  // 6. Form Submission
+  // 6. AI Auto-Format (Moved INSIDE the DOMContentLoaded event)
+  const aiFormatBtn = document.getElementById('btn-ai-format');
+  if (aiFormatBtn) {
+    aiFormatBtn.addEventListener('click', async () => {
+      const rawText = editor.innerText.trim();
+      if (!rawText || rawText.length < 10) return;
+
+      const originalHtml = aiFormatBtn.innerHTML;
+      aiFormatBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Formatting...';
+      aiFormatBtn.disabled = true;
+
+      try {
+        const endpoint = window.ResiHubApi?.ENDPOINTS?.autoFormat || "https://hub-community-apis.dekumar-ca.workers.dev/api/ai/auto-format";
+        const res = await fetch(endpoint, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ text: rawText })
+        });
+
+        const data = await res.json();
+
+        if (data.success && data.text) {
+          const formattedHtml = data.text.split('\n\n').map(p => `<p>${p.replace(/\n/g, '<br>')}</p>`).join('');
+          editor.innerHTML = formattedHtml;
+        }
+      } catch (err) {
+        console.error("Format failed:", err);
+      } finally {
+        aiFormatBtn.innerHTML = originalHtml;
+        aiFormatBtn.disabled = false;
+      }
+    });
+  }
+
+  // 7. Form Submission
   const form = document.getElementById('thcSubmissionForm');
   if (form) {
     form.addEventListener('submit', async (e) => {
@@ -361,7 +390,6 @@ sitemap: false
       try {
         const formData = new FormData();
 
-        // Core details
         formData.append('type', 'wiki');
         formData.append('title', document.getElementById('thcPageTitle').value.trim());
         formData.append('tags', document.getElementById('thcTags').value.trim());
@@ -372,13 +400,11 @@ sitemap: false
         }
         formData.append('condo', condo);
 
-        // Sections JSON
         const align = document.getElementById('wizard-image-align')?.value || 'center';
         const sectionsPayload = [{ text: editorHtml, align: align, video: "" }];
         formData.append('sections_json', JSON.stringify(sectionsPayload));
         formData.append('section_count', '1');
 
-        // Images
         const images = pickerEl && window.ResiHubImagePicker ? window.ResiHubImagePicker.getImages(pickerEl) : [];
         const imageMeta = [];
 
@@ -430,42 +456,5 @@ sitemap: false
   }
 
   showStep('1');
-}); 
-
-  // 7. AI Auto-Format
-  const aiFormatBtn = document.getElementById('btn-ai-format');
-  if (aiFormatBtn) {
-    aiFormatBtn.addEventListener('click', async () => {
-      const editor = document.querySelector('.editor-area');
-      const rawText = editor.innerText.trim();
-
-      if (!rawText || rawText.length < 10) return;
-
-      const originalHtml = aiFormatBtn.innerHTML;
-      aiFormatBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Formatting...';
-      aiFormatBtn.disabled = true;
-
-      try {
-        const endpoint = window.ResiHubApi?.ENDPOINTS?.autoFormat || "https://hub-community-apis.dekumar-ca.workers.dev/api/ai/auto-format";
-        const res = await fetch(endpoint, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ text: rawText })
-        });
-
-        const data = await res.json();
-
-        if (data.success && data.text) {
-          // Convert the line breaks from the AI into HTML paragraphs
-          const formattedHtml = data.text.split('\n\n').map(p => `<p>${p.replace(/\n/g, '<br>')}</p>`).join('');
-          editor.innerHTML = formattedHtml;
-        }
-      } catch (err) {
-        console.error("Format failed:", err);
-      } finally {
-        aiFormatBtn.innerHTML = originalHtml;
-        aiFormatBtn.disabled = false;
-      }
-    });
-  }
+});
 </script>
