@@ -37,6 +37,7 @@
     moderate: baseUrl + "/api/moderate",
     // Search lives on the public worker too
     search: baseUrl + "/api/search",
+    autoFormat: baseUrl + "/api/ai/auto-format",
   };
 
   function getSiteBaseUrl() {

@@ -6,7 +6,7 @@ sitemap: false
 ---
 <style>
   /* Force text to wrap and prevent horizontal scrolling */
-  .editor-area, 
+  .editor-area,
   .submit-preview {
     white-space: pre-wrap !important;
     word-wrap: break-word !important;
@@ -35,8 +35,9 @@ sitemap: false
       </div>
       <h1 class="page-hero__title">Contribute to The Hub Community</h1>
       <p class="page-hero__subtitle">
-        Share local knowledge with your community. Your submission will be <span data-i18n="trust_safety.reviewed_by_volunteers">Reviewed by volunteers before it goes live</span>
-          <a href="{{ site.baseurl }}/privacy.html" data-i18n="trust_safety.how_review_works">How review works</a>.
+        Share local knowledge with your community. Your submission will be <span
+          data-i18n="trust_safety.reviewed_by_volunteers">Reviewed by volunteers before it goes live</span>
+        <a href="{{ site.baseurl }}/privacy.html" data-i18n="trust_safety.how_review_works">How review works</a>.
       </p>
     </div>
 
@@ -69,12 +70,14 @@ sitemap: false
 
         <div class="form-group" id="newCommunityGroup" hidden>
           <label for="thcNewCommunity">New community name</label>
-          <input type="text" id="thcNewCommunity" name="new_community" placeholder="e.g. Elm Drive Neighbours" data-char-limit="60">
+          <input type="text" id="thcNewCommunity" name="new_community" placeholder="e.g. Elm Drive Neighbours"
+            data-char-limit="60">
         </div>
 
         <div class="form-group">
           <label for="thcPageTitle">Page Title</label>
-          <input type="text" id="thcPageTitle" name="title" placeholder="e.g. Best dog-walking routes near Elm Drive" required data-char-limit="140">
+          <input type="text" id="thcPageTitle" name="title" placeholder="e.g. Best dog-walking routes near Elm Drive"
+            required data-char-limit="140">
         </div>
 
         <div class="form-group">
@@ -117,21 +120,31 @@ sitemap: false
             <div class="editor-toolbar" role="toolbar">
               <button type="button" data-cmd="bold" title="Bold"><i class="fa-solid fa-bold"></i></button>
               <button type="button" data-cmd="italic" title="Italic"><i class="fa-solid fa-italic"></i></button>
-              <button type="button" data-cmd="underline" title="Underline"><i class="fa-solid fa-underline"></i></button>
-              <button type="button" data-cmd="insertUnorderedList" title="Bulleted List"><i class="fa-solid fa-list-ul"></i></button>
-              <button type="button" data-cmd="outdent" title="Decrease Indent"><i class="fa-solid fa-outdent"></i></button>
-              <button type="button" data-cmd="indent" title="Increase Indent"><i class="fa-solid fa-indent"></i></button>
+              <button type="button" data-cmd="underline" title="Underline"><i
+                  class="fa-solid fa-underline"></i></button>
+              <button type="button" data-cmd="insertUnorderedList" title="Bulleted List"><i
+                  class="fa-solid fa-list-ul"></i></button>
+              <button type="button" data-cmd="outdent" title="Decrease Indent"><i
+                  class="fa-solid fa-outdent"></i></button>
+              <button type="button" data-cmd="indent" title="Increase Indent"><i
+                  class="fa-solid fa-indent"></i></button>
+              <button type="button" id="btn-ai-format" title="Auto-format with AI"
+                style="color: var(--primary); margin-left: auto;">
+                <i class="fa-solid fa-wand-magic-sparkles"></i> AI Format
+              </button>
             </div>
-            <div class="editor-area" contenteditable="true" data-placeholder="Write your content here…" data-char-limit="8000"></div>
+            <div class="editor-area" contenteditable="true" data-placeholder="Write your content here…"
+              data-char-limit="8000"></div>
           </div>
         </div>
 
         <div class="form-group" style="margin-top: 24px;">
           <label>Section Image & Alignment</label>
           <div class="image-picker" id="wizard-image-picker"></div>
-          
+
           <div style="margin-top: 12px;">
-            <select id="wizard-image-align" class="modern-input" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border-default);">
+            <select id="wizard-image-align" class="modern-input"
+              style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border-default);">
               <option value="center">Center Image (Full width)</option>
               <option value="left">Float Left</option>
               <option value="right">Float Right</option>
@@ -154,7 +167,8 @@ sitemap: false
           <i class="fa-solid fa-circle-check"></i>
           <div>
             <strong>Ready for review</strong>
-            <p>Your page will be reviewed by our team — usually within 24 hours. Once approved, it appears live on the site. You'll get a tracking ID to check the status anytime.</p>
+            <p>Your page will be reviewed by our team — usually within 24 hours. Once approved, it appears live on the
+              site. You'll get a tracking ID to check the status anytime.</p>
           </div>
         </div>
 
@@ -171,18 +185,18 @@ sitemap: false
 </main>
 
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-  
-  // 1. Populate Community Dropdown
-  const select = document.getElementById('thcCommunitySelect');
-  const newGroup = document.getElementById('newCommunityGroup');
-  
-  if (select) {
-    const communities = [
-      {% assign community_indices = site.pages | where_exp: "p", "p.path contains 'content/'" | where_exp: "p", "p.name == 'index.md' or p.name == 'index.html'" | sort: "condo" %}
-      {% for c in community_indices %}
-        { slug: {{ c.path | split: '/' | slice: 1 | first | jsonify }}, name: {{ c.condo | default: c.title | jsonify }} }{% unless forloop.last %},{% endunless %}
-      {% endfor %}
+  document.addEventListener('DOMContentLoaded', function () {
+
+    // 1. Populate Community Dropdown
+    const select = document.getElementById('thcCommunitySelect');
+    const newGroup = document.getElementById('newCommunityGroup');
+
+    if (select) {
+      const communities = [
+        {% assign community_indices = site.pages | where_exp: "p", "p.path contains 'content/'" | where_exp: "p", "p.name == 'index.md' or p.name == 'index.html'" | sort: "condo" %}
+    {% for c in community_indices %}
+    { slug: { { c.path | split: '/' | slice: 1 | first | jsonify } }, name: { { c.condo | default: c.title | jsonify } } } {% unless forloop.last %}, {% endunless %}
+    {% endfor %}
     ];
 
     select.innerHTML = '';
@@ -210,13 +224,13 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
   // 3. Paste Sanitizer (Strips fonts, keeps bold/italic/lists)
-    // 3. Paste Sanitizer (Keeps bold/italic/lists, removes all fonts/styles)
+  // 3. Paste Sanitizer (Keeps bold/italic/lists, removes all fonts/styles)
   const editor = document.querySelector('.editor-area');
   if (editor) {
     editor.addEventListener('paste', (e) => {
       e.preventDefault();
       const html = (e.originalEvent || e).clipboardData.getData('text/html');
-      
+
       if (!html) {
         const text = (e.originalEvent || e).clipboardData.getData('text/plain');
         document.execCommand('insertText', false, text);
@@ -225,7 +239,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
       const tempDiv = document.createElement('div');
       tempDiv.innerHTML = html;
-      
+
       // Unwrap tags that mess up our layout (pre, code, font, span)
       tempDiv.querySelectorAll('pre, code, font, span').forEach(el => {
         const textNode = document.createTextNode(el.textContent);
@@ -238,7 +252,7 @@ document.addEventListener('DOMContentLoaded', function() {
         el.removeAttribute('class');
         el.removeAttribute('id');
       });
-      
+
       // Insert the cleaned HTML
       document.execCommand('insertHTML', false, tempDiv.innerHTML);
     });
@@ -327,11 +341,11 @@ document.addEventListener('DOMContentLoaded', function() {
   if (form) {
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
-      
+
       const submitBtn = form.querySelector('button[type="submit"]');
       const originalBtnHtml = submitBtn.innerHTML;
       const editorHtml = document.querySelector('.editor-area')?.innerHTML || '';
-      
+
       if (!editorHtml.trim() || editorHtml === '<br>') {
         alert('Please write some content before submitting.');
         return;
@@ -339,19 +353,19 @@ document.addEventListener('DOMContentLoaded', function() {
 
       submitBtn.disabled = true;
       submitBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Submitting...`;
-      
+
       if (window.ResiHubSubmissionProgress) {
         window.ResiHubSubmissionProgress.start("Submitting...", "Please wait while we prepare your page.");
       }
 
       try {
         const formData = new FormData();
-        
+
         // Core details
         formData.append('type', 'wiki');
         formData.append('title', document.getElementById('thcPageTitle').value.trim());
         formData.append('tags', document.getElementById('thcTags').value.trim());
-        
+
         let condo = select.value;
         if (condo === '__new__') {
           condo = document.getElementById('thcNewCommunity').value.trim();
@@ -367,7 +381,7 @@ document.addEventListener('DOMContentLoaded', function() {
         // Images
         const images = pickerEl && window.ResiHubImagePicker ? window.ResiHubImagePicker.getImages(pickerEl) : [];
         const imageMeta = [];
-        
+
         images.forEach((img, idx) => {
           if (img.isLocal && img.file) {
             formData.append(`section_images_0`, img.file);
@@ -376,26 +390,26 @@ document.addEventListener('DOMContentLoaded', function() {
             imageMeta.push({ isExisting: true, url: img.url, align: img.align || align, alt: img.alt || "", order: idx });
           }
         });
-        
+
         if (imageMeta.length > 0) {
           formData.append('section_images_meta_0', JSON.stringify(imageMeta));
         }
 
         const endpoint = window.ResiHubApi?.ENDPOINTS?.submit || "https://hub-community-apis.dekumar-ca.workers.dev/api/submit";
         const response = await fetch(endpoint, { method: "POST", body: formData });
-        
+
         const rawText = await response.text();
         let data = {};
-        try { data = JSON.parse(rawText); } catch (_) {}
+        try { data = JSON.parse(rawText); } catch (_) { }
 
         if (!response.ok || !data.success) {
           throw new Error(data.error || "Submission failed.");
         }
-        
+
         if (window.ResiHubSubmissionProgress) {
           window.ResiHubSubmissionProgress.complete("Success!", "Your page has been submitted.");
         }
-        
+
         const redirectUrl = window.ResiHubApi?.buildSuccessPageUrl({
           type: "wiki",
           submissionId: data.submission_id
@@ -414,7 +428,44 @@ document.addEventListener('DOMContentLoaded', function() {
       }
     });
   }
-  
+
   showStep('1');
-});
+}); 
+
+  // 7. AI Auto-Format
+  const aiFormatBtn = document.getElementById('btn-ai-format');
+  if (aiFormatBtn) {
+    aiFormatBtn.addEventListener('click', async () => {
+      const editor = document.querySelector('.editor-area');
+      const rawText = editor.innerText.trim();
+
+      if (!rawText || rawText.length < 10) return;
+
+      const originalHtml = aiFormatBtn.innerHTML;
+      aiFormatBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Formatting...';
+      aiFormatBtn.disabled = true;
+
+      try {
+        const endpoint = window.ResiHubApi?.ENDPOINTS?.autoFormat || "https://hub-community-apis.dekumar-ca.workers.dev/api/ai/auto-format";
+        const res = await fetch(endpoint, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ text: rawText })
+        });
+
+        const data = await res.json();
+
+        if (data.success && data.text) {
+          // Convert the line breaks from the AI into HTML paragraphs
+          const formattedHtml = data.text.split('\n\n').map(p => `<p>${p.replace(/\n/g, '<br>')}</p>`).join('');
+          editor.innerHTML = formattedHtml;
+        }
+      } catch (err) {
+        console.error("Format failed:", err);
+      } finally {
+        aiFormatBtn.innerHTML = originalHtml;
+        aiFormatBtn.disabled = false;
+      }
+    });
+  }
 </script>

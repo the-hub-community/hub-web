@@ -216,6 +216,47 @@ export function addSectionToDrawer(
       });
     });
 
+  // Bind AI Format button
+  const aiBtn = sectionElement.querySelector(".btn-ai-format");
+  const editorArea = sectionElement.querySelector(".editor-area");
+
+  if (aiBtn && editorArea) {
+    aiBtn.addEventListener("click", async () => {
+      const rawText = editorArea.innerText.trim();
+      if (!rawText || rawText.length < 10) return;
+
+      const originalIcon = aiBtn.innerHTML;
+      aiBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
+      aiBtn.disabled = true;
+
+      try {
+        const endpoint =
+          window.ResiHubApi?.ENDPOINTS?.autoFormat ||
+          "https://hub-community-apis.dekumar-ca.workers.dev/api/ai/auto-format";
+        const res = await fetch(endpoint, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ text: rawText }),
+        });
+
+        const data = await res.json();
+
+        if (data.success && data.text) {
+          const formattedHtml = data.text
+            .split("\n\n")
+            .map((p) => `<p>${p.replace(/\n/g, "<br>")}</p>`)
+            .join("");
+          editorArea.innerHTML = formattedHtml;
+        }
+      } catch (err) {
+        console.error("Format failed:", err);
+      } finally {
+        aiBtn.innerHTML = originalIcon;
+        aiBtn.disabled = false;
+      }
+    });
+  }
+
   container.appendChild(clone);
 
   // Mount image picker for the newly added section
