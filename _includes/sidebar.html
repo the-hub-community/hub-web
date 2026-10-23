@@ -86,19 +86,23 @@
   </div>
 
     <!-- Communities -->
-    <!-- Communities -->
     <div class="sidebar-nav__group sidebar-nav__group--communities">
       <span class="sidebar-nav__label">Communities</span>
       {% assign community_indices = site.pages
       | where_exp: "p", "p.path contains 'content/'"
       | where_exp: "p", "p.name == 'index.md' or p.name == 'index.html'" %}
+      
       {% for c in community_indices %}
       {% assign c_name = c.condo | default: c.title %}
+      {% assign c_key = c.community_key %}
       {% assign c_slug = c_name | slugify %}
-      {% assign c_pages = site.pages | where: "condo", c_name | where_exp: "p", "p.name != 'index.md' and p.name != 'index.html'" | where_exp: "p", "p.layout != 'broadcast' and p.layout != 'notification'" %}
+      
+      <!-- Count pages matching the KEY, not the name -->
+      {% assign c_pages = site.pages | where: "community_key", c_key | where_exp: "p", "p.name != 'index.md' and p.name != 'index.html'" | where_exp: "p", "p.layout != 'broadcast' and p.layout != 'notification'" %}
       {% assign c_count = c_pages | size %}
+      
       {% assign is_current = false %}
-      {% if current_condo == c_name %}{% assign is_current = true %}{% endif %}
+      {% if page.community_key == c_key %}{% assign is_current = true %}{% endif %}
 
       <a href="{{ site.baseurl }}/content/{{ c_slug }}/"
         class="sidebar-nav__item sidebar-nav__item--community {% if is_current %}is-active{% endif %}"
@@ -108,7 +112,8 @@
       </a>
 
       {% if is_current %}
-      {% assign community_pages = site.pages | where: "condo", c_name | sort: "title" %}
+      <!-- Fetch subpages by KEY, not name -->
+      {% assign community_pages = site.pages | where: "community_key", c_key | sort: "title" %}
       {% capture subpages_html %}
       {% for p in community_pages %}
       {% assign p_name = p.name | default: '' %}
