@@ -99,8 +99,23 @@ sitemap: false
               <button type="button" data-cmd="italic" title="Italic"><i class="fa-solid fa-italic"></i></button>
               <button type="button" data-cmd="underline" title="Underline"><i class="fa-solid fa-underline"></i></button>
               <button type="button" data-cmd="insertUnorderedList" title="Bulleted List"><i class="fa-solid fa-list-ul"></i></button>
+              <button type="button" data-cmd="outdent" title="Decrease Indent"><i class="fa-solid fa-outdent"></i></button>
+              <button type="button" data-cmd="indent" title="Increase Indent"><i class="fa-solid fa-indent"></i></button>
             </div>
             <div class="editor-area" contenteditable="true" data-placeholder="Write your content here…" data-char-limit="8000"></div>
+          </div>
+        </div>
+
+        <div class="form-group" style="margin-top: 24px;">
+          <label>Section Image & Alignment</label>
+          <div class="image-picker" id="wizard-image-picker"></div>
+          
+          <div style="margin-top: 12px;">
+            <select id="wizard-image-align" class="modern-input" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border-default);">
+              <option value="center">Center Image (Full width)</option>
+              <option value="left">Float Left</option>
+              <option value="right">Float Right</option>
+            </select>
           </div>
         </div>
 
@@ -136,9 +151,10 @@ sitemap: false
 </main>
 
 <script>
+<script>
 document.addEventListener('DOMContentLoaded', function() {
   
-  // ── 1. Populate Community Dropdown ──────────────────────────
+  // 1. Populate Community Dropdown
   const select = document.getElementById('thcCommunitySelect');
   const newGroup = document.getElementById('newCommunityGroup');
   
@@ -168,7 +184,47 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
 
-  // ── 2. Step Navigation & Preview ────────────────────────────
+  // 2. Mount Image Picker
+  const pickerEl = document.getElementById('wizard-image-picker');
+  if (pickerEl && window.ResiHubImagePicker) {
+    window.ResiHubImagePicker.mount(pickerEl);
+  }
+
+  // 3. Paste Sanitizer (Strips fonts, keeps bold/italic/lists)
+  const editor = document.querySelector('.editor-area');
+  if (editor) {
+    editor.addEventListener('paste', (e) => {
+      e.preventDefault();
+      const html = (e.originalEvent || e).clipboardData.getData('text/html');
+      
+      if (html) {
+        const tempDiv = document.createElement('div');
+        tempDiv.innerHTML = html;
+        
+        // Remove all styling attributes and unwanted tags
+        tempDiv.querySelectorAll('*').forEach(el => {
+          el.removeAttribute('style');
+          el.removeAttribute('class');
+          el.removeAttribute('id');
+          
+          // Unwrap spans/fonts (keep their text content)
+          if (['SPAN', 'FONT'].includes(el.tagName)) {
+            const textNode = document.createTextNode(el.textContent);
+            el.parentNode.replaceChild(textNode, el);
+          }
+        });
+        
+        // Insert the cleaned HTML
+        document.execCommand('insertHTML', false, tempDiv.innerHTML);
+      } else {
+        // Fallback to plain text if HTML isn't available
+        const text = (e.originalEvent || e).clipboardData.getData('text/plain');
+        document.execCommand('insertText', false, text);
+      }
+    });
+  }
+
+  // 4. Step Navigation & Preview
   const steps = document.querySelectorAll('.submit-step');
   const panels = document.querySelectorAll('.submit-panel');
 
@@ -195,9 +251,7 @@ document.addEventListener('DOMContentLoaded', function() {
     if (!previewContainer) return;
 
     let html = `
-      <div class="preview-chip">
-        <i class="fa-solid fa-location-dot"></i> ${escapeHtml(communityName)}
-      </div>
+      <div class="preview-chip"><i class="fa-solid fa-location-dot"></i> ${escapeHtml(communityName)}</div>
       <h1>${escapeHtml(title)}</h1>
     `;
 
@@ -206,13 +260,16 @@ document.addEventListener('DOMContentLoaded', function() {
       html += `<div class="preview-tags">${tagArray.map(t => `<span>#${escapeHtml(t)}</span>`).join('')}</div>`;
     }
 
-    html += `
-      <hr class="preview-divider">
-      <div class="preview-body">
-        ${content}
-      </div>
-    `;
+    // Add Image Preview if selected
+    const images = pickerEl && window.ResiHubImagePicker ? window.ResiHubImagePicker.getImages(pickerEl) : [];
+    if (images.length > 0) {
+      const align = document.getElementById('wizard-image-align')?.value || 'center';
+      html += `<div class="preview-image-wrapper" style="text-align: ${align}; margin: 16px 0;">
+        <img src="${images[0].previewUrl || images[0].url}" style="max-width: 100%; border-radius: 8px;">
+      </div>`;
+    }
 
+    html += `<hr class="preview-divider"><div class="preview-body">${content}</div>`;
     previewContainer.innerHTML = html;
   }
 
@@ -228,36 +285,24 @@ document.addEventListener('DOMContentLoaded', function() {
       p.hidden = !active;
     });
 
-    // Trigger preview generation when moving to Step 3
-    if (String(n) === '3') {
-      generatePreview();
-    }
-
+    if (String(n) === '3') generatePreview();
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
-  document.querySelectorAll('.submit-next').forEach(btn => {
-    btn.addEventListener('click', () => showStep(btn.dataset.next));
-  });
-  document.querySelectorAll('.submit-back').forEach(btn => {
-    btn.addEventListener('click', () => showStep(btn.dataset.back));
-  });
-  steps.forEach(s => {
-    s.addEventListener('click', () => showStep(s.dataset.step));
-  });
+  document.querySelectorAll('.submit-next').forEach(btn => btn.addEventListener('click', () => showStep(btn.dataset.next)));
+  document.querySelectorAll('.submit-back').forEach(btn => btn.addEventListener('click', () => showStep(btn.dataset.back)));
+  steps.forEach(s => s.addEventListener('click', () => showStep(s.dataset.step)));
 
-  // ── 3. Editor Toolbar ───────────────────────────────────────
+  // 5. Toolbar Commands (Bold, Italic, Indent, etc.)
   document.addEventListener('click', (e) => {
     const btn = e.target.closest('.editor-toolbar button[data-cmd]');
     if (!btn) return;
     e.preventDefault();
     document.execCommand(btn.dataset.cmd, false, null);
-    const editor = btn.closest('.editor-shell')?.querySelector('.editor-area');
-    editor?.focus();
+    document.querySelector('.editor-area')?.focus();
   });
-  
 
-    // ── 4. Form Submission ──────────────────────────────────────
+  // 6. Form Submission
   const form = document.getElementById('thcSubmissionForm');
   if (form) {
     form.addEventListener('submit', async (e) => {
@@ -265,40 +310,13 @@ document.addEventListener('DOMContentLoaded', function() {
       
       const submitBtn = form.querySelector('button[type="submit"]');
       const originalBtnHtml = submitBtn.innerHTML;
-
-      // Handle New Community
-      if (select && select.value === '__new__') {
-        const newCommInput = document.getElementById('thcNewCommunity');
-        const newName = newCommInput ? newCommInput.value.trim() : '';
-        if (!newName) {
-          alert('Please enter a name for the new community.');
-          if (newCommInput) newCommInput.focus();
-          return;
-        }
-      }
-
-      // Handle Editor Content
-      const editor = document.querySelector('.editor-area');
-      const editorHtml = editor ? editor.innerHTML : '';
+      const editorHtml = document.querySelector('.editor-area')?.innerHTML || '';
+      
       if (!editorHtml.trim() || editorHtml === '<br>') {
         alert('Please write some content before submitting.');
         return;
       }
 
-      // Package sections for the worker
-      const sectionsPayload = [{ text: editorHtml, align: "center", video: "" }];
-      const sectionsJsonInput = document.getElementById('sectionsJsonInput');
-      if (sectionsJsonInput) {
-        sectionsJsonInput.value = JSON.stringify(sectionsPayload);
-      }
-
-      // Build FormData and override condo if creating new
-      const formData = new FormData(form);
-      if (select && select.value === '__new__') {
-        formData.set('condo', document.getElementById('thcNewCommunity').value.trim());
-      }
-
-      // Submit
       submitBtn.disabled = true;
       submitBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Submitting...`;
       
@@ -307,11 +325,44 @@ document.addEventListener('DOMContentLoaded', function() {
       }
 
       try {
-        const endpoint = window.ResiHubApi?.ENDPOINTS?.submit || "https://hub-community-apis.dekumar-ca.workers.dev/api/submit";
-        const response = await fetch(endpoint, {
-          method: "POST",
-          body: formData
+        const formData = new FormData();
+        
+        // Core details
+        formData.append('type', 'wiki');
+        formData.append('title', document.getElementById('thcPageTitle').value.trim());
+        formData.append('tags', document.getElementById('thcTags').value.trim());
+        
+        let condo = select.value;
+        if (condo === '__new__') {
+          condo = document.getElementById('thcNewCommunity').value.trim();
+        }
+        formData.append('condo', condo);
+
+        // Sections JSON
+        const align = document.getElementById('wizard-image-align')?.value || 'center';
+        const sectionsPayload = [{ text: editorHtml, align: align, video: "" }];
+        formData.append('sections_json', JSON.stringify(sectionsPayload));
+        formData.append('section_count', '1');
+
+        // Images
+        const images = pickerEl && window.ResiHubImagePicker ? window.ResiHubImagePicker.getImages(pickerEl) : [];
+        const imageMeta = [];
+        
+        images.forEach((img, idx) => {
+          if (img.isLocal && img.file) {
+            formData.append(`section_images_0`, img.file);
+            imageMeta.push({ isExisting: false, align: img.align || align, alt: img.alt || "", order: idx });
+          } else if (img.url) {
+            imageMeta.push({ isExisting: true, url: img.url, align: img.align || align, alt: img.alt || "", order: idx });
+          }
         });
+        
+        if (imageMeta.length > 0) {
+          formData.append('section_images_meta_0', JSON.stringify(imageMeta));
+        }
+
+        const endpoint = window.ResiHubApi?.ENDPOINTS?.submit || "https://hub-community-apis.dekumar-ca.workers.dev/api/submit";
+        const response = await fetch(endpoint, { method: "POST", body: formData });
         
         const rawText = await response.text();
         let data = {};
@@ -325,15 +376,12 @@ document.addEventListener('DOMContentLoaded', function() {
           window.ResiHubSubmissionProgress.complete("Success!", "Your page has been submitted.");
         }
         
-        // Build success URL
         const redirectUrl = window.ResiHubApi?.buildSuccessPageUrl({
           type: "wiki",
           submissionId: data.submission_id
         }) || `/success.html?type=wiki&submission_id=${data.submission_id}`;
 
-        setTimeout(() => {
-          window.location.href = redirectUrl;
-        }, 1200);
+        setTimeout(() => { window.location.href = redirectUrl; }, 1200);
 
       } catch (error) {
         console.error("Submit error:", error);
@@ -347,7 +395,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
   
-  // Initialize Step 1
   showStep('1');
 });
+</script>
 </script>
