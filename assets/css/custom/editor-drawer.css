@@ -1648,25 +1648,34 @@
 }
 
 /* ================================================================
-   FINAL MOBILE FOOTER OVERRIDE (Side-by-side buttons)
+   FINAL MOBILE FOOTER OVERRIDE (Force side-by-side)
    ================================================================ */
 @media screen and (max-width: 768px) {
   #editor-panel .drawer-footer {
-    flex-direction: row !important; /* Forces side-by-side */
+    display: flex !important;
+    flex-direction: row !important; 
+    flex-wrap: nowrap !important; /* Prevents them from wrapping to the next line */
     justify-content: space-between !important;
+    align-items: center !important;
     padding: 16px !important;
     padding-bottom: calc(16px + env(safe-area-inset-bottom, 0px)) !important;
     gap: 12px !important;
     background: var(--surface-container-lowest) !important;
     border-top: 1px solid var(--border-subtle) !important;
+    width: 100% !important;
   }
 
   #editor-panel .drawer-footer .btn-cancel,
   #editor-panel .drawer-footer .btn-sync {
-    flex: 1 !important; /* Both take 50% width */
-    height: 48px !important; /* Standard thumb-friendly height */
+    flex: 1 1 50% !important; /* Forces each to take exactly 50% */
+    width: 50% !important; 
+    max-width: 50% !important;
+    height: 48px !important; 
     margin: 0 !important;
     border-radius: 8px !important;
     font-size: 0.95rem !important;
+    display: inline-flex !important;
+    justify-content: center !important;
+    align-items: center !important;
   }
 }
