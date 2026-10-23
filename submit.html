@@ -4,7 +4,27 @@ title: Contribute to The Hub Community
 robots: noindex, nofollow
 sitemap: false
 ---
+<style>
+  /* Force text to wrap and prevent horizontal scrolling */
+  .editor-area, 
+  .submit-preview {
+    white-space: pre-wrap !important;
+    word-wrap: break-word !important;
+    overflow-wrap: break-word !important;
+    max-width: 100% !important;
+    font-family: var(--font-body, 'Inter', sans-serif) !important;
+  }
 
+  /* Ensure paragraphs inside the editor have proper margins */
+  .editor-area p {
+    margin-bottom: 12px;
+  }
+
+  /* Add spacing to the toolbar buttons */
+  .editor-toolbar button {
+    margin-right: 4px;
+  }
+</style>
 <main class="main-content">
   <div class="submit-shell">
 
@@ -190,36 +210,37 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
   // 3. Paste Sanitizer (Strips fonts, keeps bold/italic/lists)
+    // 3. Paste Sanitizer (Keeps bold/italic/lists, removes all fonts/styles)
   const editor = document.querySelector('.editor-area');
   if (editor) {
     editor.addEventListener('paste', (e) => {
       e.preventDefault();
       const html = (e.originalEvent || e).clipboardData.getData('text/html');
       
-      if (html) {
-        const tempDiv = document.createElement('div');
-        tempDiv.innerHTML = html;
-        
-        // Remove all styling attributes and unwanted tags
-        tempDiv.querySelectorAll('*').forEach(el => {
-          el.removeAttribute('style');
-          el.removeAttribute('class');
-          el.removeAttribute('id');
-          
-          // Unwrap spans/fonts (keep their text content)
-          if (['SPAN', 'FONT'].includes(el.tagName)) {
-            const textNode = document.createTextNode(el.textContent);
-            el.parentNode.replaceChild(textNode, el);
-          }
-        });
-        
-        // Insert the cleaned HTML
-        document.execCommand('insertHTML', false, tempDiv.innerHTML);
-      } else {
-        // Fallback to plain text if HTML isn't available
+      if (!html) {
         const text = (e.originalEvent || e).clipboardData.getData('text/plain');
         document.execCommand('insertText', false, text);
+        return;
       }
+
+      const tempDiv = document.createElement('div');
+      tempDiv.innerHTML = html;
+      
+      // Unwrap tags that mess up our layout (pre, code, font, span)
+      tempDiv.querySelectorAll('pre, code, font, span').forEach(el => {
+        const textNode = document.createTextNode(el.textContent);
+        el.parentNode.replaceChild(textNode, el);
+      });
+
+      // Remove all inline styles and classes
+      tempDiv.querySelectorAll('*').forEach(el => {
+        el.removeAttribute('style');
+        el.removeAttribute('class');
+        el.removeAttribute('id');
+      });
+      
+      // Insert the cleaned HTML
+      document.execCommand('insertHTML', false, tempDiv.innerHTML);
     });
   }
 
