@@ -44,10 +44,11 @@
             <div id="drawer-edit-view">
                 <div class="editor-container-box">
                     <div id="drawer-sections-container"></div>
-<div class="form-actions">
-                    <button type="button" onclick="addNewSection()" class="btn-add-sec btn-secondary">
-                        <span data-i18n="common.add_new_section">+ Add New Section</span>
-                    </button></div>
+                    <div class="form-actions">
+                        <button type="button" onclick="addNewSection()" class="btn-add-sec btn-secondary">
+                            <span data-i18n="common.add_new_section">+ Add New Section</span>
+                        </button>
+                    </div>
                 </div>
             </div>
 
@@ -68,7 +69,6 @@
 
 <template id="drawer-section-template">
     <div class="drawer-section-card content-section">
-        <!-- AI Suggestion (Keep as is) -->
         <details class="ai-section-inline hidden">
             <summary class="ai-section-inline__summary">
                 <span class="ai-section-inline__title">AI Suggestion</span>
@@ -90,7 +90,6 @@
             </button>
         </div>
 
-        <!-- Sticky Formatting Toolbar -->
         <div class="rich-toolbar-shell">
             <div class="rich-toolbar" role="toolbar" aria-label="Formatting tools">
                 <div class="rich-toolbar__group">
@@ -105,21 +104,19 @@
                     <button type="button" data-cmd="redo" title="Redo"><i class="fa-solid fa-rotate-right" aria-hidden="true"></i></button>
                 </div>
                 <div class="rich-toolbar__group" style="margin-left: auto;">
-                <button type="button" class="btn-ai-format" title="Auto-format with AI" style="color: var(--primary);">
-                    <i class="fa-solid fa-wand-magic-sparkles" aria-hidden="true"></i>
-                    <span class="rich-toolbar__sr-only">AI Format</span>
-                </button>
-            </div>
+                    <button type="button" class="btn-ai-format" title="Auto-format with AI">
+                        <i class="fa-solid fa-wand-magic-sparkles" aria-hidden="true"></i>
+                        <span class="rich-toolbar__sr-only">AI Format</span>
+                    </button>
+                </div>
             </div>
         </div>
 
-        <!-- Text Editor -->
         <div class="section-body">
             <div class="section-text">
                 <div class="editor-area" contenteditable="true" data-char-limit="8000" data-placeholder="Start writing..."></div>
             </div>
 
-            <!-- Exposed Media Section -->
             <div class="section-media">
                 <div class="media-actions">
                     <div class="image-picker" data-role="image-picker"></div>
@@ -128,6 +125,12 @@
                         <i class="fa-brands fa-youtube"></i>
                         <input type="text" class="video-input" placeholder="Paste a YouTube URL here (optional)">
                     </div>
+                    
+                    <select class="modern-input video-align-select" style="margin-top: 8px; width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border-default);">
+                      <option value="center">Video: Center</option>
+                      <option value="left">Video: Float Left</option>
+                      <option value="right">Video: Float Right</option>
+                    </select>
 
                     <div class="floating-group" style="margin-top: 8px;">
                         <label class="floating-label" style="position: static; margin-bottom: 4px; font-size: 0.75rem; font-weight: 700; color: var(--outline); text-transform: uppercase;">Section Alignment</label>
@@ -142,16 +145,24 @@
         </div>
     </div>
 </template>
+
+<style>
+  .btn-ai-format {
+    display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px;
+    border-radius: 6px; background: color-mix(in srgb, var(--primary) 8%, transparent);
+    border: 1px solid color-mix(in srgb, var(--primary) 20%, transparent);
+    color: var(--primary); font-weight: 600; font-size: 0.75rem; cursor: pointer;
+    margin-left: auto;
+  }
+  .btn-ai-format:hover { background: color-mix(in srgb, var(--primary) 15%, transparent); }
+</style>
+
 <script>
    document.addEventListener('DOMContentLoaded', () => {
-        // Set defaultParagraphSeparator for all editors (for mobile)
         document.querySelectorAll('.editor-area').forEach((el) => {
-            try {
-                document.execCommand('defaultParagraphSeparator', false, 'p');
-            } catch (e) {}
+            try { document.execCommand('defaultParagraphSeparator', false, 'p'); } catch (e) {}
         });
 
-        // Fix Enter/Return on mobile for editor-area
         document.addEventListener('keydown', function(e) {
             if (!e.target.classList || !e.target.classList.contains('editor-area')) return;
             if (e.key === 'Enter' && !e.shiftKey) {
@@ -173,6 +184,7 @@
         const cleanedText = typeof normalizeEditorHtml === 'function' ? normalizeEditorHtml(rawText) : rawText;
         const align = sec.querySelector('.align-select')?.value || 'center';
         const videoUrl = sec.querySelector('.video-input')?.value || '';
+        const videoAlign = sec.querySelector('.video-align-select')?.value || 'center';
 
         const fileInput = sec.querySelector('.file-input');
         const existingPath = sec.querySelector('.existing-image-path');
@@ -184,7 +196,7 @@
         if (videoUrl.includes('youtube.com') || videoUrl.includes('youtu.be')) {
             const id = videoUrl.split('v=')[1]?.split('&')[0] || videoUrl.split('/').pop();
             if (id) {
-                videoHtml = `<div class="lh-video-container"><iframe src="https://www.youtube.com/embed/${id}" frameborder="0" allowfullscreen></iframe></div>`;
+                videoHtml = `<div class="lh-align-${videoAlign}"><div class="lh-video-container"><iframe src="https://www.youtube.com/embed/${id}" frameborder="0" allowfullscreen></iframe></div></div>`;
             }
         }
 
@@ -212,17 +224,12 @@
         const condo = document.getElementById('condo')?.value || (typeof window.t === 'function' ? window.t('messages.community', 'Community') : 'Community');
         const previewRoot = document.getElementById('drawer-live-preview-content');
 
-        if (!previewRoot) {
-            return;
-        }
+        if (!previewRoot) return;
 
         let html = `<h1>${title}</h1><p class="preview-subtitle">${condo}</p><hr class="preview-hr">`;
         const sections = document.querySelectorAll('#drawer-sections-container .drawer-section-card');
 
-        sections.forEach((sec) => {
-            html += getDrawerSectionPreview(sec);
-        });
-
+        sections.forEach((sec) => { html += getDrawerSectionPreview(sec); });
         previewRoot.innerHTML = html;
     }
 
@@ -233,9 +240,7 @@
         const editBtn = document.getElementById('drawer-edit-view-btn');
         const previewBtn = document.getElementById('drawer-preview-view-btn');
 
-        if (isPreview) {
-            generateDrawerPreview();
-        }
+        if (isPreview) generateDrawerPreview();
 
         if (editView) editView.classList.toggle('drawer-preview-hidden', isPreview);
         if (previewView) previewView.classList.toggle('drawer-preview-hidden', !isPreview);
@@ -246,200 +251,66 @@
     function updateDrawerToolbarState(editor) {
         const toolbar = editor?.closest('.drawer-section-card')?.querySelector('.rich-toolbar');
         if (!toolbar) return;
-
         ['bold', 'italic', 'underline'].forEach((command) => {
             const button = toolbar.querySelector(`button[data-cmd="${command}"]`);
             if (!button) return;
-
             let isActive = false;
-            try {
-                isActive = document.queryCommandState(command);
-            } catch (_) {
-                isActive = false;
-            }
-
+            try { isActive = document.queryCommandState(command); } catch (_) { isActive = false; }
             button.classList.toggle('is-active', isActive);
             button.setAttribute('aria-pressed', isActive ? 'true' : 'false');
         });
     }
 
-
-    // Live word count for each editor area
     function updateWordCount(editor) {
-    if (!editor) return;
-    const text = (editor.innerText || '').trim();
-    const words = text ? text.split(/\s+/).filter(Boolean).length : 0;
-    const count = text ? `${words} word${words === 1 ? '' : 's'}` : '';
-    editor.setAttribute('data-wordcount', count);
+        if (!editor) return;
+        const text = (editor.innerText || '').trim();
+        const words = text ? text.split(/\s+/).filter(Boolean).length : 0;
+        editor.setAttribute('data-wordcount', text ? `${words} word${words === 1 ? '' : 's'}` : '');
     }
 
-    // Bind on all editors (existing + dynamically added)
     document.addEventListener('input', (e) => {
-    if (e.target.classList?.contains('editor-area')) {
-        updateWordCount(e.target);
-    }
+        if (e.target.classList?.contains('editor-area')) updateWordCount(e.target);
     });
-
-    // Initial pass
     document.querySelectorAll('.editor-area').forEach(updateWordCount);
 
-    // Re-run when new sections are added
     const sectionContainer = document.getElementById('drawer-sections-container');
     if (sectionContainer) {
-    const observer = new MutationObserver(() => {
-        document.querySelectorAll('.editor-area').forEach((el) => {
-        if (!el.dataset.wcBound) {
-            el.dataset.wcBound = 'true';
-            updateWordCount(el);
-        }
+        const observer = new MutationObserver(() => {
+            document.querySelectorAll('.editor-area').forEach((el) => {
+                if (!el.dataset.wcBound) { el.dataset.wcBound = 'true'; updateWordCount(el); }
+            });
         });
-    });
-    observer.observe(sectionContainer, { childList: true, subtree: true });
+        observer.observe(sectionContainer, { childList: true, subtree: true });
     }
-
-    // Auto-update section status pills based on content length
-    function updateSectionStatus(card) {
-    if (!card) return;
-    const editor = card.querySelector('.editor-area');
-    const text = (editor?.innerText || '').trim();
-    const words = text ? text.split(/\s+/).filter(Boolean).length : 0;
-
-    if (words >= 30) {
-        card.dataset.status = 'complete';
-        const label = card.querySelector('.sec-label');
-        if (label) label.dataset.status = 'Ready';
-    } else if (words > 0) {
-        card.dataset.status = 'draft';
-        const label = card.querySelector('.sec-label');
-        if (label) label.dataset.status = 'Draft';
-    } else {
-        delete card.dataset.status;
-    }
-    }
-
-    document.addEventListener('input', (e) => {
-    if (e.target.classList?.contains('editor-area')) {
-        const card = e.target.closest('.drawer-section-card');
-        if (card) updateSectionStatus(card);
-    }
-    });
-
-    // Initial pass
-    document.querySelectorAll('.drawer-section-card').forEach(updateSectionStatus);
 
     const drawerViewButtons = document.querySelectorAll('.drawer-view-btn');
     drawerViewButtons.forEach((btn) => {
-        btn.addEventListener('click', () => {
-            switchDrawerView(btn.dataset.view);
-        });
+        btn.addEventListener('click', () => switchDrawerView(btn.dataset.view));
     });
 
     const drawerForm = document.getElementById('drawer-form');
     if (drawerForm) {
         const livePreviewRefresh = () => {
-            if (document.getElementById('drawer-preview-view-btn')?.classList.contains('active')) {
-                generateDrawerPreview();
-            }
+            if (document.getElementById('drawer-preview-view-btn')?.classList.contains('active')) generateDrawerPreview();
         };
-
         drawerForm.addEventListener('input', livePreviewRefresh);
         drawerForm.addEventListener('change', livePreviewRefresh);
     }
 
-    if (typeof window.applyTranslations === 'function') {
-        window.applyTranslations(document);
-    }
+    if (typeof window.applyTranslations === 'function') window.applyTranslations(document);
 
-    // 1. Handle Toolbar Button Clicks
-    // Using event delegation on the container that holds the buttons
     document.addEventListener('click', (e) => {
         const btn = e.target.closest('button[data-cmd]');
         if (!btn) return;
-
         e.preventDefault();
-        const command = btn.getAttribute('data-cmd');
-        const value = btn.getAttribute('data-value') || null;
-        
-        // Execute the command (bold, italic, etc.)
-        document.execCommand(command, false, value);
-        
-        // Return focus to the editor so user can keep typing
+        document.execCommand(btn.getAttribute('data-cmd'), false, btn.getAttribute('data-value') || null);
         const card = btn.closest('.drawer-section-card');
         const editor = card.querySelector('.editor-area');
-        if (editor) {
-            editor.focus();
-            updateDrawerToolbarState(editor);
-        }
+        if (editor) { editor.focus(); updateDrawerToolbarState(editor); }
     });
 
-    // 2. Prevent buttons from taking focus away from text selection
     document.addEventListener('mousedown', (e) => {
-        if (e.target.closest('button[data-cmd]')) {
-            e.preventDefault();
-        }
-    });
-
-    document.addEventListener('toggle', (e) => {
-        const panel = e.target;
-        if (!panel.classList || !panel.classList.contains('section-settings-panel') || !panel.open) {
-            return;
-        }
-
-        document.querySelectorAll('.section-settings-panel[open]').forEach((item) => {
-            if (item !== panel) {
-                item.open = false;
-            }
-        });
-    }, true);
-
-    document.addEventListener('selectionchange', () => {
-        const activeEditor = document.activeElement;
-        if (!activeEditor || !activeEditor.classList || !activeEditor.classList.contains('editor-area')) {
-            return;
-        }
-        updateDrawerToolbarState(activeEditor);
-    });
-
-    document.addEventListener('focusin', (e) => {
-        if (!e.target.classList || !e.target.classList.contains('editor-area')) {
-            return;
-        }
-        updateDrawerToolbarState(e.target);
-    });
-
-    document.addEventListener('keyup', (e) => {
-        if (!e.target.classList || !e.target.classList.contains('editor-area')) {
-            return;
-        }
-        updateDrawerToolbarState(e.target);
-    }, true);
-
-    // 3. Handle Keystrokes (Ctrl+B, Ctrl+I, etc.)
-    document.addEventListener('keydown', (e) => {
-        // Only trigger if we are inside an editor-area
-        if (!e.target.classList.contains('editor-area')) return;
-
-        // Check for Ctrl (or Cmd on Mac)
-        const isMeta = e.ctrlKey || e.metaKey;
-
-        if (isMeta) {
-            switch(e.key.toLowerCase()) {
-                case 'b':
-                    e.preventDefault();
-                    document.execCommand('bold', false, null);
-                    break;
-                case 'i':
-                    e.preventDefault();
-                    document.execCommand('italic', false, null);
-                    break;
-                case 'u':
-                    e.preventDefault();
-                    document.execCommand('underline', false, null);
-                    break;
-            }
-        }
-
-        
+        if (e.target.closest('button[data-cmd]')) e.preventDefault();
     });
 });
 </script>

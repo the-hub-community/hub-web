@@ -675,3 +675,38 @@
     padding-top: 16px !important;
   }
 }
+
+/* ── Responsive Video Embeds ───────────────────────────────── */
+.lh-video-container {
+  position: relative;
+  padding-bottom: 56.25%; /* 16:9 Aspect Ratio */
+  height: 0;
+  overflow: hidden;
+  margin: 1.5rem 0;
+  border-radius: 12px;
+  background: #000;
+  width: 100%;
+}
+
+.lh-video-container iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border: none;
+}
+
+/* Force video wrappers to respect alignment classes */
+.lh-align-center .lh-video-container { margin: 1.5rem auto; max-width: 800px; }
+.lh-align-left .lh-video-container { float: left; width: min(50%, 500px); margin: 0.5rem 1.5rem 1rem 0; }
+.lh-align-right .lh-video-container { float: right; width: min(50%, 500px); margin: 0.5rem 0 1rem 1.5rem; }
+
+@media (max-width: 768px) {
+  .lh-align-left .lh-video-container,
+  .lh-align-right .lh-video-container {
+    float: none;
+    width: 100%;
+    margin: 1.5rem 0;
+  }
+}

@@ -5,29 +5,24 @@ robots: noindex, nofollow
 sitemap: false
 ---
 <style>
-  /* Force text to wrap and prevent horizontal scrolling */
-  .editor-area,
-  .submit-preview {
-    white-space: pre-wrap !important;
-    word-wrap: break-word !important;
-    overflow-wrap: break-word !important;
-    max-width: 100% !important;
+  .editor-area, .submit-preview {
+    white-space: pre-wrap !important; word-wrap: break-word !important;
+    overflow-wrap: break-word !important; max-width: 100% !important;
     font-family: var(--font-body, 'Inter', sans-serif) !important;
   }
-
-  /* Ensure paragraphs inside the editor have proper margins */
-  .editor-area p {
-    margin-bottom: 12px;
+  .editor-area p { margin-bottom: 12px; }
+  .editor-toolbar button { margin-right: 4px; }
+  
+  .lh-video-container {
+    position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden;
+    margin: 1.5rem 0; border-radius: 12px; background: #000; width: 100%;
   }
-
-  /* Add spacing to the toolbar buttons */
-  .editor-toolbar button {
-    margin-right: 4px;
+  .lh-video-container iframe {
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none;
   }
 </style>
 <main class="main-content">
   <div class="submit-shell">
-
     <div class="page-hero">
       <div class="page-hero__meta">
         <span class="page-hero__dot"></span>
@@ -35,24 +30,20 @@ sitemap: false
       </div>
       <h1 class="page-hero__title">Contribute to The Hub Community</h1>
       <p class="page-hero__subtitle">
-        Share local knowledge with your community. Your submission will be <span
-          data-i18n="trust_safety.reviewed_by_volunteers">Reviewed by volunteers before it goes live</span>
+        Share local knowledge with your community. Your submission will be <span data-i18n="trust_safety.reviewed_by_volunteers">Reviewed by volunteers before it goes live</span>
         <a href="{{ site.baseurl }}/privacy.html" data-i18n="trust_safety.how_review_works">How review works</a>.
       </p>
     </div>
 
     <div class="submit-steps" role="tablist" aria-label="Submission steps">
       <button type="button" class="submit-step active" data-step="1" aria-selected="true">
-        <span class="submit-step__num">1</span>
-        <span class="submit-step__label">Community</span>
+        <span class="submit-step__num">1</span><span class="submit-step__label">Community</span>
       </button>
       <button type="button" class="submit-step" data-step="2" aria-selected="false">
-        <span class="submit-step__num">2</span>
-        <span class="submit-step__label">Content</span>
+        <span class="submit-step__num">2</span><span class="submit-step__label">Content</span>
       </button>
       <button type="button" class="submit-step" data-step="3" aria-selected="false">
-        <span class="submit-step__num">3</span>
-        <span class="submit-step__label">Review</span>
+        <span class="submit-step__num">3</span><span class="submit-step__label">Review</span>
       </button>
     </div>
 
@@ -62,92 +53,66 @@ sitemap: false
 
       <section class="submit-panel active" data-panel="1">
         <h2 class="submit-panel__title">Which community is this for?</h2>
-
         <div class="form-group">
           <label for="thcCommunitySelect">Community</label>
           <select id="thcCommunitySelect" name="condo" required></select>
         </div>
-
         <div class="form-group" id="newCommunityGroup" hidden>
           <label for="thcNewCommunity">New community name</label>
-          <input type="text" id="thcNewCommunity" name="new_community" placeholder="e.g. Elm Drive Neighbours"
-            data-char-limit="60">
+          <input type="text" id="thcNewCommunity" name="new_community" placeholder="e.g. Elm Drive Neighbours" data-char-limit="60">
         </div>
-
         <div class="form-group">
           <label for="thcPageTitle">Page Title</label>
-          <input type="text" id="thcPageTitle" name="title" placeholder="e.g. Best dog-walking routes near Elm Drive"
-            required data-char-limit="140">
+          <input type="text" id="thcPageTitle" name="title" placeholder="e.g. Best dog-walking routes" required data-char-limit="140">
         </div>
-
         <div class="form-group">
           <label for="thcTags">Tags <span class="form-optional">(optional)</span></label>
           <input type="text" id="thcTags" name="tags" placeholder="e.g. dogs, parks, outdoors" data-char-limit="120">
           <small class="form-hint">Helps people find your page</small>
         </div>
-
         <div class="submit-actions">
-          <button type="button" class="btn btn--primary submit-next" data-next="2">
-            Continue →
-          </button>
+          <button type="button" class="btn btn--primary submit-next" data-next="2">Continue →</button>
         </div>
       </section>
 
       <section class="submit-panel" data-panel="2" hidden>
         <h2 class="submit-panel__title">Add your content</h2>
-
-        <div class="form-group">
-          <label>What kind of page is this?</label>
-          <div class="content-type-toggle">
-            <label class="content-type-option">
-              <input type="radio" name="content_type" value="article" checked>
-              <span class="content-type-option__icon"><i class="fa-solid fa-file-lines"></i></span>
-              <span class="content-type-option__title">Article / Guide</span>
-              <span class="content-type-option__desc">Share local knowledge, tips, or a how-to guide</span>
-            </label>
-            <label class="content-type-option">
-              <input type="radio" name="content_type" value="review">
-              <span class="content-type-option__icon"><i class="fa-solid fa-star"></i></span>
-              <span class="content-type-option__title">Review</span>
-              <span class="content-type-option__desc">Rate a restaurant, service, or local spot</span>
-            </label>
-          </div>
-        </div>
-
         <div class="form-group">
           <label>Content</label>
           <div class="editor-shell">
             <div class="editor-toolbar" role="toolbar">
               <button type="button" data-cmd="bold" title="Bold"><i class="fa-solid fa-bold"></i></button>
               <button type="button" data-cmd="italic" title="Italic"><i class="fa-solid fa-italic"></i></button>
-              <button type="button" data-cmd="underline" title="Underline"><i
-                  class="fa-solid fa-underline"></i></button>
-              <button type="button" data-cmd="insertUnorderedList" title="Bulleted List"><i
-                  class="fa-solid fa-list-ul"></i></button>
-              <button type="button" data-cmd="outdent" title="Decrease Indent"><i
-                  class="fa-solid fa-outdent"></i></button>
-              <button type="button" data-cmd="indent" title="Increase Indent"><i
-                  class="fa-solid fa-indent"></i></button>
-              <button type="button" id="btn-ai-format" title="Auto-format with AI"
-                style="color: var(--primary); margin-left: auto;">
+              <button type="button" data-cmd="underline" title="Underline"><i class="fa-solid fa-underline"></i></button>
+              <button type="button" data-cmd="insertUnorderedList" title="Bulleted List"><i class="fa-solid fa-list-ul"></i></button>
+              <button type="button" data-cmd="outdent" title="Decrease Indent"><i class="fa-solid fa-outdent"></i></button>
+              <button type="button" data-cmd="indent" title="Increase Indent"><i class="fa-solid fa-indent"></i></button>
+              <button type="button" id="btn-ai-format" class="btn-ai-format" title="Auto-format with AI" style="margin-left: auto; padding: 4px 10px; border-radius: 6px; background: color-mix(in srgb, var(--primary) 8%, transparent); border: 1px solid color-mix(in srgb, var(--primary) 20%, transparent); color: var(--primary); font-weight: 600; font-size: 0.75rem; cursor: pointer;">
                 <i class="fa-solid fa-wand-magic-sparkles"></i> AI Format
               </button>
             </div>
-            <div class="editor-area" contenteditable="true" data-placeholder="Write your content here…"
-              data-char-limit="8000"></div>
+            <div class="editor-area" contenteditable="true" data-placeholder="Write your content here…" data-char-limit="8000"></div>
           </div>
         </div>
 
         <div class="form-group" style="margin-top: 24px;">
-          <label>Section Image & Alignment</label>
+          <label>Media & Alignment</label>
           <div class="image-picker" id="wizard-image-picker"></div>
 
           <div style="margin-top: 12px;">
-            <select id="wizard-image-align" class="modern-input"
-              style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border-default);">
-              <option value="center">Center Image (Full width)</option>
-              <option value="left">Float Left</option>
-              <option value="right">Float Right</option>
+            <select id="wizard-image-align" class="modern-input" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border-default);">
+              <option value="center">Image: Center (Full width)</option>
+              <option value="left">Image: Float Left</option>
+              <option value="right">Image: Float Right</option>
+            </select>
+          </div>
+
+          <div style="margin-top: 12px;">
+            <input type="text" id="wizard-video-url" class="modern-input" placeholder="Paste a YouTube URL here (optional)" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border-default); margin-bottom: 8px;">
+            <select id="wizard-video-align" class="modern-input" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border-default);">
+              <option value="center">Video: Center (Full width)</option>
+              <option value="left">Video: Float Left</option>
+              <option value="right">Video: Float Right</option>
             </select>
           </div>
         </div>
@@ -160,34 +125,25 @@ sitemap: false
 
       <section class="submit-panel" data-panel="3" hidden>
         <h2 class="submit-panel__title">Review your page</h2>
-
         <div class="submit-preview"></div>
-
         <div class="submit-notice">
           <i class="fa-solid fa-circle-check"></i>
           <div>
             <strong>Ready for review</strong>
-            <p>Your page will be reviewed by our team — usually within 24 hours. Once approved, it appears live on the
-              site. You'll get a tracking ID to check the status anytime.</p>
+            <p>Your page will be reviewed by our team — usually within 24 hours. Once approved, it appears live on the site.</p>
           </div>
         </div>
-
         <div class="submit-actions">
           <button type="button" class="btn btn--secondary submit-back" data-back="2">← Back</button>
-          <button type="submit" class="btn btn--primary">
-            <i class="fa-solid fa-paper-plane"></i> Submit Contribution
-          </button>
+          <button type="submit" class="btn btn--primary"><i class="fa-solid fa-paper-plane"></i> Submit Contribution</button>
         </div>
       </section>
-
     </form>
   </div>
 </main>
 
 <script>
 document.addEventListener('DOMContentLoaded', function () {
-
-  // 1. Populate Community Dropdown
   const select = document.getElementById('thcCommunitySelect');
   const newGroup = document.getElementById('newCommunityGroup');
 
@@ -198,63 +154,42 @@ document.addEventListener('DOMContentLoaded', function () {
         { slug: {{ c.path | split: '/' | slice: 1 | first | jsonify }}, name: {{ c.condo | default: c.title | jsonify }} }{% unless forloop.last %},{% endunless %}
       {% endfor %}
     ];
-
     select.innerHTML = '';
     communities.forEach(c => {
       const opt = document.createElement('option');
-      opt.value = c.slug;
-      opt.textContent = c.name;
-      select.appendChild(opt);
+      opt.value = c.slug; opt.textContent = c.name; select.appendChild(opt);
     });
-
     const optNew = document.createElement('option');
-    optNew.value = '__new__';
-    optNew.textContent = '＋ Start a new community';
-    select.appendChild(optNew);
-
-    select.addEventListener('change', () => {
-      if (newGroup) newGroup.hidden = select.value !== '__new__';
-    });
+    optNew.value = '__new__'; optNew.textContent = '＋ Start a new community'; select.appendChild(optNew);
+    select.addEventListener('change', () => { if (newGroup) newGroup.hidden = select.value !== '__new__'; });
   }
 
-  // 2. Mount Image Picker
   const pickerEl = document.getElementById('wizard-image-picker');
-  if (pickerEl && window.ResiHubImagePicker) {
-    window.ResiHubImagePicker.mount(pickerEl);
-  }
+  if (pickerEl && window.ResiHubImagePicker) window.ResiHubImagePicker.mount(pickerEl);
 
-  // 3. Paste Sanitizer
   const editor = document.querySelector('.editor-area');
   if (editor) {
     editor.addEventListener('paste', (e) => {
       e.preventDefault();
       const html = (e.originalEvent || e).clipboardData.getData('text/html');
-
       if (!html) {
         const text = (e.originalEvent || e).clipboardData.getData('text/plain');
         document.execCommand('insertText', false, text);
         return;
       }
-
       const tempDiv = document.createElement('div');
       tempDiv.innerHTML = html;
-
       tempDiv.querySelectorAll('pre, code, font, span').forEach(el => {
         const textNode = document.createTextNode(el.textContent);
         el.parentNode.replaceChild(textNode, el);
       });
-
       tempDiv.querySelectorAll('*').forEach(el => {
-        el.removeAttribute('style');
-        el.removeAttribute('class');
-        el.removeAttribute('id');
+        el.removeAttribute('style'); el.removeAttribute('class'); el.removeAttribute('id');
       });
-
       document.execCommand('insertHTML', false, tempDiv.innerHTML);
     });
   }
 
-  // 4. Step Navigation & Preview
   const steps = document.querySelectorAll('.submit-step');
   const panels = document.querySelectorAll('.submit-panel');
 
@@ -265,37 +200,32 @@ document.addEventListener('DOMContentLoaded', function () {
   function generatePreview() {
     let communityName = 'Community';
     if (select) {
-      if (select.value === '__new__') {
-        const newCommInput = document.getElementById('thcNewCommunity');
-        communityName = newCommInput?.value.trim() || 'New Community';
-      } else if (select.selectedIndex >= 0) {
-        communityName = select.options[select.selectedIndex].text;
-      }
+      if (select.value === '__new__') communityName = document.getElementById('thcNewCommunity')?.value.trim() || 'New Community';
+      else if (select.selectedIndex >= 0) communityName = select.options[select.selectedIndex].text;
     }
-
     const title = document.getElementById('thcPageTitle')?.value.trim() || 'Untitled Page';
     const tags = document.getElementById('thcTags')?.value.trim();
     const content = document.querySelector('.editor-area')?.innerHTML || '<p class="text-muted">No content provided.</p>';
-
     const previewContainer = document.querySelector('.submit-preview');
     if (!previewContainer) return;
 
-    let html = `
-      <div class="preview-chip"><i class="fa-solid fa-location-dot"></i> ${escapeHtml(communityName)}</div>
-      <h1>${escapeHtml(title)}</h1>
-    `;
-
+    let html = `<div class="preview-chip"><i class="fa-solid fa-location-dot"></i> ${escapeHtml(communityName)}</div><h1>${escapeHtml(title)}</h1>`;
     if (tags) {
       const tagArray = tags.split(',').map(t => t.trim()).filter(Boolean);
       html += `<div class="preview-tags">${tagArray.map(t => `<span>#${escapeHtml(t)}</span>`).join('')}</div>`;
     }
 
+    const videoUrl = document.getElementById('wizard-video-url')?.value.trim();
+    if (videoUrl && (videoUrl.includes('youtube.com') || videoUrl.includes('youtu.be'))) {
+      const vidId = videoUrl.split('v=')[1]?.split('&')[0] || videoUrl.split('/').pop();
+      const vAlign = document.getElementById('wizard-video-align')?.value || 'center';
+      if (vidId) html += `<div class="lh-align-${vAlign}"><div class="lh-video-container"><iframe src="https://www.youtube.com/embed/${vidId}" frameborder="0" allowfullscreen></iframe></div></div>`;
+    }
+
     const images = pickerEl && window.ResiHubImagePicker ? window.ResiHubImagePicker.getImages(pickerEl) : [];
     if (images.length > 0) {
       const align = document.getElementById('wizard-image-align')?.value || 'center';
-      html += `<div class="preview-image-wrapper" style="text-align: ${align}; margin: 16px 0;">
-        <img src="${images[0].previewUrl || images[0].url}" style="max-width: 100%; border-radius: 8px;">
-      </div>`;
+      html += `<div class="preview-image-wrapper lh-align-${align}" style="margin: 16px 0;"><img src="${images[0].previewUrl || images[0].url}" style="max-width: 100%; border-radius: 8px;"></div>`;
     }
 
     html += `<hr class="preview-divider"><div class="preview-body">${content}</div>`;
@@ -305,15 +235,12 @@ document.addEventListener('DOMContentLoaded', function () {
   function showStep(n) {
     steps.forEach(s => {
       const active = String(s.dataset.step) === String(n);
-      s.classList.toggle('active', active);
-      s.setAttribute('aria-selected', active ? 'true' : 'false');
+      s.classList.toggle('active', active); s.setAttribute('aria-selected', active ? 'true' : 'false');
     });
     panels.forEach(p => {
       const active = String(p.dataset.panel) === String(n);
-      p.classList.toggle('active', active);
-      p.hidden = !active;
+      p.classList.toggle('active', active); p.hidden = !active;
     });
-
     if (String(n) === '3') generatePreview();
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
@@ -322,7 +249,6 @@ document.addEventListener('DOMContentLoaded', function () {
   document.querySelectorAll('.submit-back').forEach(btn => btn.addEventListener('click', () => showStep(btn.dataset.back)));
   steps.forEach(s => s.addEventListener('click', () => showStep(s.dataset.step)));
 
-  // 5. Toolbar Commands
   document.addEventListener('click', (e) => {
     const btn = e.target.closest('.editor-toolbar button[data-cmd]');
     if (!btn) return;
@@ -331,83 +257,58 @@ document.addEventListener('DOMContentLoaded', function () {
     document.querySelector('.editor-area')?.focus();
   });
 
-  // 6. AI Auto-Format (Moved INSIDE the DOMContentLoaded event)
   const aiFormatBtn = document.getElementById('btn-ai-format');
   if (aiFormatBtn) {
     aiFormatBtn.addEventListener('click', async () => {
       const rawText = editor.innerText.trim();
       if (!rawText || rawText.length < 10) return;
-
       const originalHtml = aiFormatBtn.innerHTML;
       aiFormatBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Formatting...';
       aiFormatBtn.disabled = true;
-
       try {
         const endpoint = window.ResiHubApi?.ENDPOINTS?.autoFormat || "https://hub-community-apis.dekumar-ca.workers.dev/api/ai/auto-format";
-        const res = await fetch(endpoint, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ text: rawText })
-        });
-
+        const res = await fetch(endpoint, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ text: rawText }) });
         const data = await res.json();
-
         if (data.success && data.text) {
-          const formattedHtml = data.text.split('\n\n').map(p => `<p>${p.replace(/\n/g, '<br>')}</p>`).join('');
-          editor.innerHTML = formattedHtml;
+          editor.innerHTML = data.text.split('\n\n').map(p => `<p>${p.replace(/\n/g, '<br>')}</p>`).join('');
         }
-      } catch (err) {
-        console.error("Format failed:", err);
-      } finally {
-        aiFormatBtn.innerHTML = originalHtml;
-        aiFormatBtn.disabled = false;
-      }
+      } catch (err) { console.error("Format failed:", err); } finally { aiFormatBtn.innerHTML = originalHtml; aiFormatBtn.disabled = false; }
     });
   }
 
-  // 7. Form Submission
   const form = document.getElementById('thcSubmissionForm');
   if (form) {
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
-
       const submitBtn = form.querySelector('button[type="submit"]');
       const originalBtnHtml = submitBtn.innerHTML;
       const editorHtml = document.querySelector('.editor-area')?.innerHTML || '';
-
-      if (!editorHtml.trim() || editorHtml === '<br>') {
-        alert('Please write some content before submitting.');
-        return;
-      }
-
+      if (!editorHtml.trim() || editorHtml === '<br>') { alert('Please write some content before submitting.'); return; }
+      
       submitBtn.disabled = true;
       submitBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Submitting...`;
-
-      if (window.ResiHubSubmissionProgress) {
-        window.ResiHubSubmissionProgress.start("Submitting...", "Please wait while we prepare your page.");
-      }
+      if (window.ResiHubSubmissionProgress) window.ResiHubSubmissionProgress.start("Submitting...", "Please wait...");
 
       try {
         const formData = new FormData();
-
         formData.append('type', 'wiki');
         formData.append('title', document.getElementById('thcPageTitle').value.trim());
         formData.append('tags', document.getElementById('thcTags').value.trim());
-
+        
         let condo = select.value;
-        if (condo === '__new__') {
-          condo = document.getElementById('thcNewCommunity').value.trim();
-        }
+        if (condo === '__new__') condo = document.getElementById('thcNewCommunity').value.trim();
         formData.append('condo', condo);
 
         const align = document.getElementById('wizard-image-align')?.value || 'center';
-        const sectionsPayload = [{ text: editorHtml, align: align, video: "" }];
+        const videoUrl = document.getElementById('wizard-video-url')?.value.trim() || "";
+        const videoAlign = document.getElementById('wizard-video-align')?.value || 'center';
+
+        const sectionsPayload = [{ text: editorHtml, align: align, video: videoUrl, videoAlign: videoAlign }];
         formData.append('sections_json', JSON.stringify(sectionsPayload));
         formData.append('section_count', '1');
 
         const images = pickerEl && window.ResiHubImagePicker ? window.ResiHubImagePicker.getImages(pickerEl) : [];
         const imageMeta = [];
-
         images.forEach((img, idx) => {
           if (img.isLocal && img.file) {
             formData.append(`section_images_0`, img.file);
@@ -416,45 +317,23 @@ document.addEventListener('DOMContentLoaded', function () {
             imageMeta.push({ isExisting: true, url: img.url, align: img.align || align, alt: img.alt || "", order: idx });
           }
         });
-
-        if (imageMeta.length > 0) {
-          formData.append('section_images_meta_0', JSON.stringify(imageMeta));
-        }
+        if (imageMeta.length > 0) formData.append('section_images_meta_0', JSON.stringify(imageMeta));
 
         const endpoint = window.ResiHubApi?.ENDPOINTS?.submit || "https://hub-community-apis.dekumar-ca.workers.dev/api/submit";
         const response = await fetch(endpoint, { method: "POST", body: formData });
-
         const rawText = await response.text();
-        let data = {};
-        try { data = JSON.parse(rawText); } catch (_) { }
-
-        if (!response.ok || !data.success) {
-          throw new Error(data.error || "Submission failed.");
-        }
-
-        if (window.ResiHubSubmissionProgress) {
-          window.ResiHubSubmissionProgress.complete("Success!", "Your page has been submitted.");
-        }
-
-        const redirectUrl = window.ResiHubApi?.buildSuccessPageUrl({
-          type: "wiki",
-          submissionId: data.submission_id
-        }) || `/success.html?type=wiki&submission_id=${data.submission_id}`;
-
+        let data = {}; try { data = JSON.parse(rawText); } catch (_) {}
+        if (!response.ok || !data.success) throw new Error(data.error || "Submission failed.");
+        if (window.ResiHubSubmissionProgress) window.ResiHubSubmissionProgress.complete("Success!", "Your page has been submitted.");
+        const redirectUrl = window.ResiHubApi?.buildSuccessPageUrl({ type: "wiki", submissionId: data.submission_id }) || `/success.html?type=wiki&submission_id=${data.submission_id}`;
         setTimeout(() => { window.location.href = redirectUrl; }, 1200);
-
       } catch (error) {
-        console.error("Submit error:", error);
-        if (window.ResiHubSubmissionProgress) {
-          window.ResiHubSubmissionProgress.error("Submission failed", error.message);
-        }
+        if (window.ResiHubSubmissionProgress) window.ResiHubSubmissionProgress.error("Submission failed", error.message);
         alert("Error: " + error.message);
-        submitBtn.disabled = false;
-        submitBtn.innerHTML = originalBtnHtml;
+        submitBtn.disabled = false; submitBtn.innerHTML = originalBtnHtml;
       }
     });
   }
-
   showStep('1');
 });
 </script>

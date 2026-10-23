@@ -218,3 +218,20 @@
   .success-modal-overlay,
   .ai-suggestion-chip { animation: none; }
 }
+
+/* Fix Toolbar Alignment */
+.editor-toolbar {
+  display: flex !important;
+  align-items: center !important;
+  width: 100% !important;
+}
+#btn-ai-format {
+  margin-left: auto !important;
+  display: inline-flex !important;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 6px;
+  background: color-mix(in srgb, var(--primary) 8%, transparent);
+  border: 1px solid color-mix(in srgb, var(--primary) 20%, transparent);
+}
