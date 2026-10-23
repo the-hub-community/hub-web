@@ -4,7 +4,7 @@ title: "Beginner Photography Basics"
 condo: "Beginner Photography Basics"
 community_key: "comm-beginner-photography-basics"
 page_key: "page-mvlcuwwl-2i09y2ox"
-date: 2026-10-23T20:35:01.579Z
+date: 2026-10-23T20:41:13.106Z
 ---
 
 # Beginner Photography Basics
@@ -63,17 +63,22 @@ Tony Northrup’s In-Depth Camera Settings Tutorial: This is a more detailed dem
 <div class="lh-video-container"><iframe src="https://www.youtube.com/embed/-WfNjc2QDaE." allowfullscreen></iframe></div>
 
 <div class="lh-text">
-Composition &amp; LightingThe page also highlights the “Rule of Thirds” and the importance of light direction.
+Composition &amp; Lighting
+
+The page also highlights the “Rule of Thirds” and the importance of light direction.
 
 - “Top 10 Composition Tips” by Chris Bray: This video covers the Rule of Thirds, leading lines, and background considerations—directly relevant to the page’s advice. It is part of a free 10-part photography course.
-
 - YouTube URL (Course Playlist): The page provides a direct link to the full course playlist.
 
-A Special Note on the Page’s Existing ReferenceYour page already links to this video:&nbsp;
+A Special Note on the Page’s Existing Reference
+
+Your page already links to this video:
 
 - This specific video is also cited in an open courseware resource as a reference for “Camera basics, principles and practices” and related photography principles.
 
-A General Beginner Resource- B&amp;H Photo Video YouTube Channel: The search results mention that the official YouTube channel of B&amp;H Photo is a recommended resource for beginners learning about their equipment.
+A General Beginner Resource - B&amp;H Photo Video YouTube Channel
+
+The search results mention that the official YouTube channel of B&amp;H Photo is a recommended resource for beginners learning about their equipment.
 
 These videos should provide excellent visual supplements to the written concepts on your page.
 </div>
