@@ -1,7 +1,7 @@
 ---
 layout: default
 title: "Where is AI in your daily life?"
-condo: "ai-world"
+condo: "AI World"
 community_key: "comm-ai-world"
 page_key: "page-mvl17oan-kow4aoxd"
 date: 2026-10-23T13:54:54.419Z
