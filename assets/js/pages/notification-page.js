@@ -30,10 +30,10 @@
   const MESSAGE_COUNT_ID = "messageCount";
   const SUBMIT_ENDPOINT =
     window.ResiHubApi?.ENDPOINTS?.notification ||
-    "https://hub-community-apis.dekumar-ca.workers.dev/api/submit";
+    "https://api.hubcollective.ca/api/submit";
   const SUBMIT_FALLBACK_ENDPOINT =
     window.ResiHubApi?.ENDPOINTS?.submit ||
-    "https://hub-community-apis.dekumar-ca.workers.dev/api/submit";
+    "https://api.hubcollective.ca/api/submit";
 
   const EXPIRY_HOURS = 48;
   const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB

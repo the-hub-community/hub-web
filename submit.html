@@ -266,7 +266,7 @@ document.addEventListener('DOMContentLoaded', function () {
       aiFormatBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Formatting...';
       aiFormatBtn.disabled = true;
       try {
-        const endpoint = window.ResiHubApi?.ENDPOINTS?.autoFormat || "https://hub-community-apis.dekumar-ca.workers.dev/api/ai/auto-format";
+        const endpoint = window.ResiHubApi?.ENDPOINTS?.autoFormat || "https://api.hubcollective.ca/api/ai/auto-format";
         const res = await fetch(endpoint, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ text: rawText }) });
         const data = await res.json();
         if (data.success && data.text) {
@@ -319,7 +319,7 @@ document.addEventListener('DOMContentLoaded', function () {
         });
         if (imageMeta.length > 0) formData.append('section_images_meta_0', JSON.stringify(imageMeta));
 
-        const endpoint = window.ResiHubApi?.ENDPOINTS?.submit || "https://hub-community-apis.dekumar-ca.workers.dev/api/submit";
+        const endpoint = window.ResiHubApi?.ENDPOINTS?.submit || "https://api.hubcollective.ca/api/submit";
         const response = await fetch(endpoint, { method: "POST", body: formData });
         const rawText = await response.text();
         let data = {}; try { data = JSON.parse(rawText); } catch (_) {}

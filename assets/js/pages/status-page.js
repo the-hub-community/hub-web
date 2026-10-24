@@ -88,7 +88,7 @@
     try {
       var endpoint =
         window.ResiHubApi?.ENDPOINTS?.submissionStatus ||
-        "https://hub-community-apis.dekumar-ca.workers.dev/api/submission-status";
+        "https://api.hubcollective.ca/api/submission-status";
       var response = await fetch(
         endpoint + "?submission_id=" + encodeURIComponent(submissionId),
       );

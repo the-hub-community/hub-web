@@ -42,7 +42,7 @@
     window.ResiHubApi.ENDPOINTS &&
     window.ResiHubApi.ENDPOINTS.newsLatest
       ? window.ResiHubApi.ENDPOINTS.newsLatest
-      : "https://hub-community-apis.dekumar-ca.workers.dev/api/news/latest";
+      : "https://api.hubcollective.ca/api/news/latest";
 
   function setStatus(message) {
     statusBar.textContent = message || "";

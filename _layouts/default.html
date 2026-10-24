@@ -267,7 +267,7 @@
 
     {% if site.resources.expose_client_js != false %}
     <script>
-        window.API_BASE = "{{ site.api_base_url | default: 'https://hub-community-apis.dekumar-ca.workers.dev' }}";
+        window.API_BASE = "{{ site.api_base_url | default: 'https://api.hubcollective.ca' }}";
     </script>
     <script type="module" src="{{ '/assets/js/default-layout.js?v=' | append: css_version | relative_url }}"></script>
     {% endif %}

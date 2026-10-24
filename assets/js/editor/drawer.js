@@ -186,7 +186,7 @@ export function addSectionToDrawer(
       try {
         const endpoint =
           window.ResiHubApi?.ENDPOINTS?.autoFormat ||
-          "https://hub-community-apis.dekumar-ca.workers.dev/api/ai/auto-format";
+          "https://api.hubcollective.ca/api/ai/auto-format";
         const res = await fetch(endpoint, {
           method: "POST",
           headers: { "Content-Type": "application/json" },

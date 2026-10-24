@@ -3,8 +3,7 @@
 
   // Override at runtime by setting window.RESIHUB_API_BASE before this script.
   var baseUrl = String(
-    window.RESIHUB_API_BASE ||
-      "https://hub-community-apis.dekumar-ca.workers.dev",
+    window.RESIHUB_API_BASE || "https://api.hubcollective.ca",
   )
     .trim()
     .replace(/\/+$/, "");
@@ -13,8 +12,7 @@
     .replace(/\/+$/, "");
 
   var PUBLIC_WORKER_BASE = String(
-    window.RESIHUB_PUBLIC_API_BASE ||
-      "https://hub-community-apis.dekumar-ca.workers.dev",
+    window.RESIHUB_PUBLIC_API_BASE || "https://api.hubcollective.ca",
   ).replace(/\/+$/, "");
 
   var endpoints = {

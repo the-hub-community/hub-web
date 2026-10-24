@@ -242,7 +242,7 @@ document.getElementById("marketplaceForm").onsubmit = async (e) => {
     progressStarted = true;
     const submitEndpoint =
       window.ResiHubApi?.ENDPOINTS?.submit ||
-      "https://hub-community-apis.dekumar-ca.workers.dev/api/submit";
+      "https://api.hubcollective.ca/api/submit";
     const response = await fetch(submitEndpoint, {
       method: "POST",
       body: formData,
