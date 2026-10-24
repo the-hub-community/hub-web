@@ -1,10 +1,8 @@
-const CACHE_NAME = "hub-runtime-v1";
-const OFFLINE_URL = "/";
-// Specifically target the API worker, NOT the frontend worker
+const CACHE_NAME = "hub-runtime-v2"; // Bumped version to force clear old caches
 const API_HOST = "hub-community-apis.dekumar-ca.workers.dev";
 
 self.addEventListener("install", (e) => {
-  self.skipWaiting();
+  self.skipWaiting(); // Force the new SW to take over immediately
 });
 
 self.addEventListener("activate", (e) => {
@@ -23,40 +21,16 @@ self.addEventListener("activate", (e) => {
 self.addEventListener("fetch", (e) => {
   const url = new URL(e.request.url);
 
-  // Ignore non-GET requests
   if (e.request.method !== "GET") return;
 
-  // BYPASS CACHE FOR API CALLS (worker.js)
-  // If the request goes to the API worker, or has /api/ in the path, let it hit the network.
+  // NEVER cache API calls
   if (url.hostname === API_HOST || url.pathname.startsWith("/api/")) {
     return;
   }
 
-  // STRATEGY A: Network-First for HTML (Pages)
-  // Ensures PR merges show up immediately when the user navigates.
-  if (
-    e.request.mode === "navigate" ||
-    e.request.headers.get("accept")?.includes("text/html")
-  ) {
-    e.respondWith(
-      fetch(e.request)
-        .then((response) => {
-          const copy = response.clone();
-          caches.open(CACHE_NAME).then((cache) => cache.put(e.request, copy));
-          return response;
-        })
-        .catch(() => {
-          // If offline, serve the cached page
-          return caches.match(e.request).then((cached) => {
-            return cached || caches.match(OFFLINE_URL);
-          });
-        }),
-    );
-    return;
-  }
-
-  // STRATEGY B: Stale-While-Revalidate for CSS, JS, Images
-  // Serves instantly from cache, updates in background for the next visit.
+  // STALE-WHILE-REVALIDATE for EVERYTHING (HTML, CSS, JS, Images)
+  // 1. Return cached version instantly (0ms delay).
+  // 2. Fetch new version in background and update cache for next time.
   e.respondWith(
     caches.match(e.request).then((cached) => {
       const fetchPromise = fetch(e.request)
@@ -67,7 +41,7 @@ self.addEventListener("fetch", (e) => {
           }
           return networkResponse;
         })
-        .catch(() => {});
+        .catch(() => {}); // Ignore network errors, rely on cache
 
       return cached || fetchPromise;
     }),

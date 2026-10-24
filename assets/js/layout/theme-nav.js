@@ -503,90 +503,56 @@ function initGlobalLightbox() {
 function initAddToHomeScreen() {
   const banner = document.getElementById("a2hs-banner");
   const installBtn = document.getElementById("a2hs-install-btn");
-  const closeBtn = document.getElementById("a2hs-close-btn");
   const message = document.getElementById("a2hs-message");
 
-  const settingsItem = document.getElementById("a2hs-settings-item");
-  const settingsBtn = document.getElementById("settingsA2HSBtn");
-
-  // 1. Check if already installed (standalone mode)
-  const isStandalone =
-    window.matchMedia("(display-mode: standalone)").matches ||
-    window.navigator.standalone;
-
-  if (isStandalone) {
-    if (settingsItem) settingsItem.style.display = "none"; // Hide in settings
-    if (banner) banner.style.display = "none"; // Hide floating banner
-    return;
-  }
-
-  // 2. Show the Settings button if not installed
-  if (settingsItem) {
-    settingsItem.style.display = "flex";
-  }
-
-  let deferredPrompt = null;
-  const isIOS =
-    /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
-
-  // 3. Global trigger function (used by both banner and settings)
-  window.ResiHubInstallApp = async () => {
-    if (isIOS) {
-      alert(
-        "To install on iOS:\n\n1. Tap the Share icon at the bottom of Safari\n2. Scroll down and tap 'Add to Home Screen'",
-      );
-      return;
-    }
-
-    if (deferredPrompt) {
-      deferredPrompt.prompt();
-      const { outcome } = await deferredPrompt.userChoice;
-      if (outcome === "accepted") {
-        if (banner) banner.style.display = "none";
-        if (settingsItem) settingsItem.style.display = "none";
-      }
-      deferredPrompt = null;
-    } else {
-      alert("Installation is not supported in this browser right now.");
-    }
-  };
-
-  // Wire up the Settings button
-  if (settingsBtn) {
-    settingsBtn.addEventListener("click", window.ResiHubInstallApp);
-  }
-
-  // --- FLOATING BANNER LOGIC ---
   if (!banner) return;
 
-  // Don't show banner if user already dismissed it
-  const isDismissed = localStorage.getItem("a2hs-dismissed") === "true";
-  if (isDismissed) return;
+  // Check if already installed (standalone mode)
+  if (
+    window.matchMedia("(display-mode: standalone)").matches ||
+    window.navigator.standalone
+  )
+    return;
 
+  let deferredPrompt;
+
+  // Android / Chrome / Edge support
   window.addEventListener("beforeinstallprompt", (e) => {
     e.preventDefault();
     deferredPrompt = e;
-    banner.style.display = "flex";
+    banner.style.display = "flex"; // Always show banner when prompt is ready
     if (installBtn) installBtn.style.display = "inline-block";
   });
 
   if (installBtn) {
-    installBtn.addEventListener("click", window.ResiHubInstallApp);
+    installBtn.addEventListener("click", async () => {
+      if (!deferredPrompt) return;
+      deferredPrompt.prompt();
+      const { outcome } = await deferredPrompt.userChoice;
+      if (outcome === "accepted") banner.style.display = "none";
+      deferredPrompt = null;
+    });
   }
 
+  // iOS / Safari support
+  const isIOS =
+    /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
   if (isIOS) {
     banner.style.display = "flex";
-    if (message) {
+    if (message)
       message.innerHTML =
         "Tap the <strong>Share</strong> icon below, then <strong>Add to Home Screen</strong>.";
-    }
     if (installBtn) installBtn.style.display = "none";
   }
 
+  // NOTE: We removed the close button listener entirely, or you can leave it
+  // so they can temporarily close it during the current session, but it will
+  // return on next launch.
+  const closeBtn = document.getElementById("a2hs-close-btn");
   if (closeBtn) {
     closeBtn.addEventListener("click", () => {
       banner.style.display = "none";
-      localStorage.setItem("a2hs-dismissed", "true");
+      // DO NOT set localStorage here anymore
     });
   }
 }

@@ -3,39 +3,8 @@
 
 <head>
     {% include head.html %}
-
-    {% comment %} DESIGN SYSTEM {% endcomment %}
-    <link rel="stylesheet" href="{{ '/assets/css/custom/tokens.css' | relative_url }}">
-    <link rel="stylesheet" href="{{ '/assets/css/custom/typography.css' | relative_url }}">
-    <link rel="stylesheet" href="{{ '/assets/css/custom/components.css' | relative_url }}">
-
-    {% comment %} LAYOUT {% endcomment %}
-    <link rel="stylesheet" href="{{ '/assets/css/custom/header-v2.css' | relative_url }}">
-    <link rel="stylesheet" href="{{ '/assets/css/custom/sidebar-v2.css' | relative_url }}">
-
-    {% comment %} PAGES {% endcomment %}
-    <link rel="stylesheet" href="{{ '/assets/css/custom/dashboard.css' | relative_url }}">
-    <link rel="stylesheet" href="{{ '/assets/css/custom/marketplace-v2.css' | relative_url }}">
-    <link rel="stylesheet" href="{{ '/assets/css/custom/detail-v2.css' | relative_url }}">
-
-    {% comment %} UTILITIES {% endcomment %}
-    <link rel="stylesheet" href="{{ '/assets/css/custom/empty-states.css' | relative_url }}">
-    <link rel="stylesheet" href="{{ '/assets/css/custom/form-polish.css' | relative_url }}">
-    <link rel="stylesheet" href="{{ '/assets/css/custom/visual-polish.css' | relative_url }}">
-    <link rel="stylesheet" href="{{ '/assets/css/custom/dark-mode.css' | relative_url }}">
-    <link rel="stylesheet" href="{{ '/assets/css/custom/all-media.css' | relative_url }}">
-    <link rel="stylesheet" href="{{ '/assets/css/custom/footer-v2.css' | relative_url }}">
-    <link rel="stylesheet" href="{{ '/assets/css/custom/editor-drawer.css' | relative_url }}">
-    <link rel="stylesheet" href="{{ '/assets/css/custom/command-palette.css' | relative_url }}">
-    <link rel="stylesheet" href="{{ '/assets/css/custom/editorial.css' | relative_url }}">
-    <link rel="stylesheet" href="{{ '/assets/css/custom/dashboard-extras.css' | relative_url }}">
-    <link rel="stylesheet" href="{{ '/assets/css/custom/community-hero.css' | relative_url }}">
-    <link rel="stylesheet" href="{{ '/assets/css/custom/wiki-editorial.css' | relative_url }}">
-    <link rel="stylesheet" href="{{ '/assets/css/custom/marketplace-editorial.css' | relative_url }}">
-    <link rel="stylesheet" href="{{ '/assets/css/custom/editor-drawer-editorial.css' | relative_url }}">
-    <link rel="stylesheet" href="{{ '/assets/css/comments.css' | relative_url }}">
-    <link rel="stylesheet" href="{{ '/assets/css/custom/wiki-alerts.css' | relative_url }}">
-
+    
+    <!-- Page Specific Stylesheets (e.g. broadcast.css) -->
     {% if page.custom_stylesheets %}
     {% for stylesheet in page.custom_stylesheets %}
     <link rel="stylesheet" href="{{ '/assets/css/' | append: stylesheet | append: '.css' | relative_url }}">
@@ -90,14 +59,12 @@
             {% if current_condo %}
             {% assign now_ts = 'now' | date: '%s' %}
             {% assign alert_ttl_seconds = 432000 %}
-            {% assign active_alerts = site.pages | where: "layout", "broadcast" | where: "condo", current_condo | sort:
-            'date' | reverse %}
+            {% assign active_alerts = site.pages | where: "layout", "broadcast" | where: "condo", current_condo | sort: 'date' | reverse %}
             {% assign visible_alert_count = 0 %}
             {% for alert in active_alerts %}
             {% assign alert_ts = alert.date | date: '%s' %}
             {% assign alert_age = now_ts | minus: alert_ts %}
-            {% if alert_age >= 0 and alert_age <= alert_ttl_seconds %} {% assign visible_alert_count=visible_alert_count
-                | plus: 1 %} {% endif %} {% endfor %} 
+            {% if alert_age >= 0 and alert_age <= alert_ttl_seconds %} {% assign visible_alert_count=visible_alert_count | plus: 1 %} {% endif %} {% endfor %} 
                 {% if visible_alert_count > 0 %}
                     <!-- Mobile Toggle Button -->
                     <button type="button" class="mobile-alerts-toggle" id="mobileAlertsBtn">
@@ -162,27 +129,19 @@
                         {% endif %}
                     </div>
                     {% endif %}
-
-
                 {% endif %}
 
                 <div class="wiki-layout">
                     <article class="content-card">
-
-                        {% if current_condo and current_condo != "General" and page.url != "/marketplace.html" and
-                        page.url !=
-                        "/broadcast.html" and page.url != "/list-service.html" %}
-                        <div class="page-community-chip" data-community-slug="{{ current_condo | slugify }}"
-                            aria-label="Current community" data-i18n-aria-label="default.current_community_aria">
+                        {% if current_condo and current_condo != "General" and page.url != "/marketplace.html" and page.url != "/broadcast.html" and page.url != "/list-service.html" %}
+                        <div class="page-community-chip" data-community-slug="{{ current_condo | slugify }}" aria-label="Current community" data-i18n-aria-label="default.current_community_aria">
                             <i class="fa-solid fa-location-dot" aria-hidden="true"></i>
-                            <span><span data-i18n="default.community_prefix">Community:</span> {{ current_condo
-                                }}</span>
+                            <span><span data-i18n="default.community_prefix">Community:</span> {{ current_condo }}</span>
                         </div>
                         {% endif %}
 
                         {% if page.tags and page.tags.size > 0 %}
-                        <div class="page-tag-strip" aria-label="Page tags"
-                            data-i18n-aria-label="default.page_tags_aria">
+                        <div class="page-tag-strip" aria-label="Page tags" data-i18n-aria-label="default.page_tags_aria">
                             {% for tag in page.tags %}
                             <span class="page-tag-chip">#{{ tag }}</span>
                             {% endfor %}
@@ -221,6 +180,7 @@
                             {% endif %}
                         </div>
                         {% endif %}
+                        
                         <div class="wiki-render" data-raw-md="{{ page.content | escape }}" data-ugc-type="wiki"
                             data-ugc-id="{{ page.page_key | default: fallback_page_id }}"
                             data-community-key="{{ page_community_key }}"
@@ -229,25 +189,16 @@
                             {{ content }}
                         </div>
 
-                        {% if page.community_key and page.page_key and page.url != "/submit.html" and page.url !=
-                        "/broadcast.html"
-                        and
-                        page.url != "/list-service.html" and page.url != "/marketplace.html" %}
+                        {% if page.community_key and page.page_key and page.url != "/submit.html" and page.url != "/broadcast.html" and page.url != "/list-service.html" and page.url != "/marketplace.html" %}
                         <div class="ugc-report-wrap ugc-report-wrap--detail" data-ugc-type="wiki"
                             data-ugc-id="{{ page.page_key }}" data-community-key="{{ page.community_key }}"
                             data-page-key="{{ page.page_key }}"
                             data-ugc-text="{{ page.content | strip_html | strip_newlines | replace: '  ', ' ' | truncate: 220 }}">
-                            <button type="button" class="report-content-btn" aria-label="Report this page content"
-                                data-i18n-aria-label="trust_safety.report_page_aria"
-                                data-i18n="trust_safety.report_content">Report
-                                Content</button>
+                            <button type="button" class="report-content-btn" aria-label="Report this page content" data-i18n-aria-label="trust_safety.report_page_aria" data-i18n="trust_safety.report_content">Report Content</button>
                         </div>
                         {% endif %}
 
-                        {% if page.url != "/submit.html" and page.url != "/broadcast.html" and page.url !=
-                        "/list-service.html" and
-                        page.url != "/marketplace.html" or current_condo and page.url != "/submit.html" and page.url !=
-                        "/broadcast.html" and page.layout != "marketplace-item" %}
+                        {% if page.url != "/submit.html" and page.url != "/broadcast.html" and page.url != "/list-service.html" and page.url != "/marketplace.html" or current_condo and page.url != "/submit.html" and page.url != "/broadcast.html" and page.layout != "marketplace-item" %}
                        <div class="page-actions-row" style="display: flex; align-items: center; gap: 12px; margin: 32px 0; padding-top: 24px; border-top: 1px solid var(--border-subtle);">
                             {% if current_condo and page.url != "/submit.html" and page.url != "/broadcast.html" and page.layout != "marketplace-item" %}
                             <button type="button" id="pageEditBtn" class="btn-edit-action" aria-haspopup="dialog" aria-expanded="false" onclick="prepareEdit()">
@@ -267,18 +218,10 @@
                             <div class="page-share-inline" style="margin-left: auto; display: flex; align-items: center; gap: 12px;">
                                 <span class="page-share-inline__label" style="font-size: 0.75rem; font-weight: 700; color: var(--outline); text-transform: uppercase;">Share</span>
                                 <div class="page-share-inline__links" style="display: flex; gap: 8px;">
-                                    <a data-share-platform="whatsapp" href="#" target="_blank" rel="noopener" aria-label="Share on WhatsApp">
-                                        <i class="fa-brands fa-whatsapp"></i>
-                                    </a>
-                                    <a data-share-platform="facebook" href="#" target="_blank" rel="noopener" aria-label="Share on Facebook">
-                                        <i class="fa-brands fa-facebook-f"></i>
-                                    </a>
-                                    <a data-share-platform="x" href="#" target="_blank" rel="noopener" aria-label="Share on X">
-                                        <i class="fa-brands fa-x-twitter"></i>
-                                    </a>
-                                    <a data-share-platform="linkedin" href="#" target="_blank" rel="noopener" aria-label="Share on LinkedIn">
-                                        <i class="fa-brands fa-linkedin-in"></i>
-                                    </a>
+                                    <a data-share-platform="whatsapp" href="#" target="_blank" rel="noopener" aria-label="Share on WhatsApp"><i class="fa-brands fa-whatsapp"></i></a>
+                                    <a data-share-platform="facebook" href="#" target="_blank" rel="noopener" aria-label="Share on Facebook"><i class="fa-brands fa-facebook-f"></i></a>
+                                    <a data-share-platform="x" href="#" target="_blank" rel="noopener" aria-label="Share on X"><i class="fa-brands fa-x-twitter"></i></a>
+                                    <a data-share-platform="linkedin" href="#" target="_blank" rel="noopener" aria-label="Share on LinkedIn"><i class="fa-brands fa-linkedin-in"></i></a>
                                 </div>
                             </div>
                         </div>
@@ -298,7 +241,6 @@
                             </div>
                         </div>
                         {% endif %}
-
                     </article>
 
                     {% if page.url contains '/content/' and page.condo %}
@@ -309,7 +251,6 @@
                     {% endif %}
                 </div>
                 {% endif %}
-
         </main>
     </div>
 
@@ -328,17 +269,9 @@
     <script>
         window.API_BASE = "{{ site.api_base_url | default: 'https://hub-community-apis.dekumar-ca.workers.dev' }}";
     </script>
-    <script src="{{ '/assets/js/shared/wiki-reading.js' | relative_url }}" defer></script>
-    <script
-        src="{{ '/assets/js/shared/trust-safety.js?v=' | append: site.github.build_revision | relative_url }}"></script>
-    <script src="{{ '/assets/js/i18n.js?v=' | append: site.github.build_revision | relative_url }}"></script>
-    <script type="module"
-        src="{{ '/assets/js/default-layout.js?v=' | append: site.github.build_revision | relative_url }}"></script>
-    <script src="{{ '/assets/js/shared/image-fallback.js?v=' | append: site.github.build_revision | relative_url }}"
-        defer></script>
+    <script type="module" src="{{ '/assets/js/default-layout.js?v=' | append: css_version | relative_url }}"></script>
     {% endif %}
 
-{% include add-to-home.html %}
+    {% include add-to-home.html %}
 </body>
-
 </html>
