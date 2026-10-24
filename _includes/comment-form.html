@@ -73,8 +73,8 @@
 
 <script>
 (function() {
-  const pageKey = "{{ page.page_key }}";
-  const communityKey = "{{ page.community_key }}";
+  const pageKey = "{{ page.page_key | default: fallback_page_id }}";
+  const communityKey = "{{ page.community_key | default: page_community_key }}";
   const formSection = document.getElementById("comment-form-section");
   
   if (!pageKey || !communityKey) {

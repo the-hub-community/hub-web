@@ -33,8 +33,8 @@
   const INITIAL_COMMENTS_COUNT = 4;
   const COMMENTS_INCREMENT = 3;
   let visibleCommentsCount = INITIAL_COMMENTS_COUNT;
-  const pageKey = "{{ page.page_key }}";
-  const communityKey = "{{ page.community_key }}";
+  const pageKey = "{{ page.page_key | default: fallback_page_id }}";
+  const communityKey = "{{ page.community_key | default: page_community_key }}";
   const commentsList = document.getElementById("comments-list");
   const tr = (key, fallback) => (typeof window.t === "function" ? window.t(key, fallback) : fallback);
   let allComments = [];
