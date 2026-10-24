@@ -502,57 +502,62 @@ function initGlobalLightbox() {
 
 function initAddToHomeScreen() {
   const banner = document.getElementById("a2hs-banner");
-  const installBtn = document.getElementById("a2hs-install-btn");
-  const message = document.getElementById("a2hs-message");
+  const closeBtn = document.getElementById("a2hs-close-btn");
+  const settingsItem = document.getElementById("a2hs-settings-item");
 
-  if (!banner) return;
-
-  // Check if already installed (standalone mode)
-  if (
+  // 1. Check if already installed
+  const isStandalone =
     window.matchMedia("(display-mode: standalone)").matches ||
-    window.navigator.standalone
-  )
-    return;
+    window.navigator.standalone;
 
-  let deferredPrompt;
+  // Hide the settings option if the app is already installed
+  if (isStandalone && settingsItem) {
+    settingsItem.style.display = "none";
+  }
 
-  // Android / Chrome / Edge support
+  // 2. Listen for the native prompt (Android/Chrome)
+  let deferredPrompt = null;
   window.addEventListener("beforeinstallprompt", (e) => {
     e.preventDefault();
     deferredPrompt = e;
-    banner.style.display = "flex"; // Always show banner when prompt is ready
-    if (installBtn) installBtn.style.display = "inline-block";
   });
 
-  if (installBtn) {
-    installBtn.addEventListener("click", async () => {
-      if (!deferredPrompt) return;
+  // 3. Expose a global function for the Settings page button
+  window.ResiHubInstallApp = async () => {
+    if (deferredPrompt) {
       deferredPrompt.prompt();
       const { outcome } = await deferredPrompt.userChoice;
-      if (outcome === "accepted") banner.style.display = "none";
+      if (outcome === "accepted" && banner) banner.style.display = "none";
       deferredPrompt = null;
-    });
+    } else if (/iPad|iPhone|iPod/.test(navigator.userAgent)) {
+      alert(
+        "To install on iOS:\n\n1. Tap the Share icon\n2. Scroll down and tap 'Add to Home Screen'",
+      );
+    } else {
+      alert(
+        "Installation is not available right now. Please check your browser menu.",
+      );
+    }
+  };
+
+  // 4. Show the Toast on initial load
+  if (!banner) return;
+
+  // Don't show if installed, or if we are already on the settings page
+  if (isStandalone || window.location.pathname.includes("/settings")) return;
+
+  // Show it once per session (so it doesn't annoy them on every click)
+  if (!sessionStorage.getItem("a2hs-dismissed")) {
+    setTimeout(() => {
+      banner.style.display = "flex";
+    }, 1500); // 1.5 second delay so it doesn't flash on load
   }
 
-  // iOS / Safari support
-  const isIOS =
-    /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
-  if (isIOS) {
-    banner.style.display = "flex";
-    if (message)
-      message.innerHTML =
-        "Tap the <strong>Share</strong> icon below, then <strong>Add to Home Screen</strong>.";
-    if (installBtn) installBtn.style.display = "none";
-  }
-
-  // NOTE: We removed the close button listener entirely, or you can leave it
-  // so they can temporarily close it during the current session, but it will
-  // return on next launch.
-  const closeBtn = document.getElementById("a2hs-close-btn");
+  // Handle close button
   if (closeBtn) {
     closeBtn.addEventListener("click", () => {
       banner.style.display = "none";
-      // DO NOT set localStorage here anymore
+      sessionStorage.setItem("a2hs-dismissed", "true");
     });
   }
 }
