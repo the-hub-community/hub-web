@@ -38,6 +38,7 @@
   const commentsList = document.getElementById("comments-list");
   const tr = (key, fallback) => (typeof window.t === "function" ? window.t(key, fallback) : fallback);
   let allComments = [];
+  let latestRequestId = 0; // <-- ADD THIS
   
   if (!pageKey || !communityKey) {
     console.warn("Comments: page_key or community_key missing from frontmatter");
@@ -59,17 +60,21 @@
     if (state === "error") document.getElementById("comments-error").style.display = "block";
   }
 
-  async function loadComments() {
+    async function loadComments() {
+    const thisRequestId = ++latestRequestId;
     setCommentsState("loading");
     
     try {
       const response = await fetch(
-        `${window.API_BASE || "https://hub-community-apis.dekumar-ca.workers.dev"}/api/comments?page_key=${encodeURIComponent(pageKey)}&community_key=${encodeURIComponent(communityKey)}`
+        `${window.API_BASE || "https://api.hubcollective.ca"}/api/comments?page_key=${encodeURIComponent(pageKey)}&community_key=${encodeURIComponent(communityKey)}`
       );
       
       if (!response.ok) throw new Error(`HTTP ${response.status}`);
       const data = await response.json();
       
+      // If a newer request has started while we were waiting, abort this one.
+      if (thisRequestId !== latestRequestId) return;
+
       if (!data.success) throw new Error(data.error || "Failed to load");
       
       const comments = (data.comments || []).slice().reverse();
@@ -83,8 +88,11 @@
         setCommentsState("list");
       }
     } catch (error) {
-      console.error("Error loading comments:", error);
-      setCommentsState("error");
+      // Only show the error if this is the most recent request
+      if (thisRequestId === latestRequestId) {
+        console.error("Error loading comments:", error);
+        setCommentsState("error");
+      }
     }
   }
   
