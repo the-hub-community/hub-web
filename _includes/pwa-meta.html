@@ -15,3 +15,12 @@
 
 <!-- Format detection — prevents iOS from auto-linking numbers/addresses -->
 <meta name="format-detection" content="telephone=no,address=no,email=no">
+
+<script>
+  if ("serviceWorker" in navigator) {
+    window.addEventListener("load", () => {
+      navigator.serviceWorker.register("/assets/js/sw.js", { scope: "/" })
+        .catch(() => {});
+    });
+  }
+</script>
