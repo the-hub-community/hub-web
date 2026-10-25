@@ -138,6 +138,10 @@
                         </div>
                         {% endif %}
 
+                        {% if page.path contains 'content/' and page_community_key != '' and page.layout != 'broadcast' and page.layout != 'notification' %}
+                        {% include wiki-community-nav.html %}
+                        {% endif %}
+
                         {% if page.tags and page.tags.size > 0 %}
                         <div class="page-tag-strip" aria-label="Page tags" data-i18n-aria-label="default.page_tags_aria">
                             {% for tag in page.tags %}

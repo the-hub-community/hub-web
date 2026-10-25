@@ -257,14 +257,14 @@
                 return `
                     <div class="lh-align-${safeAlign}">
                         <figure class="lh-image-container">
-                            <img src="${escapePreviewAttribute(image.url)}" alt="${escapePreviewAttribute(image.alt)}" class="lh-fluid-img">
+                            <img src="${escapePreviewAttribute(image.url)}" alt="${escapePreviewAttribute(image.alt)}" title="${escapePreviewAttribute(image.alt)}" class="lh-fluid-img">
                         </figure>
                     </div>`;
             };
             const mediaHtml = images.length > 1
                 ? `<div class="lh-image-gallery" role="group" aria-label="Photo gallery" tabindex="0">${images.map((image) => `
                     <figure class="lh-image-container">
-                        <img src="${escapePreviewAttribute(image.url)}" alt="${escapePreviewAttribute(image.alt)}" class="lh-fluid-img">
+                        <img src="${escapePreviewAttribute(image.url)}" alt="${escapePreviewAttribute(image.alt)}" title="${escapePreviewAttribute(image.alt)}" class="lh-fluid-img">
                     </figure>`).join('')}</div>`
                 : images.map((image) => {
                 const imageAlign = ['left', 'right'].includes(image.align) ? image.align : 'center';

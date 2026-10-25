@@ -11,6 +11,40 @@
   const article = document.querySelector(".wiki-render");
   if (!article) return;
 
+  document.querySelectorAll(".wiki-community-nav").forEach((nav) => {
+    const browseButton = nav.querySelector(".wiki-community-nav__browse");
+    if (!browseButton) return;
+
+    const dialog = nav.querySelector(".wiki-pages-dialog");
+    const searchInput = nav.querySelector(".wiki-pages-dialog__search input");
+    const links = Array.from(
+      nav.querySelectorAll(".wiki-pages-dialog__link"),
+    );
+    const emptyState = nav.querySelector(".wiki-pages-dialog__empty");
+    if (!dialog || !searchInput || !links.length || !emptyState) return;
+
+    const filterPages = () => {
+      const query = searchInput.value.trim().toLocaleLowerCase();
+      let visibleCount = 0;
+      links.forEach((link) => {
+        const title = link.dataset.searchText || link.textContent || "";
+        const matches = title.toLocaleLowerCase().includes(query);
+        link.hidden = !matches;
+        if (matches) visibleCount += 1;
+      });
+      emptyState.hidden = visibleCount > 0;
+    };
+
+    browseButton.addEventListener("click", () => {
+      searchInput.value = "";
+      filterPages();
+      dialog.showModal();
+      searchInput.focus();
+    });
+
+    searchInput.addEventListener("input", filterPages);
+  });
+
   const progress = document.getElementById("reading-progress");
   const progressFill = document.getElementById("reading-progress-fill");
   const toc = document.getElementById("wiki-toc");
@@ -129,6 +163,40 @@
     return gallery;
   }
 
+  function initializeImageGalleryControls(contentBody) {
+    contentBody.querySelectorAll(".lh-image-gallery").forEach((gallery) => {
+      const images = gallery.querySelectorAll("figure.lh-image-container img");
+      images.forEach((image) => {
+        if (image.alt.trim() && !image.title) image.title = image.alt.trim();
+      });
+
+      if (images.length <= 6 || gallery.dataset.controlsReady === "true") {
+        return;
+      }
+
+      gallery.classList.add("lh-image-gallery--grid");
+      gallery.dataset.controlsReady = "true";
+      gallery.setAttribute(
+        "aria-label",
+        `Image gallery, ${images.length} photos`,
+      );
+
+      const toggle = document.createElement("button");
+      toggle.type = "button";
+      toggle.className = "lh-image-gallery__toggle";
+      toggle.setAttribute("aria-expanded", "false");
+      toggle.textContent = `Show all ${images.length} photos`;
+      toggle.addEventListener("click", () => {
+        const expanded = gallery.classList.toggle("is-expanded");
+        toggle.setAttribute("aria-expanded", String(expanded));
+        toggle.textContent = expanded
+          ? "Show fewer photos"
+          : `Show all ${images.length} photos`;
+      });
+      gallery.insertAdjacentElement("afterend", toggle);
+    });
+  }
+
   function groupImagesWithinSection(section) {
     let imageRun = [];
 
@@ -215,10 +283,12 @@
         window.requestAnimationFrame(() => {
           scheduled = false;
           groupConsecutiveImages(contentBody);
+          initializeImageGalleryControls(contentBody);
         });
       };
 
       groupConsecutiveImages(contentBody);
+      initializeImageGalleryControls(contentBody);
       new MutationObserver(regroup).observe(contentBody, {
         childList: true,
         subtree: true,

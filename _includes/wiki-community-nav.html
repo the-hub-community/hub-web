@@ -1,0 +1,68 @@
+{% assign community_slug = current_condo | slugify %}
+{% assign community_home_url = '/content/' | append: community_slug | append: '/' %}
+{% assign community_pages = site.pages | where: "community_key", page_community_key | sort: "title" %}
+{% assign wiki_subpage_count = 0 %}
+{% for community_page in community_pages %}
+{% assign community_page_path = community_page.path | default: '' %}
+{% if community_page_path contains 'content/' and community_page.url != community_home_url %}
+{% unless community_page_path contains '/broadcasts/' or community_page_path contains '/notifications/' %}
+{% assign wiki_subpage_count = wiki_subpage_count | plus: 1 %}
+{% endunless %}
+{% endif %}
+{% endfor %}
+{% assign community_dialog_id = 'wiki-pages-' | append: community_slug %}
+<nav class="wiki-community-nav" aria-label="Community pages">
+  <a class="wiki-community-nav__home"
+     href="{{ community_home_url | relative_url }}"
+     {% if page.url == community_home_url %}aria-current="page"{% endif %}>
+    <i class="fa-solid fa-house" aria-hidden="true"></i>
+    <span>{{ current_condo }} home</span>
+  </a>
+  {% if wiki_subpage_count > 0 %}
+  <button class="wiki-community-nav__browse" type="button"
+          aria-haspopup="dialog" aria-controls="{{ community_dialog_id }}">
+    <i class="fa-solid fa-list" aria-hidden="true"></i>
+    <span>Browse pages</span>
+    <span class="wiki-community-nav__count">{{ wiki_subpage_count }}</span>
+  </button>
+  <dialog class="wiki-pages-dialog" id="{{ community_dialog_id }}"
+          aria-labelledby="{{ community_dialog_id }}-title">
+    <div class="wiki-pages-dialog__header">
+      <div>
+        <p class="wiki-pages-dialog__eyebrow">{{ current_condo }}</p>
+        <h2 id="{{ community_dialog_id }}-title">Community pages</h2>
+        <p class="wiki-pages-dialog__count">{{ wiki_subpage_count }} pages</p>
+      </div>
+      <form method="dialog">
+        <button class="wiki-pages-dialog__close" type="submit" aria-label="Close page browser">
+          <i class="fa-solid fa-xmark" aria-hidden="true"></i>
+        </button>
+      </form>
+    </div>
+    <label class="wiki-pages-dialog__search-label" for="{{ community_dialog_id }}-search">Search pages</label>
+    <div class="wiki-pages-dialog__search">
+      <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
+      <input id="{{ community_dialog_id }}-search" type="search"
+             placeholder="Search by page title" autocomplete="off">
+    </div>
+    <p class="wiki-pages-dialog__empty" role="status" aria-live="polite" hidden>No pages match your search.</p>
+    <div class="wiki-pages-dialog__list" aria-label="Pages in {{ current_condo }}">
+      {% for community_page in community_pages %}
+      {% assign community_page_path = community_page.path | default: '' %}
+      {% if community_page_path contains 'content/' and community_page.url != community_home_url %}
+      {% unless community_page_path contains '/broadcasts/' or community_page_path contains '/notifications/' %}
+      {% assign community_page_title = community_page.title | default: community_page.name | replace: '.md', '' | replace: '.html', '' | replace: '-', ' ' %}
+      <a class="wiki-pages-dialog__link"
+         href="{{ community_page.url | relative_url }}"
+         data-search-text="{{ community_page_title | downcase | escape }}"
+         {% if page.url == community_page.url %}aria-current="page"{% endif %}>
+        <span>{{ community_page_title }}</span>
+        {% if page.url == community_page.url %}<span class="wiki-pages-dialog__current">Current page</span>{% endif %}
+      </a>
+      {% endunless %}
+      {% endif %}
+      {% endfor %}
+    </div>
+  </dialog>
+  {% endif %}
+</nav>
