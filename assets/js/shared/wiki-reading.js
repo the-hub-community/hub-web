@@ -96,6 +96,144 @@
     }
   }
 
+  function getImageFigure(element) {
+    if (element.matches("figure.lh-image-container")) {
+      return element.querySelector("img") ? element : null;
+    }
+
+    const figures = element.querySelectorAll("figure.lh-image-container");
+    if (figures.length !== 1 || !figures[0].querySelector("img")) return null;
+    return figures[0];
+  }
+
+  function preserveImageAlignment(element, figure) {
+    const alignment = element.closest(
+      ".lh-align-left, .lh-align-center, .lh-align-right",
+    );
+    if (alignment) {
+      figure.dataset.align = alignment.classList.contains("lh-align-left")
+        ? "left"
+        : alignment.classList.contains("lh-align-right")
+          ? "right"
+          : "center";
+    }
+  }
+
+  function createImageGallery(parent, before) {
+    const gallery = document.createElement("div");
+    gallery.className = "lh-image-gallery";
+    gallery.setAttribute("role", "group");
+    gallery.setAttribute("aria-label", "Image gallery");
+    gallery.tabIndex = 0;
+    parent.insertBefore(gallery, before);
+    return gallery;
+  }
+
+  function groupImagesWithinSection(section) {
+    let imageRun = [];
+
+    function flushRun() {
+      if (imageRun.length > 1) {
+        const gallery = createImageGallery(section, imageRun[0].element);
+        imageRun.forEach(({ element, figure }) => {
+          preserveImageAlignment(element, figure);
+          gallery.appendChild(figure);
+          if (element !== figure) element.remove();
+        });
+      }
+      imageRun = [];
+    }
+
+    Array.from(section.children).forEach((element) => {
+      const figure = getImageFigure(element);
+      if (figure) imageRun.push({ element, figure });
+      else flushRun();
+    });
+    flushRun();
+  }
+
+  function getImageOnlyFigures(section) {
+    const text = section.querySelector(".lh-text");
+    if (text && text.textContent.trim()) return null;
+    if (section.querySelector(".lh-video-container, iframe")) return null;
+
+    const figures = Array.from(
+      section.querySelectorAll("figure.lh-image-container"),
+    );
+    if (!figures.length) return null;
+
+    const isAllowedChild = (element) =>
+      element === text ||
+      element.classList.contains("lh-clear") ||
+      element.classList.contains("lh-image-gallery") ||
+      Boolean(getImageFigure(element));
+
+    return Array.from(section.children).every(isAllowedChild) ? figures : null;
+  }
+
+  function groupImageOnlySections(contentBody) {
+    let imageSections = [];
+
+    function flushSections() {
+      if (imageSections.length > 1) {
+        const gallery = createImageGallery(
+          imageSections[0].parentNode,
+          imageSections[0],
+        );
+        imageSections.forEach((section) => {
+          section
+            .querySelectorAll("figure.lh-image-container")
+            .forEach((figure) => {
+              preserveImageAlignment(figure, figure);
+              gallery.appendChild(figure);
+            });
+          section.remove();
+        });
+      }
+      imageSections = [];
+    }
+
+    Array.from(contentBody.querySelectorAll(".lh-section")).forEach((section) => {
+      if (getImageOnlyFigures(section)) imageSections.push(section);
+      else flushSections();
+    });
+    flushSections();
+  }
+
+  function groupConsecutiveImages(contentBody) {
+    const sections = Array.from(contentBody.querySelectorAll(".lh-section"));
+    sections.forEach(groupImagesWithinSection);
+    groupImageOnlySections(contentBody);
+  }
+
+  function initializeImageGalleries() {
+    document.querySelectorAll(".lh-content-body").forEach((contentBody) => {
+      let scheduled = false;
+      const regroup = () => {
+        if (scheduled) return;
+        scheduled = true;
+        window.requestAnimationFrame(() => {
+          scheduled = false;
+          groupConsecutiveImages(contentBody);
+        });
+      };
+
+      groupConsecutiveImages(contentBody);
+      new MutationObserver(regroup).observe(contentBody, {
+        childList: true,
+        subtree: true,
+      });
+    });
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initializeImageGalleries, {
+      once: true,
+    });
+  } else {
+    initializeImageGalleries();
+  }
+
   window.addEventListener("scroll", onScroll, { passive: true });
   window.addEventListener("resize", onScroll, { passive: true });
   updateProgress();

@@ -18,11 +18,41 @@
   // ── Public API ─────────────────────────────────────────
   function mount(container, options = {}) {
     if (!container || state.pickers.has(container)) return;
+    container.classList.remove("dropzone");
+    container.removeAttribute("style");
+    container.classList.add("image-picker");
     const picker = {
       container,
       images: options.images ? [...options.images] : [],
     };
     state.pickers.set(container, picker);
+    render(container, picker);
+  }
+
+  function setImages(container, images = []) {
+    if (!container) return;
+
+    const nextImages = Array.isArray(images) ? [...images] : [];
+    let picker = state.pickers.get(container);
+    if (!picker) {
+      mount(container, { images: nextImages });
+      return;
+    }
+
+    const retainedPreviewUrls = new Set(
+      nextImages.map((img) => img.previewUrl).filter(Boolean),
+    );
+    picker.images.forEach((img) => {
+      if (
+        img.isLocal &&
+        img.previewUrl &&
+        !retainedPreviewUrls.has(img.previewUrl)
+      ) {
+        URL.revokeObjectURL(img.previewUrl);
+      }
+    });
+
+    picker.images = nextImages;
     render(container, picker);
   }
 
@@ -61,22 +91,26 @@
     strip.className = "image-picker__strip";
     strip.setAttribute("role", "list");
 
-    picker.images.forEach((img) => {
+    picker.images.forEach((img, index) => {
       const li = document.createElement("li");
       li.className = "image-picker__item";
       li.dataset.id = img.id;
-      li.dataset.align = img.align || "center";
+      const align = ["left", "right"].includes(img.align)
+        ? img.align
+        : "center";
+      li.dataset.align = align;
 
       const thumbSrc = img.previewUrl || img.url;
       li.innerHTML = `
         <img src="${escapeAttr(thumbSrc)}" alt="${escapeAttr(img.alt || "")}" class="image-picker__thumb">
-        <button type="button" class="image-picker__menu" aria-label="Image options">
-          <i class="fa-solid fa-ellipsis" aria-hidden="true"></i>
+        <span class="image-picker__badge">${index + 1} · ${align}</span>
+        <button type="button" class="image-picker__menu" aria-label="Edit image ${index + 1}" title="Edit image">
+          <i class="fa-solid fa-pen" aria-hidden="true"></i>
         </button>
       `;
 
       li.querySelector(".image-picker__thumb").addEventListener("click", () =>
-        openLightbox(thumbSrc),
+        openLightbox(picker, img.id),
       );
       li.querySelector(".image-picker__menu").addEventListener("click", (e) => {
         e.stopPropagation();
@@ -235,7 +269,11 @@
           );
         });
         const li = picker.container.querySelector(`[data-id="${img.id}"]`);
-        if (li) li.dataset.align = align;
+        if (li) {
+          li.dataset.align = align;
+          const badge = li.querySelector(".image-picker__badge");
+          if (badge) badge.textContent = `${index + 1} · ${align}`;
+        }
       });
     });
 
@@ -287,17 +325,24 @@
   }
 
   // ── Lightbox ───────────────────────────────────────────
-  function openLightbox(src) {
+  function openLightbox(picker, imageId) {
     let lb = document.getElementById("image-picker-lightbox");
     if (!lb) {
       lb = document.createElement("div");
       lb.id = "image-picker-lightbox";
       lb.className = "image-picker-lightbox";
       lb.innerHTML = `
+        <button type="button" class="image-picker-lightbox__nav image-picker-lightbox__nav--previous" aria-label="Previous image">
+          <i class="fa-solid fa-chevron-left" aria-hidden="true"></i>
+        </button>
         <button type="button" class="image-picker-lightbox__close" aria-label="Close preview">
           <i class="fa-solid fa-xmark"></i>
         </button>
         <img alt="">
+        <span class="image-picker-lightbox__count" aria-live="polite"></span>
+        <button type="button" class="image-picker-lightbox__nav image-picker-lightbox__nav--next" aria-label="Next image">
+          <i class="fa-solid fa-chevron-right" aria-hidden="true"></i>
+        </button>
       `;
       document.body.appendChild(lb);
       lb.addEventListener("click", (e) => {
@@ -305,16 +350,63 @@
           e.target === lb ||
           e.target.closest(".image-picker-lightbox__close")
         ) {
-          lb.classList.remove("is-open");
+          closePickerLightbox(lb);
         }
       });
-      document.addEventListener("keydown", (e) => {
-        if (e.key === "Escape" && lb.classList.contains("is-open"))
-          lb.classList.remove("is-open");
-      });
+      lb.querySelector(".image-picker-lightbox__nav--previous").addEventListener(
+        "click",
+        () => stepLightboxImage(-1),
+      );
+      lb.querySelector(".image-picker-lightbox__nav--next").addEventListener(
+        "click",
+        () => stepLightboxImage(1),
+      );
     }
-    lb.querySelector("img").src = src;
+    state.lightboxPicker = picker;
+    state.lightboxImageId = imageId;
+    renderLightboxImage(lb);
     lb.classList.add("is-open");
+  }
+
+  function renderLightboxImage(lightbox) {
+    const picker = state.lightboxPicker;
+    if (!picker) return;
+    const index = picker.images.findIndex(
+      (image) => image.id === state.lightboxImageId,
+    );
+    if (index < 0) {
+      lightbox.classList.remove("is-open");
+      state.lightboxPicker = null;
+      state.lightboxImageId = null;
+      return;
+    }
+
+    const image = picker.images[index];
+    const imageElement = lightbox.querySelector("img");
+    imageElement.src = image.previewUrl || image.url;
+    imageElement.alt = image.alt || "";
+    lightbox.querySelector(".image-picker-lightbox__count").textContent =
+      `${index + 1} / ${picker.images.length}`;
+    lightbox.querySelectorAll(".image-picker-lightbox__nav").forEach((button) => {
+      button.hidden = picker.images.length < 2;
+    });
+  }
+
+  function stepLightboxImage(delta) {
+    const picker = state.lightboxPicker;
+    if (!picker || picker.images.length < 2) return;
+    const index = picker.images.findIndex(
+      (image) => image.id === state.lightboxImageId,
+    );
+    const nextIndex = (index + delta + picker.images.length) % picker.images.length;
+    state.lightboxImageId = picker.images[nextIndex].id;
+    renderLightboxImage(document.getElementById("image-picker-lightbox"));
+  }
+
+  function closePickerLightbox(lightbox) {
+    lightbox.classList.remove("is-open");
+    state.lightboxPicker = null;
+    state.lightboxImageId = null;
   }
 
   // ── Sheet infra ────────────────────────────────────────
@@ -337,6 +429,34 @@
   }
 
   document.addEventListener("keydown", (e) => {
+    const lightbox = document.getElementById("image-picker-lightbox");
+    if (lightbox?.classList.contains("is-open")) {
+      if (e.key === "Escape") {
+        closePickerLightbox(lightbox);
+      } else if (e.key === "ArrowLeft" || e.key === "ArrowRight") {
+        e.preventDefault();
+        stepLightboxImage(e.key === "ArrowRight" ? 1 : -1);
+      }
+    } else if (e.key === "ArrowLeft" || e.key === "ArrowRight") {
+      const item = e.target.closest?.(".image-picker__item");
+      const items = item
+        ? Array.from(item.parentElement.querySelectorAll(".image-picker__item"))
+        : [];
+      if (items.length < 2) return;
+      const currentIndex = items.indexOf(item);
+      const nextIndex =
+        (currentIndex + (e.key === "ArrowRight" ? 1 : -1) + items.length) %
+        items.length;
+      const nextButton = items[nextIndex].querySelector(".image-picker__menu");
+      if (!nextButton) return;
+      e.preventDefault();
+      nextButton.focus();
+      nextButton.scrollIntoView({
+        behavior: "smooth",
+        block: "nearest",
+        inline: "nearest",
+      });
+    }
     if (e.key === "Escape") closeSheet();
   });
 
@@ -348,5 +468,5 @@
       .replace(/>/g, "&gt;");
   }
 
-  window.ResiHubImagePicker = { mount, getImages, clear };
+  window.ResiHubImagePicker = { mount, setImages, getImages, clear };
 })();

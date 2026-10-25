@@ -317,7 +317,12 @@ export function prepareEdit() {
   titleInput.value = wikiContainer.querySelector("h1")?.innerText || "";
   sectionsContainer.innerHTML = "";
 
-  const sections = wikiContainer.querySelectorAll(".lh-section");
+  const contentBody = wikiContainer.querySelector(".lh-content-body");
+  const sections = contentBody
+    ? Array.from(contentBody.children).filter((element) =>
+        element.matches(".lh-section, .lh-image-gallery"),
+      )
+    : Array.from(wikiContainer.querySelectorAll(".lh-section"));
   if (sections.length > 0) {
     sections.forEach((sec) => {
       const textHTML = normalizeEditorHtml(
@@ -326,8 +331,33 @@ export function prepareEdit() {
       const videoURL = normalizeYoutubeUrl(
         sec.querySelector("iframe")?.src || "",
       );
-      const imageURL = sec.querySelector("img")?.src || "";
-      let align = "center";
+      const imageElements = Array.from(
+        sec.querySelectorAll("figure.lh-image-container img"),
+      );
+      if (!imageElements.length) {
+        const legacyImage = sec.querySelector(
+          ".lh-align-left img, .lh-align-center img, .lh-align-right img",
+        );
+        if (legacyImage) imageElements.push(legacyImage);
+      }
+      const images = imageElements.map((image, index) => {
+        const alignment = image.closest(".lh-align-left, .lh-align-right");
+        const imageAlign = alignment?.classList.contains("lh-align-left")
+          ? "left"
+          : alignment?.classList.contains("lh-align-right")
+            ? "right"
+            : image.closest("figure.lh-image-container")?.dataset.align ||
+              "center";
+        return {
+          id: `existing-${Date.now()}-${index}`,
+          url: image.src,
+          previewUrl: image.src,
+          alt: image.alt || "",
+          align: imageAlign,
+          isLocal: false,
+        };
+      });
+      let align = images[0]?.align || "center";
       if (sec.querySelector(".lh-align-left")) align = "left";
       if (sec.querySelector(".lh-align-right")) align = "right";
 
@@ -335,23 +365,12 @@ export function prepareEdit() {
       if (sec.querySelector(".lh-align-left iframe")) videoAlign = "left";
       if (sec.querySelector(".lh-align-right iframe")) videoAlign = "right";
 
-      addSectionToDrawer(textHTML, videoURL, align, imageURL, videoAlign);
+      addSectionToDrawer(textHTML, videoURL, align, "", videoAlign);
 
       const lastSection = sectionsContainer.lastElementChild;
       const pickerEl = lastSection?.querySelector('[data-role="image-picker"]');
-      if (pickerEl && window.ResiHubImagePicker && imageURL) {
-        window.ResiHubImagePicker.mount(pickerEl, {
-          images: [
-            {
-              id: `existing-${Date.now()}`,
-              url: imageURL,
-              previewUrl: imageURL,
-              alt: "",
-              align: align || "center",
-              isLocal: false,
-            },
-          ],
-        });
+      if (pickerEl && window.ResiHubImagePicker) {
+        window.ResiHubImagePicker.setImages(pickerEl, images);
       }
     });
   } else {

@@ -229,11 +229,25 @@
             const videoUrl = sec.querySelector('.video-input')?.value || '';
             const videoAlign = sec.querySelector('.video-align-select')?.value || 'center';
 
+            const pickerEl = sec.querySelector('[data-role="image-picker"]');
+            const pickedImages = pickerEl && window.ResiHubImagePicker
+                ? window.ResiHubImagePicker.getImages(pickerEl)
+                : [];
             const fileInput = sec.querySelector('.file-input');
             const existingPath = sec.querySelector('.existing-image-path');
-            const imageUrl = fileInput?.files?.[0]
-                ? URL.createObjectURL(fileInput.files[0])
-                : (existingPath?.value || '');
+            const images = pickedImages
+                .map((image) => ({
+                    url: image.previewUrl || image.url,
+                    alt: image.alt || 'Preview image',
+                    align: image.align || align,
+                }))
+                .filter((image) => image.url);
+            if (!images.length) {
+                const imageUrl = fileInput?.files?.[0]
+                    ? URL.createObjectURL(fileInput.files[0])
+                    : (existingPath?.value || '');
+                if (imageUrl) images.push({ url: imageUrl, alt: 'Preview image', align });
+            }
 
             let videoHtml = '';
             if (videoUrl.includes('youtube.com') || videoUrl.includes('youtu.be')) {
@@ -243,15 +257,20 @@
                 }
             }
 
-            let mediaHtml = '';
-            if (imageUrl) {
-                mediaHtml = `
-                <div class="lh-align-${align}">
+            const escapePreviewAttribute = (value) => String(value)
+                .replace(/&/g, '&amp;')
+                .replace(/"/g, '&quot;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;');
+            const mediaHtml = images.map((image) => {
+                const imageAlign = ['left', 'right'].includes(image.align) ? image.align : 'center';
+                return `
+                <div class="lh-align-${imageAlign}">
                     <figure class="lh-image-container">
-                        <img src="${imageUrl}" alt="Preview image" class="lh-fluid-img">
+                        <img src="${escapePreviewAttribute(image.url)}" alt="${escapePreviewAttribute(image.alt)}" class="lh-fluid-img">
                     </figure>
                 </div>`;
-            }
+            }).join('');
 
             return `
             <div class="lh-section">
