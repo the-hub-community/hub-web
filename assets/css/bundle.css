@@ -8085,22 +8085,6 @@ body {
   }
 }
 
-/* Ensure Font Awesome brand glyphs render in footer share row */
-.footer-share-links a i,
-.footer-share-links a .fa-brands,
-.footer-share-links a .fa-solid {
-  font-family: "Font Awesome 6 Brands", "Font Awesome 6 Free" !important;
-  font-style: normal;
-  font-weight: 900;
-  display: inline-block;
-  line-height: 1;
-}
-
-/* Fix blank X icon on FA6 — allow alias fallback */
-.footer-share-links a i.fa-x-twitter::before {
-  content: "\e61b"; /* x-twitter glyph */
-}
-
 .logo-image--footer {
   height: 32px;    /* was 26px — new wordmark is taller */
   max-width: 240px;
@@ -8772,6 +8756,23 @@ body {
 .image-picker__item[data-align="left"]   { border-color: rgba(59, 130, 246, 0.35); }
 .image-picker__item[data-align="center"] { border-color: rgba(16, 185, 129, 0.35); }
 .image-picker__item[data-align="right"]  { border-color: rgba(245, 158, 11, 0.35); }
+.image-picker__strip .image-picker__item[data-gallery="true"] { border-color: transparent; }
+
+.image-picker__gallery-note,
+.image-edit__gallery-note {
+  margin: 0;
+  padding: 10px 12px;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  background: var(--surface-container-low);
+  color: var(--on-surface-variant);
+  font-size: 0.78rem;
+  line-height: 1.5;
+}
+
+.image-edit__gallery-note {
+  margin-bottom: 12px;
+}
 
 .image-picker__thumb {
   width: 100%; height: 100%;

@@ -141,16 +141,15 @@
 
                 <div class="media-actions" style="display: flex; flex-direction: column; gap: 12px;">
 
-                    <!-- 1. The Bulk Upload Dropzone -->
+                    <!-- 1. Photo picker -->
                     <div class="dropzone" data-role="image-picker"
                         style="border: 2px dashed var(--border-strong); border-radius: var(--radius-lg); padding: 20px; text-align: center; cursor: pointer; background: var(--surface-container-lowest); transition: background 0.2s;">
                         <i class="fa-solid fa-cloud-arrow-up"
                             style="font-size: 1.5rem; color: var(--primary); margin-bottom: 8px;"></i>
                         <div
                             style="font-family: var(--font-mono); font-size: 0.75rem; font-weight: 600; color: var(--on-surface);">
-                            UPLOAD GALLERY</div>
-                        <div style="font-size: 0.72rem; color: var(--outline); margin-top: 4px;">Drag & drop up to 10
-                            images</div>
+                            ADD PHOTOS</div>
+                        <div style="font-size: 0.72rem; color: var(--outline); margin-top: 4px;">Multiple photos form a swipeable gallery</div>
                     </div>
 
                     <!-- 2. Video Input (Keep as is) -->
@@ -159,18 +158,6 @@
                         <i class="fa-brands fa-youtube" style="color: #ff0000; font-size: 1.2rem;"></i>
                         <input type="text" class="video-input" placeholder="Paste YouTube URL..."
                             style="border: none; background: transparent; flex: 1; outline: none; font-size: 0.85rem;">
-                    </div>
-
-                    <!-- 3. The Layout Selector -->
-                    <div style="display: flex; align-items: center; gap: 8px; margin-top: 8px;">
-                        <label
-                            style="font-size: 0.75rem; font-weight: 600; color: var(--outline); text-transform: uppercase;">Layout:</label>
-                        <select class="align-select"
-                            style="flex: 1; padding: 8px; border-radius: 6px; border: 1px solid var(--border-default); font-size: 0.85rem;">
-                            <option value="center">Full Width (Center)</option>
-                            <option value="left">Float Left</option>
-                            <option value="right">Float Right</option>
-                        </select>
                     </div>
 
                 </div>
@@ -225,7 +212,6 @@
             const editor = sec.querySelector('.editor-area');
             const rawText = editor ? editor.innerHTML : '';
             const cleanedText = typeof normalizeEditorHtml === 'function' ? normalizeEditorHtml(rawText) : rawText;
-            const align = sec.querySelector('.align-select')?.value || 'center';
             const videoUrl = sec.querySelector('.video-input')?.value || '';
             const videoAlign = sec.querySelector('.video-align-select')?.value || 'center';
 
@@ -239,14 +225,18 @@
                 .map((image) => ({
                     url: image.previewUrl || image.url,
                     alt: image.alt || 'Preview image',
-                    align: image.align || align,
+                    align: pickedImages.length === 1 ? image.align || 'center' : 'center',
                 }))
                 .filter((image) => image.url);
             if (!images.length) {
                 const imageUrl = fileInput?.files?.[0]
                     ? URL.createObjectURL(fileInput.files[0])
                     : (existingPath?.value || '');
-                if (imageUrl) images.push({ url: imageUrl, alt: 'Preview image', align });
+                if (imageUrl) images.push({
+                    url: imageUrl,
+                    alt: 'Preview image',
+                    align: existingPath?.dataset.align || 'center',
+                });
             }
 
             let videoHtml = '';
@@ -262,14 +252,23 @@
                 .replace(/"/g, '&quot;')
                 .replace(/</g, '&lt;')
                 .replace(/>/g, '&gt;');
-            const mediaHtml = images.map((image) => {
-                const imageAlign = ['left', 'right'].includes(image.align) ? image.align : 'center';
+            const renderImage = (image, imageAlign) => {
+                const safeAlign = ['left', 'right'].includes(imageAlign) ? imageAlign : 'center';
                 return `
-                <div class="lh-align-${imageAlign}">
+                    <div class="lh-align-${safeAlign}">
+                        <figure class="lh-image-container">
+                            <img src="${escapePreviewAttribute(image.url)}" alt="${escapePreviewAttribute(image.alt)}" class="lh-fluid-img">
+                        </figure>
+                    </div>`;
+            };
+            const mediaHtml = images.length > 1
+                ? `<div class="lh-image-gallery" role="group" aria-label="Photo gallery" tabindex="0">${images.map((image) => `
                     <figure class="lh-image-container">
                         <img src="${escapePreviewAttribute(image.url)}" alt="${escapePreviewAttribute(image.alt)}" class="lh-fluid-img">
-                    </figure>
-                </div>`;
+                    </figure>`).join('')}</div>`
+                : images.map((image) => {
+                const imageAlign = ['left', 'right'].includes(image.align) ? image.align : 'center';
+                return renderImage(image, imageAlign);
             }).join('');
 
             return `

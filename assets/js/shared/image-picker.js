@@ -85,16 +85,26 @@
     addBtn.addEventListener("click", () => openSourceSheet(picker));
     container.appendChild(addBtn);
 
-    if (!picker.images.length) return;
+    if (!picker.images.length) {
+      container.dispatchEvent(
+        new CustomEvent("resiHub:image-picker-change", {
+          bubbles: true,
+          detail: { count: 0 },
+        }),
+      );
+      return;
+    }
 
     const strip = document.createElement("ul");
     strip.className = "image-picker__strip";
     strip.setAttribute("role", "list");
+    const isGallery = picker.images.length > 1;
 
     picker.images.forEach((img, index) => {
       const li = document.createElement("li");
       li.className = "image-picker__item";
       li.dataset.id = img.id;
+      li.dataset.gallery = String(isGallery);
       const align = ["left", "right"].includes(img.align)
         ? img.align
         : "center";
@@ -103,7 +113,7 @@
       const thumbSrc = img.previewUrl || img.url;
       li.innerHTML = `
         <img src="${escapeAttr(thumbSrc)}" alt="${escapeAttr(img.alt || "")}" class="image-picker__thumb">
-        <span class="image-picker__badge">${index + 1} · ${align}</span>
+        <span class="image-picker__badge">${isGallery ? `Photo ${index + 1}` : `${index + 1} · ${align}`}</span>
         <button type="button" class="image-picker__menu" aria-label="Edit image ${index + 1}" title="Edit image">
           <i class="fa-solid fa-pen" aria-hidden="true"></i>
         </button>
@@ -121,6 +131,19 @@
     });
 
     container.appendChild(strip);
+    if (isGallery) {
+      const galleryNote = document.createElement("p");
+      galleryNote.className = "image-picker__gallery-note";
+      galleryNote.textContent =
+        "Gallery layout is automatic. Edit photos to add alt text, reorder, or remove.";
+      container.appendChild(galleryNote);
+    }
+    container.dispatchEvent(
+      new CustomEvent("resiHub:image-picker-change", {
+        bubbles: true,
+        detail: { count: picker.images.length },
+      }),
+    );
   }
 
   // ── Source sheet ───────────────────────────────────────
@@ -209,6 +232,7 @@
     const index = picker.images.indexOf(img);
     const isFirst = index === 0;
     const isLast = index === picker.images.length - 1;
+    const isGallery = picker.images.length > 1;
 
     const sheet = ensureSheet("image-edit-sheet");
     sheet.innerHTML = `
@@ -221,6 +245,10 @@
         <h3 class="image-sheet__title" id="image-edit-title">Edit image</h3>
         <div class="image-edit__preview"><img src="${escapeAttr(img.previewUrl || img.url)}" alt=""></div>
 
+        ${isGallery ? `
+        <p class="image-edit__gallery-note">
+          This photo is part of a gallery. Gallery photos stay centered automatically.
+        </p>` : `
         <div class="image-edit__row">
           <label>Alignment</label>
           <div class="segmented" role="radiogroup" aria-label="Image alignment">
@@ -234,7 +262,7 @@
               <i class="fa-solid fa-align-right"></i><span>Right</span>
             </button>
           </div>
-        </div>
+        </div>`}
 
         <div class="image-edit__row">
           <label for="image-alt-input">Alt text (for screen readers)</label>
@@ -280,12 +308,24 @@
           const badge = li.querySelector(".image-picker__badge");
           if (badge) badge.textContent = `${index + 1} · ${align}`;
         }
+        picker.container.dispatchEvent(
+          new CustomEvent("resiHub:image-picker-change", {
+            bubbles: true,
+            detail: { count: picker.images.length },
+          }),
+        );
       });
     });
 
     const altInput = sheet.querySelector("#image-alt-input");
     altInput.addEventListener("input", () => {
       img.alt = altInput.value;
+      picker.container.dispatchEvent(
+        new CustomEvent("resiHub:image-picker-change", {
+          bubbles: true,
+          detail: { count: picker.images.length },
+        }),
+      );
     });
 
     sheet

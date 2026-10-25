@@ -192,9 +192,25 @@ async function handleDrawerSubmit(e) {
       const videoUrl = normalizeYoutubeUrl(
         sec.querySelector(".video-input")?.value || "",
       );
-      const alignValue = sec.querySelector(".align-select")?.value || "center";
       const videoAlignValue =
         sec.querySelector(".video-align-select")?.value || "center"; // <-- ADD THIS
+
+      // ── Multi-image picker ─────────────────────────────────
+      const pickerEl = sec.querySelector('[data-role="image-picker"]');
+      const pickedImages =
+        pickerEl && window.ResiHubImagePicker
+          ? window.ResiHubImagePicker.getImages(pickerEl)
+          : [];
+      const legacyAlign =
+        sec.querySelector(".existing-image-path")?.dataset.align || "center";
+      const alignValue = pickedImages.length === 1
+        ? ["left", "right"].includes(pickedImages[0].align)
+          ? pickedImages[0].align
+          : "center"
+        : pickedImages.length === 0 &&
+            ["left", "right"].includes(legacyAlign)
+          ? legacyAlign
+          : "center";
 
       fd.append(`section_text_${count}`, markdownContent);
       fd.append(`section_video_${count}`, videoUrl);
@@ -208,22 +224,20 @@ async function handleDrawerSubmit(e) {
         videoAlign: videoAlignValue,
       };
 
-      // ── Multi-image picker ─────────────────────────────────
-      const pickerEl = sec.querySelector('[data-role="image-picker"]');
-      const pickedImages =
-        pickerEl && window.ResiHubImagePicker
-          ? window.ResiHubImagePicker.getImages(pickerEl)
-          : [];
-
       const imageMeta = [];
       let newImageIdx = 0;
 
       pickedImages.forEach((img) => {
+        const imageAlign =
+          pickedImages.length === 1 &&
+          ["left", "right"].includes(img.align)
+            ? img.align
+            : "center";
         if (img.isLocal && img.file instanceof File) {
           fd.append(`section_images_${count}`, img.file);
           imageMeta.push({
             isExisting: false,
-            align: img.align || "center",
+            align: imageAlign,
             alt: img.alt || "",
             order: newImageIdx++,
           });
@@ -231,7 +245,7 @@ async function handleDrawerSubmit(e) {
           imageMeta.push({
             isExisting: true,
             url: img.url,
-            align: img.align || "center",
+            align: imageAlign,
             alt: img.alt || "",
             order: newImageIdx++,
           });

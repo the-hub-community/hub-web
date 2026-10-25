@@ -57,6 +57,23 @@
 .image-picker__item[data-align="left"]   { border-color: rgba(59, 130, 246, 0.35); }
 .image-picker__item[data-align="center"] { border-color: rgba(16, 185, 129, 0.35); }
 .image-picker__item[data-align="right"]  { border-color: rgba(245, 158, 11, 0.35); }
+.image-picker__strip .image-picker__item[data-gallery="true"] { border-color: transparent; }
+
+.image-picker__gallery-note,
+.image-edit__gallery-note {
+  margin: 0;
+  padding: 10px 12px;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  background: var(--surface-container-low);
+  color: var(--on-surface-variant);
+  font-size: 0.78rem;
+  line-height: 1.5;
+}
+
+.image-edit__gallery-note {
+  margin-bottom: 12px;
+}
 
 .image-picker__badge {
   position: absolute;

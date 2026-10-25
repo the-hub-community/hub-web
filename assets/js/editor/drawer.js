@@ -76,14 +76,12 @@ export function addSectionToDrawer(
   const clone = template.content.cloneNode(true);
   const editor = clone.querySelector(".editor-area");
   const videoInput = clone.querySelector(".video-input");
-  const alignSelect = clone.querySelector(".align-select");
   const videoAlignSelect = clone.querySelector(".video-align-select");
   const mediaCol = clone.querySelector(".section-media");
   const toolbarShell = clone.querySelector(".rich-toolbar-shell");
 
   if (editor) editor.innerHTML = text;
   if (videoInput) videoInput.value = video;
-  if (alignSelect) alignSelect.value = align;
   if (videoAlignSelect) videoAlignSelect.value = videoAlign;
   if (toolbarShell)
     toolbarShell.open = !window.matchMedia("(max-width: 768px)").matches;
@@ -119,6 +117,9 @@ export function addSectionToDrawer(
         mediaCol.appendChild(hidden);
       }
       hidden.value = imagePath;
+      hidden.dataset.align = ["left", "right"].includes(align)
+        ? align
+        : "center";
     };
     const renderRemovedState = () => {
       mediaCol.querySelector(".existing-image-loaded-row")?.remove();
@@ -235,7 +236,14 @@ export function saveDraft() {
         text: normalizedContent,
         video: sec.querySelector(".video-input")?.value || "",
         videoAlign: sec.querySelector(".video-align-select")?.value || "center",
-        align: sec.querySelector(".align-select")?.value || "center",
+        align: (() => {
+          const picker = sec.querySelector('[data-role="image-picker"]');
+          const images =
+            picker && window.ResiHubImagePicker
+              ? window.ResiHubImagePicker.getImages(picker)
+              : [];
+          return images.length === 1 ? images[0].align || "center" : "center";
+        })(),
       });
     }
   });
@@ -357,11 +365,11 @@ export function prepareEdit() {
           isLocal: false,
         };
       });
-      let align = images[0]?.align || "center";
-      if (sec.querySelector(".lh-align-left")) align = "left";
-      if (sec.querySelector(".lh-align-right")) align = "right";
-
-      let videoAlign = align;
+      const align =
+        images.length === 1 && ["left", "right"].includes(images[0].align)
+          ? images[0].align
+          : "center";
+      let videoAlign = "center";
       if (sec.querySelector(".lh-align-left iframe")) videoAlign = "left";
       if (sec.querySelector(".lh-align-right iframe")) videoAlign = "right";
 
