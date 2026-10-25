@@ -9072,6 +9072,36 @@ body {
   .image-sheet__backdrop,
   .image-sheet__panel { animation: none; }
 }
+
+/* Keep editor image sheets above the mobile editor drawer. */
+.image-sheet { z-index: 100100 !important; }
+
+.image-sheet__title { margin-right: 44px; }
+
+.image-sheet__close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  z-index: 2;
+  display: grid;
+  width: 40px;
+  height: 40px;
+  place-items: center;
+  border: 1px solid var(--border-subtle);
+  border-radius: 50%;
+  background: var(--surface-container-low);
+  color: var(--on-surface-variant);
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+.image-sheet__close:hover,
+.image-sheet__close:focus-visible {
+  background: var(--surface-container);
+  color: var(--on-surface);
+}
+
+.image-sheet__close:active { transform: scale(0.96); }
 /* ================================================================
    Marketplace — Editorial overrides
    Flattens cards, tightens typography, editorializes the hero.

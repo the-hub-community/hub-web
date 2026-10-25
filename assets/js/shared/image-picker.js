@@ -215,6 +215,9 @@
       <div class="image-sheet__backdrop" data-close="true"></div>
       <div class="image-sheet__panel" role="dialog" aria-modal="true" aria-labelledby="image-edit-title">
         <div class="image-sheet__handle"></div>
+        <button type="button" class="image-sheet__close" aria-label="Close image editor" title="Close image editor">
+          <i class="fa-solid fa-xmark" aria-hidden="true"></i>
+        </button>
         <h3 class="image-sheet__title" id="image-edit-title">Edit image</h3>
         <div class="image-edit__preview"><img src="${escapeAttr(img.previewUrl || img.url)}" alt=""></div>
 
@@ -257,6 +260,9 @@
     sheet
       .querySelectorAll("[data-close]")
       .forEach((el) => el.addEventListener("click", closeSheet));
+    sheet
+      .querySelector(".image-sheet__close")
+      ?.addEventListener("click", closeSheet);
 
     sheet.querySelectorAll(".segmented__btn").forEach((btn) => {
       btn.addEventListener("click", () => {
@@ -303,7 +309,7 @@
         closeSheet();
       });
 
-    requestAnimationFrame(() => altInput.focus());
+    requestAnimationFrame(() => sheet.querySelector(".image-sheet__close")?.focus());
   }
 
   function moveImage(picker, imageId, delta) {

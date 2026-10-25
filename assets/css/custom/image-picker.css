@@ -129,7 +129,7 @@
 .image-sheet {
   position: fixed;
   inset: 0;
-  z-index: 10100;
+  z-index: 100100;
   display: none;
   align-items: flex-end;
   justify-content: center;
@@ -175,9 +175,35 @@
   font-size: 1.05rem;
   font-weight: 700;
   color: var(--on-surface);
-  margin: 4px 0 16px;
+  margin: 4px 44px 16px 0;
   letter-spacing: -0.01em;
 }
+
+.image-sheet__close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  z-index: 2;
+  display: grid;
+  width: 40px;
+  height: 40px;
+  place-items: center;
+  border: 1px solid var(--border-subtle);
+  border-radius: 50%;
+  background: var(--surface-container-low);
+  color: var(--on-surface-variant);
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease, transform 0.15s ease;
+}
+
+.image-sheet__close:hover,
+.image-sheet__close:focus-visible {
+  background: var(--surface-container);
+  color: var(--on-surface);
+}
+
+.image-sheet__close:active { transform: scale(0.96); }
 
 /* Source options */
 .image-source__option {
