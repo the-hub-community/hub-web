@@ -72,7 +72,7 @@
 
   /* Content */
   .content-card { padding: 20px 16px !important; }
-  .content-card > * { padding-left: 0 !important; padding-right: 0 !important; }
+  .content-card > *:not(.page-community-chip) { padding-left: 0 !important; padding-right: 0 !important; }
 
   /* Footer */
   .footer-inner {

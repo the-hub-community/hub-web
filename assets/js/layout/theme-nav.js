@@ -28,16 +28,34 @@ function initTextZoom() {
   let currentZoom = applyTextZoom(getSavedTextZoom());
   const zoomOutBtn = document.getElementById("zoomOut");
   const zoomInBtn = document.getElementById("zoomIn");
+  const zoomResetBtn = document.getElementById("zoomReset");
+
+  const updateZoomControls = () => {
+    if (zoomResetBtn) zoomResetBtn.textContent = `${currentZoom}%`;
+    if (zoomOutBtn) zoomOutBtn.disabled = currentZoom <= TEXT_ZOOM_MIN;
+    if (zoomInBtn) zoomInBtn.disabled = currentZoom >= TEXT_ZOOM_MAX;
+  };
+
+  updateZoomControls();
 
   if (zoomOutBtn) {
     zoomOutBtn.addEventListener("click", () => {
       currentZoom = applyTextZoom(currentZoom - TEXT_ZOOM_STEP);
+      updateZoomControls();
     });
   }
 
   if (zoomInBtn) {
     zoomInBtn.addEventListener("click", () => {
       currentZoom = applyTextZoom(currentZoom + TEXT_ZOOM_STEP);
+      updateZoomControls();
+    });
+  }
+
+  if (zoomResetBtn) {
+    zoomResetBtn.addEventListener("click", () => {
+      currentZoom = applyTextZoom(100);
+      updateZoomControls();
     });
   }
 }
