@@ -170,30 +170,77 @@
         if (image.alt.trim() && !image.title) image.title = image.alt.trim();
       });
 
-      if (images.length <= 6 || gallery.dataset.controlsReady === "true") {
-        return;
-      }
+      if (images.length < 2 || gallery.dataset.controlsReady === "true") return;
 
-      gallery.classList.add("lh-image-gallery--grid");
       gallery.dataset.controlsReady = "true";
       gallery.setAttribute(
         "aria-label",
         `Image gallery, ${images.length} photos`,
       );
 
-      const toggle = document.createElement("button");
-      toggle.type = "button";
-      toggle.className = "lh-image-gallery__toggle";
-      toggle.setAttribute("aria-expanded", "false");
-      toggle.textContent = `Show all ${images.length} photos`;
-      toggle.addEventListener("click", () => {
-        const expanded = gallery.classList.toggle("is-expanded");
-        toggle.setAttribute("aria-expanded", String(expanded));
-        toggle.textContent = expanded
-          ? "Show fewer photos"
-          : `Show all ${images.length} photos`;
+      const controls = document.createElement("div");
+      controls.className = "lh-image-gallery__controls";
+
+      const createControl = (direction, iconClass, label) => {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = `lh-image-gallery__arrow lh-image-gallery__arrow--${direction}`;
+        button.setAttribute("aria-label", label);
+        button.innerHTML = `<i class="${iconClass}" aria-hidden="true"></i>`;
+        button.addEventListener("click", () => {
+          const firstFigure = gallery.querySelector("figure.lh-image-container");
+          if (!firstFigure) return;
+          const gap = Number.parseFloat(getComputedStyle(gallery).columnGap) || 0;
+          const step = firstFigure.getBoundingClientRect().width + gap;
+          gallery.scrollLeft += direction === "next" ? step : -step;
+          updateControls();
+        });
+        return button;
+      };
+
+      const previousButton = createControl(
+        "previous",
+        "fa-solid fa-chevron-left",
+        "Previous photos",
+      );
+      previousButton.disabled = true;
+      const nextButton = createControl(
+        "next",
+        "fa-solid fa-chevron-right",
+        "Next photos",
+      );
+      const counter = document.createElement("span");
+      counter.className = "lh-image-gallery__count";
+      counter.setAttribute("aria-live", "polite");
+      counter.setAttribute("aria-atomic", "true");
+      counter.textContent = `1 of ${images.length}`;
+      controls.append(previousButton, counter, nextButton);
+      gallery.insertAdjacentElement("afterend", controls);
+
+      const updateControls = () => {
+        const figures = Array.from(
+          gallery.querySelectorAll("figure.lh-image-container"),
+        );
+        if (!figures.length) return;
+        const galleryLeft = gallery.getBoundingClientRect().left;
+        const firstVisibleIndex = figures.findIndex(
+          (figure) => figure.getBoundingClientRect().right > galleryLeft + 1,
+        );
+        const activeIndex = Math.max(0, firstVisibleIndex);
+        counter.textContent = `${activeIndex + 1} of ${figures.length}`;
+        previousButton.disabled = gallery.scrollLeft <= 1;
+        nextButton.disabled =
+          gallery.scrollLeft + gallery.clientWidth >= gallery.scrollWidth - 1;
+      };
+
+      gallery.addEventListener("scroll", updateControls, { passive: true });
+      gallery.addEventListener("keydown", (event) => {
+        if (event.key !== "ArrowLeft" && event.key !== "ArrowRight") return;
+        event.preventDefault();
+        (event.key === "ArrowRight" ? nextButton : previousButton).click();
       });
-      gallery.insertAdjacentElement("afterend", toggle);
+      window.addEventListener("resize", updateControls, { passive: true });
+      updateControls();
     });
   }
 

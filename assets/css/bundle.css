@@ -12554,9 +12554,6 @@ html.theme-transitioning * {
     margin-bottom: 1rem;
   }
 
-  .lh-image-gallery__toggle {
-    width: 100%;
-  }
 }
 
 .wiki-community-nav {
@@ -13761,22 +13758,16 @@ html.theme-transitioning * {
 }
 
 .lh-image-gallery figure {
-  flex: 0 0 min(86%, 420px);
+  flex: 0 0 clamp(150px, 22%, 220px);
   min-width: 0 !important;
   overflow: hidden;
   scroll-snap-align: start;
-  margin: 0;
+  margin: 0 !important;
   position: relative;
   border: 1px solid rgba(83, 104, 145, 0.14);
   border-radius: 16px;
   background: var(--surface-container-lowest, #fff);
   box-shadow: 0 8px 24px rgba(23, 36, 66, 0.1);
-}
-
-@media (min-width: 768px) {
-  .lh-image-gallery figure {
-    flex-basis: min(42%, 480px);
-  }
 }
 
 .lh-image-gallery img {
@@ -13801,64 +13792,6 @@ html.theme-transitioning * {
 .lh-image-gallery:focus-visible {
   outline: 3px solid var(--primary, #35568e);
   outline-offset: 4px;
-}
-
-.lh-image-gallery--grid {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: clamp(8px, 1.5vw, 16px);
-  overflow: visible;
-  scroll-snap-type: none;
-}
-
-.lh-image-gallery--grid figure {
-  min-width: 0;
-  width: 100%;
-}
-
-.lh-image-gallery--grid:not(.is-expanded) figure:nth-child(n + 7) {
-  display: none;
-}
-
-.lh-image-gallery__toggle {
-  display: flex;
-  width: fit-content;
-  min-height: 42px;
-  align-items: center;
-  justify-content: center;
-  margin: -0.5rem auto 1.25rem;
-  padding: 0.55rem 1rem;
-  border: 1px solid var(--border-subtle, #d8deea);
-  border-radius: 999px;
-  background: var(--surface-container-lowest, #fff);
-  color: var(--primary, #35568e);
-  font: inherit;
-  font-size: 0.875rem;
-  font-weight: 650;
-  cursor: pointer;
-}
-
-.lh-image-gallery__toggle:hover,
-.lh-image-gallery__toggle:focus-visible {
-  border-color: var(--primary, #35568e);
-  outline: none;
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary, #35568e) 16%, transparent);
-}
-
-.drawer-preview-canvas .lh-image-gallery__toggle {
-  display: flex;
-}
-
-@media (max-width: 640px) {
-  .lh-image-gallery--grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-}
-
-@media (max-width: 768px) {
-  .lh-image-gallery__toggle {
-    width: 100%;
-  }
 }
 
 .global-lightbox__nav {
@@ -14569,4 +14502,61 @@ html.theme-transitioning * {
   }
 
   .wiki-pages-dialog__list { flex: 1; }
+}
+
+.lh-image-gallery figure {
+  flex-basis: clamp(150px, 22%, 220px);
+  margin: 0 !important;
+}
+
+.lh-image-gallery__controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.7rem;
+  margin: -0.55rem 0 1.1rem;
+}
+
+.lh-image-gallery__arrow {
+  display: grid;
+  width: 40px;
+  height: 40px;
+  place-items: center;
+  border: 1px solid var(--border-subtle, #d8deea);
+  border-radius: 50%;
+  background: var(--surface-container-lowest, #fff);
+  color: var(--primary, #35568e);
+  cursor: pointer;
+  transition: background-color 160ms ease, color 160ms ease, opacity 160ms ease, transform 160ms ease;
+}
+
+.lh-image-gallery__arrow:hover:not(:disabled),
+.lh-image-gallery__arrow:focus-visible {
+  border-color: var(--primary, #35568e);
+  background: var(--primary, #35568e);
+  color: #fff;
+  outline: none;
+}
+
+.lh-image-gallery__arrow:active:not(:disabled) {
+  transform: scale(0.94);
+}
+
+.lh-image-gallery__arrow:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.lh-image-gallery__count {
+  min-width: 4.5rem;
+  color: var(--outline, #64748b);
+  font-size: 0.78rem;
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+}
+
+@media (max-width: 640px) {
+  .lh-image-gallery figure {
+    flex-basis: clamp(135px, 46%, 190px);
+  }
 }
