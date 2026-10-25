@@ -152,6 +152,26 @@
   color: #93c5fd;
 }
 
+[data-theme="dark"] .community-dashboard__stat,
+[data-theme="dark"] .community-dashboard__distribution {
+  border-color: rgba(148, 163, 184, 0.14);
+  background: var(--surface-container-lowest, #111827);
+}
+
+[data-theme="dark"] .community-dashboard__search {
+  border-color: rgba(148, 163, 184, 0.2);
+  background: var(--surface, #0f172a);
+}
+
+[data-theme="dark"] .community-dashboard__chart,
+[data-theme="dark"] .community-dashboard__row {
+  border-color: rgba(148, 163, 184, 0.12);
+}
+
+[data-theme="dark"] .community-dashboard__bar {
+  background: rgba(148, 163, 184, 0.14);
+}
+
 /* Marketplace editorial */
 [data-theme="dark"] .mp-hero-v2 {
   border-bottom-color: rgba(148, 163, 184, 0.12);

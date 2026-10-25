@@ -1,0 +1,18 @@
+{% assign target_community_key = include.community_key | default: '' %}
+{% assign community_page_count = 0 %}
+{% if target_community_key != '' %}
+  {% for community_page in site.pages %}
+    {% assign community_page_path = community_page.path | default: '' %}
+    {% assign community_page_name = community_page.name | default: '' %}
+    {% if community_page.community_key == target_community_key and community_page_path contains 'content/' %}
+      {% unless community_page_name == 'index.md' or community_page_name == 'index.html' %}
+        {% unless community_page.layout == 'broadcast' or community_page.layout == 'notification' %}
+          {% unless community_page_path contains '/broadcasts/' or community_page_path contains '/notifications/' or community_page_path contains '/_data/' %}
+            {% assign community_page_count = community_page_count | plus: 1 %}
+          {% endunless %}
+        {% endunless %}
+      {% endunless %}
+    {% endif %}
+  {% endfor %}
+{% endif %}
+{{ community_page_count }}

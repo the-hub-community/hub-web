@@ -3,41 +3,139 @@ layout: default
 title: Communities
 ---
 
-<section class="dashboard-ed">
+{% assign communities = site.pages
+   | where_exp: "p", "p.path contains 'content/'"
+   | where_exp: "p", "p.name == 'index.md' or p.name == 'index.html'"
+   | sort: "title" %}
+{% assign community_count = communities | size %}
+{% assign total_wiki_page_count = 0 %}
+{% assign communities_with_pages = 0 %}
+{% for community in communities %}
+  {% assign community_key = community.community_key %}
+  {% if community_key == nil or community_key == '' %}
+    {% assign community_name = community.condo | default: community.title %}
+    {% assign community_key = community_name | slugify | prepend: 'comm-' %}
+  {% endif %}
+  {% capture community_page_count_output %}{% include community-page-count.html community_key=community_key %}{% endcapture %}
+  {% assign community_page_count = community_page_count_output | strip | plus: 0 %}
+  {% assign total_wiki_page_count = total_wiki_page_count | plus: community_page_count %}
+  {% if community_page_count > 0 %}
+    {% assign communities_with_pages = communities_with_pages | plus: 1 %}
+  {% endif %}
+{% endfor %}
+{% assign listing_count = site.pros | size %}
+
+<section class="dashboard-ed community-dashboard">
   <header class="ed-hero">
     <div class="ed-hero__eyebrow">
       <span>All communities</span>
     </div>
     <h1 class="ed-hero__title">Every neighbourhood on the Hub.</h1>
     <p class="ed-hero__subtitle">
-      Each community is maintained by the residents inside it. Pick one to explore its wiki, marketplace, and active notices.
+      Explore local knowledge and see how each community grows. Choose a community to browse its wiki, marketplace, and notices.
     </p>
   </header>
 
-  {% assign communities = site.pages
-     | where_exp: "p", "p.path contains 'content/'"
-     | where_exp: "p", "p.name == 'index.md' or p.name == 'index.html'"
-     | sort: "title" %}
+  <section class="community-dashboard__stats" aria-label="Community overview">
+    <div class="community-dashboard__stat">
+      <span class="community-dashboard__stat-label">Communities</span>
+      <strong>{{ community_count }}</strong>
+      <span class="community-dashboard__stat-note">Local spaces on the Hub</span>
+    </div>
+    <div class="community-dashboard__stat">
+      <span class="community-dashboard__stat-label">Wiki guides</span>
+      <strong>{{ total_wiki_page_count }}</strong>
+      <span class="community-dashboard__stat-note">Resident-shared knowledge</span>
+    </div>
+    <div class="community-dashboard__stat">
+      <span class="community-dashboard__stat-label">Active wikis</span>
+      <strong>{{ communities_with_pages }}</strong>
+      <span class="community-dashboard__stat-note">Communities with guides</span>
+    </div>
+    <div class="community-dashboard__stat">
+      <span class="community-dashboard__stat-label">Listings</span>
+      <strong>{{ listing_count }}</strong>
+      <span class="community-dashboard__stat-note">Available across the Hub</span>
+    </div>
+  </section>
 
-  <div class="ed-list">
-    {% for c in communities %}
-      {% assign c_name = c.condo | default: c.title %}
-      {% assign c_slug = c_name | slugify %}
-      {% assign c_count = site.pages | where: "condo", c_name | size %}
-      <a href="{{ site.baseurl }}/content/{{ c_slug }}/" class="ed-list__row" data-community-slug="{{ c_slug }}">
-        <span class="ed-list__monogram" data-community-slug="{{ c_slug }}" aria-hidden="true">
-          {{ c_name | slice: 0 | upcase }}
-        </span>
-        <span class="ed-list__body">
-          <span class="ed-list__title">{{ c_name }}</span>
-          <span class="ed-list__meta">
-            <span>{{ c_count }} page{% if c_count != 1 %}s{% endif %}</span>
-            <span class="ed-list__meta-sep">·</span>
-            <span>Resident-maintained</span>
+  <section class="community-dashboard__distribution" aria-labelledby="community-distribution-title">
+    <div class="community-dashboard__header">
+      <div>
+        <h2 id="community-distribution-title">Wiki guides by community</h2>
+        <p>Compare published guides across local spaces.</p>
+      </div>
+      <label class="community-dashboard__search">
+        <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
+        <input type="search" id="community-directory-search" aria-label="Search communities" placeholder="Search communities" autocomplete="off">
+      </label>
+    </div>
+
+    <div class="community-dashboard__chart" role="list" aria-label="Number of wiki guides in each community">
+      {% for community in communities %}
+        {% assign community_name = community.condo | default: community.title %}
+        {% assign community_slug = community_name | slugify %}
+        {% assign community_key = community.community_key %}
+        {% if community_key == nil or community_key == '' %}
+          {% assign community_key = community_slug | prepend: 'comm-' %}
+        {% endif %}
+        {% capture community_page_count_output %}{% include community-page-count.html community_key=community_key %}{% endcapture %}
+        {% assign community_page_count = community_page_count_output | strip | plus: 0 %}
+        {% assign community_share = 0 %}
+        {% if total_wiki_page_count > 0 %}
+          {% assign community_share = community_page_count | times: 100.0 | divided_by: total_wiki_page_count %}
+        {% endif %}
+
+        <a href="{{ site.baseurl }}/content/{{ community_slug }}/"
+           class="community-dashboard__row"
+           data-community-name="{{ community_name | downcase | escape }}"
+           data-community-page-count="{{ community_page_count }}"
+           role="listitem">
+          <span class="community-dashboard__monogram" data-community-slug="{{ community_slug }}" aria-hidden="true">
+            {{ community_name | slice: 0 | upcase }}
           </span>
-        </span>
-        <span class="ed-list__arrow"><i class="fa-solid fa-arrow-right"></i></span>
-      </a>
-    {% endfor %}
-  </div>
+          <span class="community-dashboard__row-copy">
+            <span class="community-dashboard__name">{{ community_name }}</span>
+            <span class="community-dashboard__row-note">{{ community_page_count }} wiki guide{% if community_page_count != 1 %}s{% endif %}</span>
+          </span>
+          <span class="community-dashboard__bar" role="img"
+                aria-label="{{ community_page_count }} of {{ total_wiki_page_count }} wiki guides, {{ community_share | round }} percent">
+            <span style="width: {{ community_share }}%"></span>
+          </span>
+          <span class="community-dashboard__count">{{ community_page_count }}</span>
+          <i class="fa-solid fa-arrow-right community-dashboard__arrow" aria-hidden="true"></i>
+        </a>
+      {% endfor %}
+    </div>
+    <p class="community-dashboard__empty" role="status" hidden>No communities match your search.</p>
+  </section>
 </section>
+
+<script>
+  (function initCommunityDirectorySearch() {
+    "use strict";
+    const searchInput = document.getElementById("community-directory-search");
+    const rows = Array.from(document.querySelectorAll(".community-dashboard__row"));
+    const emptyState = document.querySelector(".community-dashboard__empty");
+    if (!searchInput || !rows.length || !emptyState) return;
+
+    const chart = rows[0].parentElement;
+    rows.sort((a, b) => {
+      const pageDifference =
+        Number(b.dataset.communityPageCount) - Number(a.dataset.communityPageCount);
+      return pageDifference || (a.dataset.communityName || "").localeCompare(b.dataset.communityName || "");
+    });
+    rows.forEach((row) => chart.append(row));
+
+    searchInput.addEventListener("input", () => {
+      const query = searchInput.value.trim().toLocaleLowerCase();
+      let visibleCount = 0;
+      rows.forEach((row) => {
+        const matches = (row.dataset.communityName || "").includes(query);
+        row.hidden = !matches;
+        if (matches) visibleCount += 1;
+      });
+      emptyState.hidden = visibleCount > 0;
+    });
+  })();
+</script>

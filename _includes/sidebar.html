@@ -100,9 +100,8 @@
       {% assign c_key = c_slug | prepend: 'comm-' %}
       {% endif %}
       
-      <!-- Count pages matching the KEY, not the name -->
-      {% assign c_pages = site.pages | where: "community_key", c_key | where_exp: "p", "p.name != 'index.md' and p.name != 'index.html'" | where_exp: "p", "p.layout != 'broadcast' and p.layout != 'notification'" %}
-      {% assign c_count = c_pages | size %}
+      {% capture c_count_output %}{% include community-page-count.html community_key=c_key %}{% endcapture %}
+      {% assign c_count = c_count_output | strip | plus: 0 %}
       
       {% assign is_current = false %}
       {% if page_community_key == c_key %}{% assign is_current = true %}{% endif %}
@@ -111,7 +110,7 @@
         class="sidebar-nav__item sidebar-nav__item--community {% if is_current %}is-active{% endif %}"
         data-community-slug="{{ c_slug }}">
         <span class="sidebar-nav__community-name">{{ c_name }}</span>
-        <span class="sidebar-nav__count" aria-label="{{ c_count }} pages">{{ c_count }}</span>
+        <span class="sidebar-nav__count" aria-label="{{ c_count }} {% if c_count == 1 %}page{% else %}pages{% endif %}">{{ c_count }}</span>
       </a>
 
       {% if is_current %}
@@ -121,7 +120,7 @@
       {% for p in community_pages %}
       {% assign p_name = p.name | default: '' %}
       {% assign p_path = p.path | default: '' %}
-      {% if p_path contains 'content/' and p_name != 'index.md' and p_name != 'index.html' %}
+      {% if p_path contains 'content/' and p_name != 'index.md' and p_name != 'index.html' and p.layout != 'broadcast' and p.layout != 'notification' %}
       {% unless p_path contains '/broadcasts/' or p_path contains '/notifications/' or p_path contains '/_data/' %}
       {% assign sidebar_subpage_count = sidebar_subpage_count | plus: 1 %}
       {% endunless %}
@@ -133,7 +132,7 @@
       {% for p in community_pages %}
       {% assign p_name = p.name | default: '' %}
       {% assign p_path = p.path | default: '' %}
-      {% if p_path contains 'content/' and p_name != 'index.md' and p_name != 'index.html' %}
+      {% if p_path contains 'content/' and p_name != 'index.md' and p_name != 'index.html' and p.layout != 'broadcast' and p.layout != 'notification' %}
       {% unless p_path contains '/broadcasts/' or p_path contains '/notifications/' or p_path contains '/_data/' %}
       {% assign sidebar_subpage_index = sidebar_subpage_index | plus: 1 %}
       {% if sidebar_subpage_index <= 5 or page.url == p.url %}

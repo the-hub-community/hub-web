@@ -39,7 +39,8 @@ Tinted per-community, shows live stats inline.
   <!-- COMMUNITY SPECIFIC STATE (e.g., /content/elm-drive/) -->
   {% assign hero_slug = hero_name | slugify %}
   
-  {% assign hero_page_count = site.pages | where: "condo", hero_name | where_exp: "p", "p.path contains 'content/'" | where_exp: "p", "p.name != 'index.md' and p.name != 'index.html'" | size %}
+  {% capture hero_page_count_output %}{% include community-page-count.html community_key=page_community_key %}{% endcapture %}
+  {% assign hero_page_count = hero_page_count_output | strip | plus: 0 %}
   {% assign hero_listing_count = 0 %}
   {% for ad in site.pros %}
     {% assign ad_comm = ad.target_community | default: ad.condo %}

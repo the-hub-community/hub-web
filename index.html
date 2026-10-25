@@ -3,10 +3,19 @@ layout: default
 title: Dashboard
 ---
 
-{% assign communities = site.pages | where_exp: "p", "p.path contains 'content/'" | where_exp: "p", "p.name ==
-'index.md' or p.name == 'index.html'" %}
+{% assign communities = site.pages | where_exp: "p", "p.path contains 'content/'" | where_exp: "p", "p.name == 'index.md' or p.name == 'index.html'" %}
 {% assign community_count = communities | size %}
-{% assign page_count = site.pages | where_exp: "p", "p.path contains 'content/'" | size %}
+{% assign page_count = 0 %}
+{% for community in communities %}
+  {% assign community_key = community.community_key %}
+  {% if community_key == nil or community_key == '' %}
+    {% assign community_name = community.condo | default: community.title %}
+    {% assign community_key = community_name | slugify | prepend: 'comm-' %}
+  {% endif %}
+  {% capture community_page_count_output %}{% include community-page-count.html community_key=community_key %}{% endcapture %}
+  {% assign community_page_count = community_page_count_output | strip | plus: 0 %}
+  {% assign page_count = page_count | plus: community_page_count %}
+{% endfor %}
 {% assign listing_count = site.pros | size %}
 
 <section class="dashboard-ed">
@@ -33,8 +42,12 @@ title: Dashboard
           {% for c in communities %}
             {% assign c_name = c.condo | default: c.title %}
             {% assign c_slug = c_name | slugify %}
-           {% assign c_pages = site.pages | where: "condo", c_name | where_exp: "p", "p.name != 'index.md' and p.name != 'index.html'" | where_exp: "p", "p.layout != 'broadcast' and p.layout != 'notification'" %}
-            {% assign c_count = c_pages | size %}
+            {% assign c_key = c.community_key %}
+            {% if c_key == nil or c_key == '' %}
+              {% assign c_key = c_slug | prepend: 'comm-' %}
+            {% endif %}
+            {% capture c_count_output %}{% include community-page-count.html community_key=c_key %}{% endcapture %}
+            {% assign c_count = c_count_output | strip | plus: 0 %}
             <a href="{{ site.baseurl }}/content/{{ c_slug }}/" class="ed-list__row" data-community-slug="{{ c_slug }}">
               <span class="ed-list__monogram" data-community-slug="{{ c_slug }}" aria-hidden="true">
                 {{ c_name | slice: 0 | upcase }}

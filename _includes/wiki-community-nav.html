@@ -4,7 +4,7 @@
 {% assign wiki_subpage_count = 0 %}
 {% for community_page in community_pages %}
 {% assign community_page_path = community_page.path | default: '' %}
-{% if community_page_path contains 'content/' and community_page.url != community_home_url %}
+{% if community_page_path contains 'content/' and community_page.url != community_home_url and community_page.layout != 'broadcast' and community_page.layout != 'notification' %}
 {% unless community_page_path contains '/broadcasts/' or community_page_path contains '/notifications/' or community_page_path contains '/_data/' %}
 {% assign wiki_subpage_count = wiki_subpage_count | plus: 1 %}
 {% endunless %}
@@ -49,7 +49,7 @@
     <div class="wiki-pages-dialog__list" aria-label="Pages in {{ current_condo }}">
       {% for community_page in community_pages %}
       {% assign community_page_path = community_page.path | default: '' %}
-      {% if community_page_path contains 'content/' and community_page.url != community_home_url %}
+      {% if community_page_path contains 'content/' and community_page.url != community_home_url and community_page.layout != 'broadcast' and community_page.layout != 'notification' %}
       {% unless community_page_path contains '/broadcasts/' or community_page_path contains '/notifications/' or community_page_path contains '/_data/' %}
       {% assign community_page_title = community_page.title | default: community_page.name | replace: '.md', '' | replace: '.html', '' | replace: '-', ' ' %}
       <a class="wiki-pages-dialog__link"
