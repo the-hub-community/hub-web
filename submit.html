@@ -97,7 +97,19 @@ sitemap: false
 
         <div class="form-group" style="margin-top: 24px;">
           <label>Media & Alignment</label>
-          <div class="image-picker" id="wizard-image-picker"></div>
+          <div class="form-group" style="margin-top: 24px;">
+            <label>Media Gallery (Up to 10 images)</label>
+            
+            <!-- Dropzone area -->
+            <div id="bulk-upload-zone" class="file-drop" style="border: 2px dashed var(--border-default); border-radius: 12px; padding: 24px; text-align: center; cursor: pointer; transition: 0.2s;">
+              <i class="fa-solid fa-images" style="font-size: 2rem; color: var(--primary); margin-bottom: 12px;"></i>
+              <div style="font-weight: 600; color: var(--on-surface);">Click or drag images here</div>
+              <div style="font-size: 0.8rem; color: var(--outline);">Supports JPG, PNG, WEBP (Max 5MB each)</div>
+            </div>
+
+            <!-- The Image Picker renders the thumbnails here -->
+            <div class="image-picker" id="wizard-image-picker" style="margin-top: 16px;"></div>
+          </div>
 
           <div style="margin-top: 12px;">
             <select id="wizard-image-align" class="modern-input" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border-default);">

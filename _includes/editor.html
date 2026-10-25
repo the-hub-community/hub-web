@@ -15,8 +15,10 @@
             <!-- Desktop: View Switcher & Close -->
             <div class="drawer-header-actions">
                 <div class="drawer-view-switcher" role="tablist" aria-label="Editor mode toggle">
-                    <button type="button" id="drawer-edit-view-btn" class="drawer-view-btn active" data-view="edit" data-i18n="common.editor">Editor</button>
-                    <button type="button" id="drawer-preview-view-btn" class="drawer-view-btn" data-view="preview" data-i18n="common.preview">Preview</button>
+                    <button type="button" id="drawer-edit-view-btn" class="drawer-view-btn active" data-view="edit"
+                        data-i18n="common.editor">Editor</button>
+                    <button type="button" id="drawer-preview-view-btn" class="drawer-view-btn" data-view="preview"
+                        data-i18n="common.preview">Preview</button>
                 </div>
                 <button type="button" onclick="togglePanel()" class="drawer-close" aria-label="Close">&times;</button>
             </div>
@@ -34,7 +36,8 @@
                             <label class="floating-label" data-i18n="common.community">Community</label>
                         </div>
                         <div class="floating-group">
-                            <input type="text" class="floating-input" id="title" name="title" placeholder=" " required data-char-limit="140">
+                            <input type="text" class="floating-input" id="title" name="title" placeholder=" " required
+                                data-char-limit="140">
                             <label class="floating-label" data-i18n="common.page_title">Page Title</label>
                         </div>
                     </div>
@@ -59,7 +62,8 @@
             </div>
 
             <div class="drawer-footer">
-                <button type="button" onclick="togglePanel()" class="btn-cancel" data-i18n="common.cancel">Cancel</button>
+                <button type="button" onclick="togglePanel()" class="btn-cancel"
+                    data-i18n="common.cancel">Cancel</button>
                 <button type="submit" id="sync-btn" class="btn-sync" data-i18n="common.update">Update</button>
             </div>
             <p id="drawerSubmissionError" class="submission-error-inline" style="display: none;"></p>
@@ -81,8 +85,10 @@
             <div style="display: flex; align-items: center; gap: 8px;">
                 <span class="sec-label" data-i18n="common.section">Section</span>
                 <div class="section-controls" style="display: flex; gap: 2px;">
-                    <button type="button" class="btn-move" data-dir="up" aria-label="Move section up"><i class="fa-solid fa-arrow-up"></i></button>
-                    <button type="button" class="btn-move" data-dir="down" aria-label="Move section down"><i class="fa-solid fa-arrow-down"></i></button>
+                    <button type="button" class="btn-move" data-dir="up" aria-label="Move section up"><i
+                            class="fa-solid fa-arrow-up"></i></button>
+                    <button type="button" class="btn-move" data-dir="down" aria-label="Move section down"><i
+                            class="fa-solid fa-arrow-down"></i></button>
                 </div>
             </div>
             <button type="button" class="btn-remove-sec" aria-label="Remove Section">
@@ -93,19 +99,27 @@
         <div class="rich-toolbar-shell">
             <div class="rich-toolbar" role="toolbar" aria-label="Formatting tools">
                 <div class="rich-toolbar__group">
-                    <button type="button" data-cmd="bold" title="Bold"><i class="fa-solid fa-bold" aria-hidden="true"></i></button>
-                    <button type="button" data-cmd="italic" title="Italic"><i class="fa-solid fa-italic" aria-hidden="true"></i></button>
-                    <button type="button" data-cmd="underline" title="Underline"><i class="fa-solid fa-underline" aria-hidden="true"></i></button>
-                    <button type="button" data-cmd="insertUnorderedList" title="Bulleted List"><i class="fa-solid fa-list-ul" aria-hidden="true"></i></button>
+                    <button type="button" data-cmd="bold" title="Bold"><i class="fa-solid fa-bold"
+                            aria-hidden="true"></i></button>
+                    <button type="button" data-cmd="italic" title="Italic"><i class="fa-solid fa-italic"
+                            aria-hidden="true"></i></button>
+                    <button type="button" data-cmd="underline" title="Underline"><i class="fa-solid fa-underline"
+                            aria-hidden="true"></i></button>
+                    <button type="button" data-cmd="insertUnorderedList" title="Bulleted List"><i
+                            class="fa-solid fa-list-ul" aria-hidden="true"></i></button>
                 </div>
                 <div class="v-sep" aria-hidden="true"></div>
                 <div class="rich-toolbar__group rich-toolbar__group--history">
-                    <button type="button" data-cmd="undo" title="Undo"><i class="fa-solid fa-rotate-left" aria-hidden="true"></i></button>
-                    <button type="button" data-cmd="redo" title="Redo"><i class="fa-solid fa-rotate-right" aria-hidden="true"></i></button>
-                    <button type="button" data-cmd="outdent" title="Decrease Indent"><i class="fa-solid fa-outdent" aria-hidden="true"></i></button>
-                    <button type="button" data-cmd="indent" title="Increase Indent"><i class="fa-solid fa-indent" aria-hidden="true"></i></button>
+                    <button type="button" data-cmd="undo" title="Undo"><i class="fa-solid fa-rotate-left"
+                            aria-hidden="true"></i></button>
+                    <button type="button" data-cmd="redo" title="Redo"><i class="fa-solid fa-rotate-right"
+                            aria-hidden="true"></i></button>
+                    <button type="button" data-cmd="outdent" title="Decrease Indent"><i class="fa-solid fa-outdent"
+                            aria-hidden="true"></i></button>
+                    <button type="button" data-cmd="indent" title="Increase Indent"><i class="fa-solid fa-indent"
+                            aria-hidden="true"></i></button>
                 </div>
-                
+
 
                 <div class="rich-toolbar__group" style="margin-left: auto;">
                     <button type="button" class="btn-ai-format" title="Auto-format with AI">
@@ -118,32 +132,47 @@
 
         <div class="section-body">
             <div class="section-text">
-                <div class="editor-area" contenteditable="true" data-char-limit="8000" data-placeholder="Start writing..."></div>
+                <div class="editor-area" contenteditable="true" data-char-limit="8000"
+                    data-placeholder="Start writing..."></div>
             </div>
 
-            <div class="section-media">
-                <div class="media-actions">
-                    <div class="image-picker" data-role="image-picker"></div>
-                    
-                    <div class="video-input-wrapper">
-                        <i class="fa-brands fa-youtube"></i>
-                        <input type="text" class="video-input" placeholder="Paste a YouTube URL here (optional)">
-                    </div>
-                    
-                    <select class="modern-input video-align-select" style="margin-top: 8px; width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border-default);">
-                      <option value="center">Video: Center</option>
-                      <option value="left">Video: Float Left</option>
-                      <option value="right">Video: Float Right</option>
-                    </select>
+            <div class="section-media"
+                style="padding: 16px; background: var(--surface-container-low); border-top: 1px solid var(--border-subtle);">
 
-                    <div class="floating-group" style="margin-top: 8px;">
-                        <label class="floating-label" style="position: static; margin-bottom: 4px; font-size: 0.75rem; font-weight: 700; color: var(--outline); text-transform: uppercase;">Section Alignment</label>
-                        <select class="modern-input align-select" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border-default); background: var(--surface-container-lowest);">
-                            <option value="center">Center Image (Full width)</option>
+                <div class="media-actions" style="display: flex; flex-direction: column; gap: 12px;">
+
+                    <!-- 1. The Bulk Upload Dropzone -->
+                    <div class="dropzone" data-role="image-picker"
+                        style="border: 2px dashed var(--border-strong); border-radius: var(--radius-lg); padding: 20px; text-align: center; cursor: pointer; background: var(--surface-container-lowest); transition: background 0.2s;">
+                        <i class="fa-solid fa-cloud-arrow-up"
+                            style="font-size: 1.5rem; color: var(--primary); margin-bottom: 8px;"></i>
+                        <div
+                            style="font-family: var(--font-mono); font-size: 0.75rem; font-weight: 600; color: var(--on-surface);">
+                            UPLOAD GALLERY</div>
+                        <div style="font-size: 0.72rem; color: var(--outline); margin-top: 4px;">Drag & drop up to 10
+                            images</div>
+                    </div>
+
+                    <!-- 2. Video Input (Keep as is) -->
+                    <div class="video-input-wrapper"
+                        style="display: flex; align-items: center; gap: 8px; background: var(--surface-container-lowest); padding: 8px 12px; border-radius: 8px; border: 1px solid var(--border-subtle);">
+                        <i class="fa-brands fa-youtube" style="color: #ff0000; font-size: 1.2rem;"></i>
+                        <input type="text" class="video-input" placeholder="Paste YouTube URL..."
+                            style="border: none; background: transparent; flex: 1; outline: none; font-size: 0.85rem;">
+                    </div>
+
+                    <!-- 3. The Layout Selector -->
+                    <div style="display: flex; align-items: center; gap: 8px; margin-top: 8px;">
+                        <label
+                            style="font-size: 0.75rem; font-weight: 600; color: var(--outline); text-transform: uppercase;">Layout:</label>
+                        <select class="align-select"
+                            style="flex: 1; padding: 8px; border-radius: 6px; border: 1px solid var(--border-default); font-size: 0.85rem;">
+                            <option value="center">Full Width (Center)</option>
                             <option value="left">Float Left</option>
                             <option value="right">Float Right</option>
                         </select>
                     </div>
+
                 </div>
             </div>
         </div>
@@ -151,23 +180,33 @@
 </template>
 
 <style>
-  .btn-ai-format {
-    display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px;
-    border-radius: 6px; background: color-mix(in srgb, var(--primary) 8%, transparent);
-    border: 1px solid color-mix(in srgb, var(--primary) 20%, transparent);
-    color: var(--primary); font-weight: 600; font-size: 0.75rem; cursor: pointer;
-    margin-left: auto;
-  }
-  .btn-ai-format:hover { background: color-mix(in srgb, var(--primary) 15%, transparent); }
+    .btn-ai-format {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 4px 10px;
+        border-radius: 6px;
+        background: color-mix(in srgb, var(--primary) 8%, transparent);
+        border: 1px solid color-mix(in srgb, var(--primary) 20%, transparent);
+        color: var(--primary);
+        font-weight: 600;
+        font-size: 0.75rem;
+        cursor: pointer;
+        margin-left: auto;
+    }
+
+    .btn-ai-format:hover {
+        background: color-mix(in srgb, var(--primary) 15%, transparent);
+    }
 </style>
 
 <script>
-   document.addEventListener('DOMContentLoaded', () => {
+    document.addEventListener('DOMContentLoaded', () => {
         document.querySelectorAll('.editor-area').forEach((el) => {
-            try { document.execCommand('defaultParagraphSeparator', false, 'p'); } catch (e) {}
+            try { document.execCommand('defaultParagraphSeparator', false, 'p'); } catch (e) { }
         });
 
-        document.addEventListener('keydown', function(e) {
+        document.addEventListener('keydown', function (e) {
             if (!e.target.classList || !e.target.classList.contains('editor-area')) return;
             if (e.key === 'Enter' && !e.shiftKey) {
                 setTimeout(() => {
@@ -182,139 +221,139 @@
             }
         });
 
-    function getDrawerSectionPreview(sec) {
-        const editor = sec.querySelector('.editor-area');
-        const rawText = editor ? editor.innerHTML : '';
-        const cleanedText = typeof normalizeEditorHtml === 'function' ? normalizeEditorHtml(rawText) : rawText;
-        const align = sec.querySelector('.align-select')?.value || 'center';
-        const videoUrl = sec.querySelector('.video-input')?.value || '';
-        const videoAlign = sec.querySelector('.video-align-select')?.value || 'center';
+        function getDrawerSectionPreview(sec) {
+            const editor = sec.querySelector('.editor-area');
+            const rawText = editor ? editor.innerHTML : '';
+            const cleanedText = typeof normalizeEditorHtml === 'function' ? normalizeEditorHtml(rawText) : rawText;
+            const align = sec.querySelector('.align-select')?.value || 'center';
+            const videoUrl = sec.querySelector('.video-input')?.value || '';
+            const videoAlign = sec.querySelector('.video-align-select')?.value || 'center';
 
-        const fileInput = sec.querySelector('.file-input');
-        const existingPath = sec.querySelector('.existing-image-path');
-        const imageUrl = fileInput?.files?.[0]
-            ? URL.createObjectURL(fileInput.files[0])
-            : (existingPath?.value || '');
+            const fileInput = sec.querySelector('.file-input');
+            const existingPath = sec.querySelector('.existing-image-path');
+            const imageUrl = fileInput?.files?.[0]
+                ? URL.createObjectURL(fileInput.files[0])
+                : (existingPath?.value || '');
 
-        let videoHtml = '';
-        if (videoUrl.includes('youtube.com') || videoUrl.includes('youtu.be')) {
-            const id = videoUrl.split('v=')[1]?.split('&')[0] || videoUrl.split('/').pop();
-            if (id) {
-                videoHtml = `<div class="lh-align-${videoAlign}"><div class="lh-video-container"><iframe src="https://www.youtube.com/embed/${id}" frameborder="0" allowfullscreen></iframe></div></div>`;
+            let videoHtml = '';
+            if (videoUrl.includes('youtube.com') || videoUrl.includes('youtu.be')) {
+                const id = videoUrl.split('v=')[1]?.split('&')[0] || videoUrl.split('/').pop();
+                if (id) {
+                    videoHtml = `<div class="lh-align-${videoAlign}"><div class="lh-video-container"><iframe src="https://www.youtube.com/embed/${id}" frameborder="0" allowfullscreen></iframe></div></div>`;
+                }
             }
-        }
 
-        let mediaHtml = '';
-        if (imageUrl) {
-            mediaHtml = `
+            let mediaHtml = '';
+            if (imageUrl) {
+                mediaHtml = `
                 <div class="lh-align-${align}">
                     <figure class="lh-image-container">
                         <img src="${imageUrl}" alt="Preview image" class="lh-fluid-img">
                     </figure>
                 </div>`;
-        }
+            }
 
-        return `
+            return `
             <div class="lh-section">
                 ${videoHtml}
                 ${mediaHtml}
                 <div class="lh-text">${cleanedText}</div>
                 <div class="lh-clear"></div>
             </div>`;
-    }
+        }
 
-    function generateDrawerPreview() {
-        const title = document.getElementById('title')?.value || (typeof window.t === 'function' ? window.t('messages.untitled_page', 'Untitled Page') : 'Untitled Page');
-        const condo = document.getElementById('condo')?.value || (typeof window.t === 'function' ? window.t('messages.community', 'Community') : 'Community');
-        const previewRoot = document.getElementById('drawer-live-preview-content');
+        function generateDrawerPreview() {
+            const title = document.getElementById('title')?.value || (typeof window.t === 'function' ? window.t('messages.untitled_page', 'Untitled Page') : 'Untitled Page');
+            const condo = document.getElementById('condo')?.value || (typeof window.t === 'function' ? window.t('messages.community', 'Community') : 'Community');
+            const previewRoot = document.getElementById('drawer-live-preview-content');
 
-        if (!previewRoot) return;
+            if (!previewRoot) return;
 
-        let html = `<h1>${title}</h1><p class="preview-subtitle">${condo}</p><hr class="preview-hr">`;
-        const sections = document.querySelectorAll('#drawer-sections-container .drawer-section-card');
+            let html = `<h1>${title}</h1><p class="preview-subtitle">${condo}</p><hr class="preview-hr">`;
+            const sections = document.querySelectorAll('#drawer-sections-container .drawer-section-card');
 
-        sections.forEach((sec) => { html += getDrawerSectionPreview(sec); });
-        previewRoot.innerHTML = html;
-    }
+            sections.forEach((sec) => { html += getDrawerSectionPreview(sec); });
+            previewRoot.innerHTML = html;
+        }
 
-    function switchDrawerView(view) {
-        const isPreview = view === 'preview';
-        const editView = document.getElementById('drawer-edit-view');
-        const previewView = document.getElementById('drawer-preview-view');
-        const editBtn = document.getElementById('drawer-edit-view-btn');
-        const previewBtn = document.getElementById('drawer-preview-view-btn');
+        function switchDrawerView(view) {
+            const isPreview = view === 'preview';
+            const editView = document.getElementById('drawer-edit-view');
+            const previewView = document.getElementById('drawer-preview-view');
+            const editBtn = document.getElementById('drawer-edit-view-btn');
+            const previewBtn = document.getElementById('drawer-preview-view-btn');
 
-        if (isPreview) generateDrawerPreview();
+            if (isPreview) generateDrawerPreview();
 
-        if (editView) editView.classList.toggle('drawer-preview-hidden', isPreview);
-        if (previewView) previewView.classList.toggle('drawer-preview-hidden', !isPreview);
-        if (editBtn) editBtn.classList.toggle('active', !isPreview);
-        if (previewBtn) previewBtn.classList.toggle('active', isPreview);
-    }
+            if (editView) editView.classList.toggle('drawer-preview-hidden', isPreview);
+            if (previewView) previewView.classList.toggle('drawer-preview-hidden', !isPreview);
+            if (editBtn) editBtn.classList.toggle('active', !isPreview);
+            if (previewBtn) previewBtn.classList.toggle('active', isPreview);
+        }
 
-    function updateDrawerToolbarState(editor) {
-        const toolbar = editor?.closest('.drawer-section-card')?.querySelector('.rich-toolbar');
-        if (!toolbar) return;
-        ['bold', 'italic', 'underline'].forEach((command) => {
-            const button = toolbar.querySelector(`button[data-cmd="${command}"]`);
-            if (!button) return;
-            let isActive = false;
-            try { isActive = document.queryCommandState(command); } catch (_) { isActive = false; }
-            button.classList.toggle('is-active', isActive);
-            button.setAttribute('aria-pressed', isActive ? 'true' : 'false');
-        });
-    }
-
-    function updateWordCount(editor) {
-        if (!editor) return;
-        const text = (editor.innerText || '').trim();
-        const words = text ? text.split(/\s+/).filter(Boolean).length : 0;
-        editor.setAttribute('data-wordcount', text ? `${words} word${words === 1 ? '' : 's'}` : '');
-    }
-
-    document.addEventListener('input', (e) => {
-        if (e.target.classList?.contains('editor-area')) updateWordCount(e.target);
-    });
-    document.querySelectorAll('.editor-area').forEach(updateWordCount);
-
-    const sectionContainer = document.getElementById('drawer-sections-container');
-    if (sectionContainer) {
-        const observer = new MutationObserver(() => {
-            document.querySelectorAll('.editor-area').forEach((el) => {
-                if (!el.dataset.wcBound) { el.dataset.wcBound = 'true'; updateWordCount(el); }
+        function updateDrawerToolbarState(editor) {
+            const toolbar = editor?.closest('.drawer-section-card')?.querySelector('.rich-toolbar');
+            if (!toolbar) return;
+            ['bold', 'italic', 'underline'].forEach((command) => {
+                const button = toolbar.querySelector(`button[data-cmd="${command}"]`);
+                if (!button) return;
+                let isActive = false;
+                try { isActive = document.queryCommandState(command); } catch (_) { isActive = false; }
+                button.classList.toggle('is-active', isActive);
+                button.setAttribute('aria-pressed', isActive ? 'true' : 'false');
             });
+        }
+
+        function updateWordCount(editor) {
+            if (!editor) return;
+            const text = (editor.innerText || '').trim();
+            const words = text ? text.split(/\s+/).filter(Boolean).length : 0;
+            editor.setAttribute('data-wordcount', text ? `${words} word${words === 1 ? '' : 's'}` : '');
+        }
+
+        document.addEventListener('input', (e) => {
+            if (e.target.classList?.contains('editor-area')) updateWordCount(e.target);
         });
-        observer.observe(sectionContainer, { childList: true, subtree: true });
-    }
+        document.querySelectorAll('.editor-area').forEach(updateWordCount);
 
-    const drawerViewButtons = document.querySelectorAll('.drawer-view-btn');
-    drawerViewButtons.forEach((btn) => {
-        btn.addEventListener('click', () => switchDrawerView(btn.dataset.view));
+        const sectionContainer = document.getElementById('drawer-sections-container');
+        if (sectionContainer) {
+            const observer = new MutationObserver(() => {
+                document.querySelectorAll('.editor-area').forEach((el) => {
+                    if (!el.dataset.wcBound) { el.dataset.wcBound = 'true'; updateWordCount(el); }
+                });
+            });
+            observer.observe(sectionContainer, { childList: true, subtree: true });
+        }
+
+        const drawerViewButtons = document.querySelectorAll('.drawer-view-btn');
+        drawerViewButtons.forEach((btn) => {
+            btn.addEventListener('click', () => switchDrawerView(btn.dataset.view));
+        });
+
+        const drawerForm = document.getElementById('drawer-form');
+        if (drawerForm) {
+            const livePreviewRefresh = () => {
+                if (document.getElementById('drawer-preview-view-btn')?.classList.contains('active')) generateDrawerPreview();
+            };
+            drawerForm.addEventListener('input', livePreviewRefresh);
+            drawerForm.addEventListener('change', livePreviewRefresh);
+        }
+
+        if (typeof window.applyTranslations === 'function') window.applyTranslations(document);
+
+        document.addEventListener('click', (e) => {
+            const btn = e.target.closest('button[data-cmd]');
+            if (!btn) return;
+            e.preventDefault();
+            document.execCommand(btn.getAttribute('data-cmd'), false, btn.getAttribute('data-value') || null);
+            const card = btn.closest('.drawer-section-card');
+            const editor = card.querySelector('.editor-area');
+            if (editor) { editor.focus(); updateDrawerToolbarState(editor); }
+        });
+
+        document.addEventListener('mousedown', (e) => {
+            if (e.target.closest('button[data-cmd]')) e.preventDefault();
+        });
     });
-
-    const drawerForm = document.getElementById('drawer-form');
-    if (drawerForm) {
-        const livePreviewRefresh = () => {
-            if (document.getElementById('drawer-preview-view-btn')?.classList.contains('active')) generateDrawerPreview();
-        };
-        drawerForm.addEventListener('input', livePreviewRefresh);
-        drawerForm.addEventListener('change', livePreviewRefresh);
-    }
-
-    if (typeof window.applyTranslations === 'function') window.applyTranslations(document);
-
-    document.addEventListener('click', (e) => {
-        const btn = e.target.closest('button[data-cmd]');
-        if (!btn) return;
-        e.preventDefault();
-        document.execCommand(btn.getAttribute('data-cmd'), false, btn.getAttribute('data-value') || null);
-        const card = btn.closest('.drawer-section-card');
-        const editor = card.querySelector('.editor-area');
-        if (editor) { editor.focus(); updateDrawerToolbarState(editor); }
-    });
-
-    document.addEventListener('mousedown', (e) => {
-        if (e.target.closest('button[data-cmd]')) e.preventDefault();
-    });
-});
 </script>

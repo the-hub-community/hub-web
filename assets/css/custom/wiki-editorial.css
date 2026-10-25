@@ -710,3 +710,81 @@
     margin: 1.5rem 0;
   }
 }
+
+/* 1. Global Image Constraints (Prevents page breaking) */
+.lh-section img {
+  max-width: 100%;
+  height: auto;
+  border-radius: var(--radius-lg);
+}
+
+/* 2. Single Image Alignments (Refined) */
+.lh-align-center { 
+  display: block; 
+  margin: 1.5rem auto; 
+  text-align: center; 
+}
+.lh-align-center img { 
+  max-height: 500px; 
+  width: auto;
+  max-width: 100%;
+}
+
+.lh-align-left { 
+  float: left; 
+  width: min(50%, 400px); 
+  margin: 0.5rem 1.5rem 1rem 0; 
+}
+.lh-align-right { 
+  float: right; 
+  width: min(50%, 400px); 
+  margin: 0.5rem 0 1rem 1.5rem; 
+}
+
+/* Clear floats after sections */
+.lh-section::after {
+  content: "";
+  display: table;
+  clear: both;
+}
+
+@media (max-width: 768px) {
+  .lh-align-left, .lh-align-right {
+    float: none;
+    width: 100%;
+    margin: 1rem 0;
+  }
+}
+
+/* 3. The Reel/Carousel (For 2+ Images) */
+.lh-image-gallery {
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: 12px;
+  margin: 1.5rem 0;
+  scrollbar-width: thin;
+}
+
+.lh-image-gallery figure {
+  flex: 0 0 85%; /* Shows 1 main image with a peek of the next */
+  scroll-snap-align: start;
+  margin: 0;
+  position: relative;
+}
+
+@media (min-width: 768px) {
+  .lh-image-gallery figure {
+    flex: 0 0 45%; /* Shows 2 images side-by-side on desktop */
+  }
+}
+
+.lh-image-gallery img {
+  width: 100%;
+  height: 300px;
+  object-fit: cover;
+  border-radius: var(--radius-lg);
+  cursor: zoom-in;
+}
