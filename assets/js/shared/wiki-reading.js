@@ -11,39 +11,54 @@
   const article = document.querySelector(".wiki-render");
   if (!article) return;
 
-  document.querySelectorAll(".wiki-community-nav").forEach((nav) => {
-    const browseButton = nav.querySelector(".wiki-community-nav__browse");
-    if (!browseButton) return;
+  const openWikiPageBrowser = new Map();
+  document
+    .querySelectorAll(
+      ".wiki-community-nav__browse, .sidebar-nav__browse-pages",
+    )
+    .forEach((browseButton) => {
+      const dialogId = browseButton.getAttribute("aria-controls");
+      const dialog = dialogId ? document.getElementById(dialogId) : null;
+      if (!dialog) return;
 
-    const dialog = nav.querySelector(".wiki-pages-dialog");
-    const searchInput = nav.querySelector(".wiki-pages-dialog__search input");
-    const links = Array.from(
-      nav.querySelectorAll(".wiki-pages-dialog__link"),
-    );
-    const emptyState = nav.querySelector(".wiki-pages-dialog__empty");
-    if (!dialog || !searchInput || !links.length || !emptyState) return;
+      let openBrowser = openWikiPageBrowser.get(dialog);
+      if (!openBrowser) {
+        const searchInput = dialog.querySelector(
+          ".wiki-pages-dialog__search input",
+        );
+        const links = Array.from(
+          dialog.querySelectorAll(".wiki-pages-dialog__link"),
+        );
+        const emptyState = dialog.querySelector(
+          ".wiki-pages-dialog__empty",
+        );
+        if (!searchInput || !links.length || !emptyState) return;
 
-    const filterPages = () => {
-      const query = searchInput.value.trim().toLocaleLowerCase();
-      let visibleCount = 0;
-      links.forEach((link) => {
-        const title = link.dataset.searchText || link.textContent || "";
-        const matches = title.toLocaleLowerCase().includes(query);
-        link.hidden = !matches;
-        if (matches) visibleCount += 1;
-      });
-      emptyState.hidden = visibleCount > 0;
-    };
+        const filterPages = () => {
+          const query = searchInput.value.trim().toLocaleLowerCase();
+          let visibleCount = 0;
+          links.forEach((link) => {
+            const title = link.dataset.searchText || link.textContent || "";
+            const matches = title.toLocaleLowerCase().includes(query);
+            link.hidden = !matches;
+            if (matches) visibleCount += 1;
+          });
+          emptyState.hidden = visibleCount > 0;
+        };
 
-    browseButton.addEventListener("click", () => {
-      searchInput.value = "";
-      filterPages();
-      dialog.showModal();
-      searchInput.focus();
+        openBrowser = () => {
+          searchInput.value = "";
+          filterPages();
+          dialog.showModal();
+          searchInput.focus();
+        };
+
+        searchInput.addEventListener("input", filterPages);
+        openWikiPageBrowser.set(dialog, openBrowser);
+      }
+
+      browseButton.addEventListener("click", openBrowser);
     });
-
-    searchInput.addEventListener("input", filterPages);
-  });
 
   const progress = document.getElementById("reading-progress");
   const progressFill = document.getElementById("reading-progress-fill");

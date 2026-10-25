@@ -10805,7 +10805,7 @@ body.mobile-sheet-open { overflow: hidden; }
   overflow: hidden;
 }
 
-.sidebar-nav__subpage > span {
+.sidebar-nav__subpage-title {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -15535,4 +15535,85 @@ html.theme-transitioning * {
 @media (max-width: 560px) {
   .broadcast-form .form-actions { align-items: stretch; flex-direction: column-reverse; }
   .broadcast-form .form-actions .btn { width: 100%; min-width: 0; justify-content: center; }
+}
+
+
+/* Keep long community and page names readable without expanding the sidebar. */
+.sidebar-nav__item--community {
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.sidebar-nav__community-name {
+  display: -webkit-box;
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  overflow-wrap: anywhere;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+}
+
+.sidebar-nav__item--community .sidebar-nav__count {
+  flex: 0 0 auto;
+  margin-left: 4px;
+}
+
+.sidebar-nav__subpage {
+  align-items: flex-start;
+  min-width: 0;
+}
+
+.sidebar-nav__subpage-title {
+  display: -webkit-box;
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  overflow-wrap: anywhere;
+  white-space: normal;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+}
+
+.sidebar-nav__subpage .sidebar-nav__item-mark--page,
+.sidebar-nav__subpage > i {
+  margin-top: 2px;
+}
+
+.sidebar-nav__browse-pages {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  min-height: 36px;
+  margin-top: 4px;
+  padding: 7px 8px;
+  border: 1px solid var(--border-subtle);
+  border-radius: 9px;
+  background: var(--surface-container-lowest);
+  color: var(--primary);
+  font: inherit;
+  font-size: .74rem;
+  font-weight: 650;
+  text-align: left;
+  cursor: pointer;
+}
+
+.sidebar-nav__browse-pages span {
+  flex: 1;
+  min-width: 0;
+}
+
+.sidebar-nav__browse-pages:hover,
+.sidebar-nav__browse-pages:focus-visible {
+  border-color: color-mix(in srgb, var(--primary) 40%, var(--border-subtle));
+  background: color-mix(in srgb, var(--primary) 6%, var(--surface-container-lowest));
+}
+
+.wiki-pages-dialog__link > span:first-child {
+  min-width: 0;
+  overflow-wrap: anywhere;
 }

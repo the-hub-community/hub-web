@@ -5,7 +5,7 @@
 {% for community_page in community_pages %}
 {% assign community_page_path = community_page.path | default: '' %}
 {% if community_page_path contains 'content/' and community_page.url != community_home_url %}
-{% unless community_page_path contains '/broadcasts/' or community_page_path contains '/notifications/' %}
+{% unless community_page_path contains '/broadcasts/' or community_page_path contains '/notifications/' or community_page_path contains '/_data/' %}
 {% assign wiki_subpage_count = wiki_subpage_count | plus: 1 %}
 {% endunless %}
 {% endif %}
@@ -50,7 +50,7 @@
       {% for community_page in community_pages %}
       {% assign community_page_path = community_page.path | default: '' %}
       {% if community_page_path contains 'content/' and community_page.url != community_home_url %}
-      {% unless community_page_path contains '/broadcasts/' or community_page_path contains '/notifications/' %}
+      {% unless community_page_path contains '/broadcasts/' or community_page_path contains '/notifications/' or community_page_path contains '/_data/' %}
       {% assign community_page_title = community_page.title | default: community_page.name | replace: '.md', '' | replace: '.html', '' | replace: '-', ' ' %}
       <a class="wiki-pages-dialog__link"
          href="{{ community_page.url | relative_url }}"

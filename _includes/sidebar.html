@@ -96,35 +96,53 @@
       {% assign c_name = c.condo | default: c.title %}
       {% assign c_key = c.community_key %}
       {% assign c_slug = c_name | slugify %}
+      {% if c_key == nil or c_key == '' %}
+      {% assign c_key = c_slug | prepend: 'comm-' %}
+      {% endif %}
       
       <!-- Count pages matching the KEY, not the name -->
       {% assign c_pages = site.pages | where: "community_key", c_key | where_exp: "p", "p.name != 'index.md' and p.name != 'index.html'" | where_exp: "p", "p.layout != 'broadcast' and p.layout != 'notification'" %}
       {% assign c_count = c_pages | size %}
       
       {% assign is_current = false %}
-      {% if page.community_key == c_key %}{% assign is_current = true %}{% endif %}
+      {% if page_community_key == c_key %}{% assign is_current = true %}{% endif %}
 
       <a href="{{ site.baseurl }}/content/{{ c_slug }}/"
         class="sidebar-nav__item sidebar-nav__item--community {% if is_current %}is-active{% endif %}"
         data-community-slug="{{ c_slug }}">
-        <span>{{ c_name }}</span>
-        <span class="sidebar-nav__count">{{ c_count }}</span>
+        <span class="sidebar-nav__community-name">{{ c_name }}</span>
+        <span class="sidebar-nav__count" aria-label="{{ c_count }} pages">{{ c_count }}</span>
       </a>
 
       {% if is_current %}
       <!-- Fetch subpages by KEY, not name -->
       {% assign community_pages = site.pages | where: "community_key", c_key | sort: "title" %}
-      {% capture subpages_html %}
+      {% assign sidebar_subpage_count = 0 %}
       {% for p in community_pages %}
       {% assign p_name = p.name | default: '' %}
       {% assign p_path = p.path | default: '' %}
       {% if p_path contains 'content/' and p_name != 'index.md' and p_name != 'index.html' %}
       {% unless p_path contains '/broadcasts/' or p_path contains '/notifications/' or p_path contains '/_data/' %}
+      {% assign sidebar_subpage_count = sidebar_subpage_count | plus: 1 %}
+      {% endunless %}
+      {% endif %}
+      {% endfor %}
+      {% assign community_dialog_id = 'wiki-pages-' | append: c_slug %}
+      {% capture subpages_html %}
+      {% assign sidebar_subpage_index = 0 %}
+      {% for p in community_pages %}
+      {% assign p_name = p.name | default: '' %}
+      {% assign p_path = p.path | default: '' %}
+      {% if p_path contains 'content/' and p_name != 'index.md' and p_name != 'index.html' %}
+      {% unless p_path contains '/broadcasts/' or p_path contains '/notifications/' or p_path contains '/_data/' %}
+      {% assign sidebar_subpage_index = sidebar_subpage_index | plus: 1 %}
+      {% if sidebar_subpage_index <= 5 or page.url == p.url %}
       <a href="{{ p.url | relative_url }}" class="sidebar-nav__subpage{% if page.url == p.url %} is-active{% endif %}"
         title="{{ p.title | default: p.name | replace: '.md', '' }}">
         <i class="fa-regular fa-file-lines" aria-hidden="true"></i>
-        <span>{{ p.title | default: p.name | replace: '.md', '' | replace: '-', ' ' }}</span>
+        <span class="sidebar-nav__subpage-title">{{ p.title | default: p.name | replace: '.md', '' | replace: '-', ' ' }}</span>
       </a>
+      {% endif %}
       {% endunless %}
       {% endif %}
       {% endfor %}
@@ -133,6 +151,15 @@
       {% if subpages_trimmed != '' %}
       <div class="sidebar-nav__subpages">
         {{ subpages_html }}
+        {% if sidebar_subpage_count > 5 %}
+        <button class="sidebar-nav__browse-pages" type="button"
+          data-wiki-pages-open="{{ community_dialog_id }}"
+          aria-haspopup="dialog" aria-controls="{{ community_dialog_id }}">
+          <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
+          <span>Browse all {{ sidebar_subpage_count }} pages</span>
+          <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
+        </button>
+        {% endif %}
       </div>
       {% endif %}
       {% endif %}

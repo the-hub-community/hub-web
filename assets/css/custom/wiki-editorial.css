@@ -433,6 +433,11 @@
   text-decoration: none;
 }
 
+.wiki-pages-dialog__link > span:first-child {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
 .wiki-pages-dialog__link[hidden] {
   display: none;
 }
