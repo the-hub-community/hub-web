@@ -119,9 +119,10 @@
         </button>
       `;
 
-      li.querySelector(".image-picker__thumb").addEventListener("click", () =>
-        openLightbox(picker, img.id),
-      );
+      li.querySelector(".image-picker__thumb").addEventListener("click", (e) => {
+        e.stopPropagation();
+        openLightbox(picker, img.id);
+      });
       li.querySelector(".image-picker__menu").addEventListener("click", (e) => {
         e.stopPropagation();
         openEditSheet(picker, img.id);

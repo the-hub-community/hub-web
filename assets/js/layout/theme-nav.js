@@ -603,7 +603,12 @@ function initGlobalLightbox() {
       ".detail-gallery__hero img, .wiki-render img, .lh-content-body img",
     );
 
-    if (!targetImg || targetImg.closest(".comment-card")) return;
+    if (
+      !targetImg ||
+      targetImg.closest(".comment-card, .image-picker")
+    ) {
+      return;
+    }
 
     e.preventDefault();
     lb.dataset.detailGallery = String(
