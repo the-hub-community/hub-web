@@ -40,9 +40,7 @@
     data-baseurl="{{ site.baseurl | default: '' }}" data-page-condo="{{ page.condo | default: '' | escape }}"
     data-page-path="{{ page.path | default: '' | escape }}"
     data-page-key="{{ page.page_key | default: fallback_page_id | escape }}"
-    data-community-key="{{ page_community_key | escape }}"
-    data-resource-mode="{{ site.resources.mode | default: 'dev' }}"
-    data-expose-debug-bindings="{{ site.resources.expose_debug_bindings | default: true }}">
+    data-community-key="{{ page_community_key | escape }}"{% if site.resources.expose_debug_bindings != false and site.resources.mode != 'prod' and jekyll.environment != 'production' %} data-expose-debug-bindings="true"{% endif %}>
 
     {% include header.html %}
 
@@ -266,9 +264,6 @@
     {% include command-palette.html %}
 
     {% if site.resources.expose_client_js != false %}
-    <script>
-        window.API_BASE = "{{ site.api_base_url | default: 'https://api.hubcollective.ca' }}";
-    </script>
     <script type="module" src="{{ '/assets/js/default-layout.js?v=' | append: css_version | relative_url }}"></script>
     {% endif %}
 

@@ -121,16 +121,11 @@ bundle exec jekyll build
 
 ## Deployment
 
-Typical site deploy command:
-
-```bash
-bundle exec jekyll deploy
-```
-
-Production build (with prod resource flags):
+Production static-site deployment:
 
 ```bash
 bundle exec jekyll build --config _config.yml,_config.prod.yml
+wrangler deploy
 ```
 
 Worker deployment should include latest `assets/combined-worker.js` changes and required environment bindings.

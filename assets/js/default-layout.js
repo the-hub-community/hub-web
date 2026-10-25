@@ -35,21 +35,8 @@ if (mobileAlertsBtn && alertsContainer) {
   });
 }
 
-function getResourceMode() {
-  return (document.body?.dataset?.resourceMode || "dev").trim().toLowerCase();
-}
-
 function shouldExposeDebugBindings() {
-  const mode = getResourceMode();
-  // Hard lock: never expose debug bindings in prod mode.
-  if (mode === "prod") return false;
-
-  const explicit = (document.body?.dataset?.exposeDebugBindings || "")
-    .trim()
-    .toLowerCase();
-  if (explicit === "true") return true;
-  if (explicit === "false") return false;
-  return true;
+  return document.body?.dataset?.exposeDebugBindings === "true";
 }
 
 function initShareLinks() {
