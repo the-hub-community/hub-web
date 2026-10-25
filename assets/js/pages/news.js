@@ -35,7 +35,9 @@
     isLoading: false,
     hasMore: true,
     latestRequestId: 0,
+    activeRequestController: null,
   };
+  var defaultCountry = countrySelect.value || "ca";
 
   var endpoint =
     window.ResiHubApi &&
@@ -137,7 +139,9 @@
     var imageHtml = article.image
       ? '<img class="news-card__img" src="' +
         escapeHtml(article.image) +
-        '" alt="News image" loading="lazy" referrerpolicy="no-referrer">'
+        '" alt="' +
+        escapeHtml(article.title || "News story image") +
+        '" loading="lazy" referrerpolicy="no-referrer">'
       : '<div class="news-card__img-placeholder"><i class="fa-regular fa-image"></i></div>';
 
     var source = article.source ? escapeHtml(article.source) : "News Desk";
@@ -206,11 +210,19 @@
   }
 
   async function fetchNews(reset) {
-    if (state.isLoading) return;
+    if (state.isLoading) {
+      if (!reset) return;
+      if (state.activeRequestController) {
+        state.activeRequestController.abort();
+      }
+    }
 
     state.isLoading = true;
-    var requestId = Date.now();
+    grid.setAttribute("aria-busy", "true");
+    var requestId = state.latestRequestId + 1;
     state.latestRequestId = requestId;
+    var requestController = new AbortController();
+    state.activeRequestController = requestController;
     toggleLoadMore();
 
     if (reset) {
@@ -226,6 +238,7 @@
       var response = await fetch(endpoint + "?" + params.toString(), {
         method: "GET",
         headers: { Accept: "application/json" },
+        signal: requestController.signal,
       });
       var payload = await response.json();
 
@@ -274,6 +287,8 @@
     } finally {
       if (requestId === state.latestRequestId) {
         state.isLoading = false;
+        state.activeRequestController = null;
+        grid.setAttribute("aria-busy", "false");
         loadMoreButton.textContent = "Load more";
         toggleLoadMore();
       }
@@ -328,6 +343,7 @@
 
   clearButton.addEventListener("click", function onClearFilters() {
     searchInput.value = "";
+    countrySelect.value = defaultCountry;
     state.topic = "";
     updateActiveTopicButton("");
     applyFiltersAndReload();
