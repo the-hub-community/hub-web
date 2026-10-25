@@ -26,6 +26,7 @@
       images: options.images ? [...options.images] : [],
     };
     state.pickers.set(container, picker);
+    bindDropEvents(container, picker);
     render(container, picker);
   }
 
@@ -71,6 +72,52 @@
     render(container, p);
   }
 
+  function bindDropEvents(container, picker) {
+    let dragDepth = 0;
+    const hasFiles = (dataTransfer) =>
+      Array.from(dataTransfer?.types || []).includes("Files");
+    const clearDragState = () => {
+      dragDepth = 0;
+      container.classList.remove("is-dragover");
+    };
+
+    container.addEventListener("dragenter", (event) => {
+      if (!hasFiles(event.dataTransfer)) return;
+      event.preventDefault();
+      dragDepth += 1;
+      container.classList.add("is-dragover");
+    });
+
+    container.addEventListener("dragover", (event) => {
+      if (!hasFiles(event.dataTransfer)) return;
+      event.preventDefault();
+      event.dataTransfer.dropEffect = "copy";
+    });
+
+    container.addEventListener("dragleave", (event) => {
+      if (!hasFiles(event.dataTransfer)) return;
+      event.preventDefault();
+      dragDepth = Math.max(0, dragDepth - 1);
+      const nextTarget = event.relatedTarget;
+      if (
+        dragDepth === 0 ||
+        !(nextTarget instanceof Node) ||
+        !container.contains(nextTarget)
+      ) {
+        clearDragState();
+      }
+    });
+
+    container.addEventListener("drop", (event) => {
+      if (!hasFiles(event.dataTransfer)) return;
+      event.preventDefault();
+      clearDragState();
+      handleFiles(picker, Array.from(event.dataTransfer.files || []));
+    });
+
+    container.addEventListener("dragend", clearDragState);
+  }
+
   // ── Render ─────────────────────────────────────────────
   function render(container, picker) {
     container.innerHTML = "";
@@ -84,6 +131,13 @@
     `;
     addBtn.addEventListener("click", () => openSourceSheet(picker));
     container.appendChild(addBtn);
+
+    const status = document.createElement("p");
+    status.className = "image-picker__status";
+    status.setAttribute("role", "status");
+    status.setAttribute("aria-live", "polite");
+    status.hidden = true;
+    container.appendChild(status);
 
     if (!picker.images.length) {
       container.dispatchEvent(
@@ -206,7 +260,16 @@
 
   function handleFiles(picker, files) {
     const imageFiles = files.filter((f) => f.type.startsWith("image/"));
-    if (!imageFiles.length) return;
+    const rejectedCount = files.length - imageFiles.length;
+    if (!imageFiles.length) {
+      setPickerStatus(
+        picker,
+        files.length
+          ? "No images added. Choose image files to upload."
+          : "",
+      );
+      return;
+    }
 
     imageFiles.forEach((file) => {
       picker.images.push({
@@ -221,8 +284,21 @@
     });
 
     render(picker.container, picker);
+    if (rejectedCount > 0) {
+      setPickerStatus(
+        picker,
+        `${rejectedCount} non-image file${rejectedCount === 1 ? "" : "s"} skipped. Only images were added.`,
+      );
+    }
     const lastAdded = picker.images[picker.images.length - imageFiles.length];
     if (lastAdded) openEditSheet(picker, lastAdded.id);
+  }
+
+  function setPickerStatus(picker, message) {
+    const status = picker.container.querySelector(".image-picker__status");
+    if (!status) return;
+    status.textContent = message;
+    status.hidden = !message;
   }
 
   // ── Edit sheet ─────────────────────────────────────────

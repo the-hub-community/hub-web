@@ -11,6 +11,19 @@ function getDraftKey() {
   return `editor-draft-${document.body?.dataset?.pageKey || "global"}`;
 }
 
+function mountSectionImagePicker(section) {
+  const pickerEl = section?.querySelector('[data-role="image-picker"]');
+  if (!pickerEl) {
+    console.error("[Editor] image picker container not found");
+    return;
+  }
+  if (!window.ResiHubImagePicker) {
+    console.error("[Editor] image picker module unavailable");
+    return;
+  }
+  window.ResiHubImagePicker.mount(pickerEl);
+}
+
 function showUndoToast(message, undoCallback) {
   document.querySelector(".undo-toast")?.remove();
   const toast = document.createElement("div");
@@ -210,10 +223,7 @@ export function addSectionToDrawer(
   }
 
   container.appendChild(clone);
-  const newSection = container.lastElementChild;
-  const pickerEl = newSection?.querySelector('[data-role="image-picker"]');
-  if (pickerEl && window.ResiHubImagePicker)
-    window.ResiHubImagePicker.mount(pickerEl);
+  mountSectionImagePicker(container.lastElementChild);
   if (typeof window.applyTranslations === "function")
     window.applyTranslations(container);
 }
@@ -506,6 +516,7 @@ export function addNewSection() {
       toolbarShell.open = !window.matchMedia("(max-width: 768px)").matches;
   }
   container.appendChild(clone);
+  mountSectionImagePicker(container.lastElementChild);
   if (typeof window.applyTranslations === "function")
     window.applyTranslations(container);
 }

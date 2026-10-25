@@ -8742,6 +8742,16 @@ body {
   cursor: pointer;
   transition: all 0.15s var(--ease-out);
 }
+.image-picker.is-dragover {
+  border-radius: var(--radius-lg);
+  outline: 2px solid color-mix(in srgb, var(--primary) 24%, transparent);
+  outline-offset: 4px;
+}
+.image-picker.is-dragover .image-picker__add {
+  border-color: var(--primary);
+  background: color-mix(in srgb, var(--primary-container) 14%, var(--surface-container-low));
+  color: var(--primary);
+}
 .image-picker__add:hover,
 .image-picker__add:focus-visible {
   border-color: var(--primary-container);
@@ -8750,6 +8760,13 @@ body {
   outline: none;
 }
 .image-picker__add i { font-size: 1rem; }
+
+.image-picker__status {
+  margin: 0;
+  color: var(--error, #ba1a1a);
+  font-size: 0.78rem;
+  line-height: 1.45;
+}
 
 /* Thumbnails */
 .image-picker__strip {
