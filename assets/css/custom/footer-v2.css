@@ -123,21 +123,7 @@
   }
 }
 
-/* Ensure Font Awesome brand glyphs render in footer share row */
-.footer-share-links a i,
-.footer-share-links a .fa-brands,
-.footer-share-links a .fa-solid {
-  font-family: "Font Awesome 6 Brands", "Font Awesome 6 Free" !important;
-  font-style: normal;
-  font-weight: 900;
-  display: inline-block;
-  line-height: 1;
-}
 
-/* Fix blank X icon on FA6 — allow alias fallback */
-.footer-share-links a i.fa-x-twitter::before {
-  content: "\e61b"; /* x-twitter glyph */
-}
 
 .logo-image--footer {
   height: 32px;    /* was 26px — new wordmark is taller */
