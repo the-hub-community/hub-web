@@ -8,8 +8,13 @@ let currentPage = 1;
 const adsPerPage = 6; // Adjust based on your preference
 let currentSort = "relevance";
 let currentPriceBand = "all";
+let currentDateFilter = "all";
+let currentPhotosOnly = false;
+let currentVerifiedOnly = false;
+let currentSavedOnly = false;
 const activeTags = new Set();
 let listingIndex = [];
+let savedListingUrls = new Set();
 
 const SORT_LABELS = {
   relevance: "Smart relevance",
@@ -285,6 +290,37 @@ function populateCommunityOptions() {
   });
 }
 
+function buildCategoryLinks() {
+  const container = document.getElementById("mpCategoryLinks");
+  if (!container) return;
+
+  const existing = new Set(
+    Array.from(container.querySelectorAll(".mp-category-link")).map((button) =>
+      normalizeToken(button.dataset.category || "all"),
+    ),
+  );
+  const categories = new Map();
+  listingIndex.forEach((item) => {
+    const label = item.category.trim();
+    const normalized = normalizeToken(label);
+    if (label && normalized && !existing.has(normalized)) {
+      categories.set(normalized, label);
+    }
+  });
+
+  Array.from(categories.values())
+    .sort((a, b) => a.localeCompare(b))
+    .forEach((label) => {
+      const button = document.createElement("button");
+      button.type = "button";
+      button.className = "mp-category-link";
+      button.dataset.category = label;
+      button.setAttribute("aria-pressed", "false");
+      button.textContent = label;
+      container.appendChild(button);
+    });
+}
+
 function buildTagRail() {
   const rail = document.getElementById("mpTagRail");
   if (!rail) return;
@@ -341,14 +377,84 @@ function syncTagRailState() {
 }
 
 function updateCategoryPillState() {
-  document.querySelectorAll(".mp-pill").forEach((pill) => {
-    const text = normalizeToken(pill.innerText);
+  document.querySelectorAll(".mp-category-link").forEach((button) => {
     const active =
-      currentCategory === "all"
-        ? text.includes("all")
-        : text.includes(normalizeToken(currentCategory));
-    pill.classList.toggle("active", active);
+      normalizeToken(button.dataset.category || "all") ===
+      normalizeToken(currentCategory);
+    button.classList.toggle("active", active);
+    button.setAttribute("aria-pressed", String(active));
   });
+}
+
+function updateQuickFilterState() {
+  const filters = {
+    all:
+      normalizeToken(currentCategory) === "all" &&
+      currentDateFilter === "all" &&
+      currentPriceBand === "all" &&
+      !currentPhotosOnly &&
+      !currentVerifiedOnly,
+    new: currentDateFilter === "new",
+    under50: currentPriceBand === "under50",
+    free: currentPriceBand === "free",
+    photos: currentPhotosOnly,
+    verified: currentVerifiedOnly,
+  };
+
+  document.querySelectorAll(".mp-pill-v2").forEach((button) => {
+    const active = Boolean(filters[button.dataset.filter]);
+    button.classList.toggle("active", active);
+    button.setAttribute("aria-pressed", String(active));
+  });
+
+  const savedButton = document.getElementById("mpSavedBtn");
+  if (savedButton) {
+    savedButton.classList.toggle("is-active", currentSavedOnly);
+    savedButton.setAttribute("aria-pressed", String(currentSavedOnly));
+  }
+}
+
+function readSavedListingUrls() {
+  try {
+    const parsed = JSON.parse(
+      localStorage.getItem("resiHubSavedListings") || "[]",
+    );
+    return new Set(
+      Array.isArray(parsed)
+        ? parsed.filter((url) => typeof url === "string")
+        : [],
+    );
+  } catch (error) {
+    console.error("Unable to read saved marketplace listings.", error);
+    return new Set();
+  }
+}
+
+function saveSavedListingUrls() {
+  try {
+    localStorage.setItem(
+      "resiHubSavedListings",
+      JSON.stringify(Array.from(savedListingUrls)),
+    );
+  } catch (error) {
+    console.error("Unable to save marketplace listing.", error);
+  }
+}
+
+function syncSavedListingControls() {
+  const count = document.getElementById("mpSavedCount");
+  if (count) count.textContent = String(savedListingUrls.size);
+
+  document.querySelectorAll(".mp-card-v2__heart").forEach((button) => {
+    const saved = savedListingUrls.has(button.dataset.url || "");
+    button.classList.toggle("is-saved", saved);
+    button.setAttribute("aria-pressed", String(saved));
+    button.setAttribute("aria-label", saved ? "Remove saved listing" : "Save listing");
+    button.innerHTML = saved
+      ? '<i class="fa-solid fa-heart" aria-hidden="true"></i>'
+      : '<i class="fa-regular fa-heart" aria-hidden="true"></i>';
+  });
+  updateQuickFilterState();
 }
 
 function passesPriceBand(price) {
@@ -632,6 +738,13 @@ function applyLogic() {
         typeof currentVerifiedOnly === "undefined" ||
         !currentVerifiedOnly ||
         Boolean(item.card.querySelector(".mp-badge--verified"));
+      const savedMatch =
+        !currentSavedOnly ||
+        savedListingUrls.has(
+          item.card.querySelector(".mp-card-v2__heart")?.dataset.url ||
+            item.card.querySelector(".mp-card-v2")?.getAttribute("href") ||
+            "",
+        );
 
       return (
         categoryMatch &&
@@ -641,7 +754,8 @@ function applyLogic() {
         searchMatch &&
         dateMatch &&
         photosMatch &&
-        verifiedMatch
+        verifiedMatch &&
+        savedMatch
       );
     })
     .map((item) => ({
@@ -694,9 +808,11 @@ function applyLogic() {
   const start = (currentPage - 1) * adsPerPage;
   const end = start + adsPerPage;
   const pageItems = filtered.slice(start, end);
+  const grid = document.getElementById("adList");
 
   pageItems.forEach((item) => {
     item.card.style.display = "block";
+    grid.appendChild(item.card);
   });
 
   const noResults = document.getElementById("marketplaceNoResults");
@@ -717,6 +833,7 @@ function applyLogic() {
   if (nextBtnEl) {
     nextBtnEl.disabled = currentPage === totalPages || filtered.length === 0;
   }
+  updateQuickFilterState();
 }
 
 /**
@@ -758,20 +875,17 @@ function syncControlsWithState() {
   }
   if (sortSelect) sortSelect.value = currentSort;
   if (priceSelect) priceSelect.value = currentPriceBand;
-  if (searchInput) {
-    const parsed = parseUrlState();
-    if (parsed.q && !searchInput.value) searchInput.value = parsed.q;
-  }
 
   updateCategoryPillState();
   syncTagRailState();
+  if (priceSelect) priceSelect.value = currentPriceBand;
+  updateQuickFilterState();
 }
 
 function bindDiscoveryControls() {
   const communitySelect = document.getElementById("mpCommunitySelect");
   const sortSelect = document.getElementById("mpSortSelect");
   const priceSelect = document.getElementById("mpPriceBand");
-  const clearBtn = document.getElementById("mpClearFilters");
   const tagRail = document.getElementById("mpTagRail");
 
   if (communitySelect) {
@@ -797,25 +911,6 @@ function bindDiscoveryControls() {
     priceSelect.addEventListener("change", () => {
       currentPriceBand = priceSelect.value || "all";
       currentPage = 1;
-      applyLogic();
-      writeUrlState();
-    });
-  }
-
-  if (clearBtn) {
-    clearBtn.addEventListener("click", () => {
-      currentCategory = "all";
-      currentCommunity = "all";
-      currentSort = "relevance";
-      currentPriceBand = "all";
-      currentPage = 1;
-      activeTags.clear();
-
-      const searchInput = document.getElementById("adSearch");
-      if (searchInput) searchInput.value = "";
-
-      initCommunityNavigation();
-      syncControlsWithState();
       applyLogic();
       writeUrlState();
     });
@@ -851,15 +946,12 @@ document.addEventListener("DOMContentLoaded", () => {
     parsedState.community || resolveCommunityFilterFromUrl() || "all";
   currentSort = SORT_LABELS[parsedState.sort] ? parsedState.sort : "relevance";
 
-  let currentDateFilter = "all";
-  let currentPhotosOnly = false;
-  let currentVerifiedOnly = false;
-
   currentPriceBand = PRICE_LABELS[parsedState.price]
     ? parsedState.price
     : "all";
   currentPage = parsedState.page || 1;
   parsedState.tags.forEach((tag) => activeTags.add(tag));
+  savedListingUrls = readSavedListingUrls();
 
   const searchInput = document.getElementById("adSearch");
   if (searchInput && parsedState.q) {
@@ -868,11 +960,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
   buildListingIndex();
   populateCommunityOptions();
+  buildCategoryLinks();
   buildTagRail();
   bindDiscoveryControls();
   syncControlsWithState();
   initCommunityNavigation();
   initMarketplaceImageLightbox();
+  syncSavedListingControls();
   applyLogic();
   writeUrlState();
 
@@ -880,11 +974,6 @@ document.addEventListener("DOMContentLoaded", () => {
   // The new editorial markup uses .mp-pill-v2 with data-filter
   // and .mp-category-link with data-category. Route them to
   // existing state + applyLogic().
-
-  const FILTER_TO_PRICE_BAND = {
-    under50: "under50",
-    free: "free",
-  };
 
   // Show Local Banner if filtered
   if (currentCommunity && currentCommunity !== "all") {
@@ -903,30 +992,56 @@ document.addEventListener("DOMContentLoaded", () => {
   // "new today" = listing date within 24h
 
   document.addEventListener("click", (e) => {
+    const savedHeart = e.target.closest(".mp-card-v2__heart");
+    if (savedHeart) {
+      e.preventDefault();
+      e.stopPropagation();
+      const url = savedHeart.dataset.url || "";
+      if (!url) return;
+      if (savedListingUrls.has(url)) {
+        savedListingUrls.delete(url);
+      } else {
+        savedListingUrls.add(url);
+      }
+      saveSavedListingUrls();
+      syncSavedListingControls();
+      applyLogic();
+      return;
+    }
+
+    const savedButton = e.target.closest("#mpSavedBtn");
+    if (savedButton) {
+      e.preventDefault();
+      currentSavedOnly = !currentSavedOnly;
+      currentPage = 1;
+      applyLogic();
+      return;
+    }
+
+    if (e.target.closest("#mpClearFilters, #mpEmptyClear")) {
+      currentCategory = "all";
+      currentCommunity = "all";
+      currentSort = "relevance";
+      currentPriceBand = "all";
+      currentDateFilter = "all";
+      currentPhotosOnly = false;
+      currentVerifiedOnly = false;
+      currentSavedOnly = false;
+      currentPage = 1;
+      activeTags.clear();
+      if (searchInput) searchInput.value = "";
+      initCommunityNavigation();
+      syncControlsWithState();
+      applyLogic();
+      writeUrlState();
+      return;
+    }
+
     // ── Filter pills ─────────────────────────────────────────
     const pill = e.target.closest(".mp-pill-v2");
     if (pill) {
       e.preventDefault();
       const filter = String(pill.dataset.filter || "all");
-
-      // Sort pill cycles through sort options
-      if (filter === "sort") {
-        const sorts = [
-          { key: "relevance", label: "Smart relevance" },
-          { key: "newest", label: "Newest first" },
-          { key: "price_low", label: "Price: Low → High" },
-          { key: "price_high", label: "Price: High → Low" },
-          { key: "title_az", label: "Title: A → Z" },
-        ];
-        const idx = sorts.findIndex((s) => s.key === currentSort);
-        const next = sorts[(idx + 1) % sorts.length];
-        currentSort = next.key;
-        pill.textContent = `Sort: ${next.label} ▾`;
-        currentPage = 1;
-        applyLogic();
-        writeUrlState();
-        return;
-      }
 
       // Reset all toggle-style filters first
       currentDateFilter = "all";
@@ -934,6 +1049,7 @@ document.addEventListener("DOMContentLoaded", () => {
       currentVerifiedOnly = false;
       currentPriceBand = "all";
       currentCategory = "all";
+      currentSavedOnly = false;
 
       // Apply the clicked filter
       switch (filter) {
@@ -965,11 +1081,14 @@ document.addEventListener("DOMContentLoaded", () => {
       });
       document.querySelectorAll(".mp-category-link").forEach((c) => {
         c.classList.remove("active");
+        c.setAttribute("aria-pressed", "false");
       });
+      updateCategoryPillState();
 
       currentPage = 1;
       applyLogic();
       writeUrlState();
+      syncControlsWithState();
       return;
     }
 
@@ -987,13 +1106,20 @@ document.addEventListener("DOMContentLoaded", () => {
       currentCategory = category === "all" ? "all" : category;
 
       document.querySelectorAll(".mp-category-link").forEach((c) => {
-        c.classList.toggle("active", c === cat);
+        const active = c === cat;
+        c.classList.toggle("active", active);
+        c.setAttribute("aria-pressed", String(active));
       });
       document.querySelectorAll(".mp-pill-v2").forEach((p) => {
         p.classList.remove("active");
+        p.setAttribute("aria-pressed", "false");
       });
       const allPill = document.querySelector('.mp-pill-v2[data-filter="all"]');
-      if (allPill) allPill.classList.add("active");
+      if (allPill) {
+        const allSelected = category === "all";
+        allPill.classList.toggle("active", allSelected);
+        allPill.setAttribute("aria-pressed", String(allSelected));
+      }
 
       currentPage = 1;
       applyLogic();
@@ -1001,6 +1127,33 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
   });
+
+  if (searchInput) {
+    const applySearch = () => {
+      currentPage = 1;
+      applyLogic();
+      writeUrlState();
+    };
+    searchInput.addEventListener("input", applySearch);
+    searchInput.addEventListener("keydown", (event) => {
+      if (event.key === "Enter") {
+        event.preventDefault();
+        applySearch();
+      }
+    });
+    document
+      .getElementById("mpSearchSubmit")
+      ?.addEventListener("click", applySearch);
+  }
+
+  const newCount = document.getElementById("mpNewCount");
+  if (newCount) {
+    const now = Math.floor(Date.now() / 1000);
+    newCount.textContent = String(
+      listingIndex.filter((item) => item.date > 0 && now - item.date < 86400)
+        .length,
+    );
+  }
 
   // Auto-hide skeletons after images load
   document.querySelectorAll(".ad-main-img").forEach((img) => {

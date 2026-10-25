@@ -30,42 +30,89 @@ description: Browse local community listings, services, rentals, and goods publi
     <h1 id="mpTitle">Neighborhood Marketplace</h1>
     <p id="mpSubtitle">Buy, sell, borrow, and give away locally. No middleman fees, verified neighbor badges, and transparent peer trust signals.</p>
     <div class="mp-hero-actions">
-      <a href="#" class="mp-btn mp-btn--secondary" id="mpSavedBtn">
-        <i class="fa-regular fa-heart"></i>
-        Saved Items
-        <span class="mp-btn__badge" id="mpSavedCount">0</span>
-      </a>
-      <a href="{{ site.baseurl }}/list-service.html" class="mp-btn mp-btn--primary">
+        <a href="{{ site.baseurl }}/list-service.html" class="mp-btn mp-btn--primary">
         <i class="fa-solid fa-plus"></i>
         Post a Listing
       </a>
     </div>
   </div>
 
-  <!-- Filter pills -->
-  <div class="mp-filter-row" id="mpFilterRow">
-    <button class="mp-pill-v2 active" data-filter="all">All Items</button>
-    <button class="mp-pill-v2" data-filter="new">New Today <small id="mpNewCount"></small></button>
-    <button class="mp-pill-v2" data-filter="under50">Under $50</button>
-    <button class="mp-pill-v2" data-filter="free">Free / Curbside</button>
-    <button class="mp-pill-v2" data-filter="photos">Has Photos</button>
-    <button class="mp-pill-v2" data-filter="verified">Verified</button>
-    <button class="mp-pill-v2" data-filter="sort" id="mpSortPill">Sort: Newest First ▾</button>
-  </div>
+  <section class="mp-discovery" aria-label="Find marketplace listings">
+    <div class="mp-discovery__search">
+      <label class="mp-search" for="adSearch">
+        <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
+        <input id="adSearch" type="search" placeholder="Search listings, categories, communities…" autocomplete="off">
+        <button type="button" class="mp-search__submit" id="mpSearchSubmit">Search</button>
+      </label>
+      <label class="mp-select-field">
+        <span>Community</span>
+        <select id="mpCommunitySelect" aria-label="Filter by community">
+          <option value="all">All communities</option>
+        </select>
+      </label>
+    </div>
+
+    <div class="mp-filter-row" id="mpFilterRow" aria-label="Quick filters">
+      <button type="button" class="mp-pill-v2 active" data-filter="all" aria-pressed="true">All items</button>
+      <button type="button" class="mp-pill-v2" data-filter="new" aria-pressed="false">New today <small id="mpNewCount"></small></button>
+      <button type="button" class="mp-pill-v2" data-filter="under50" aria-pressed="false">Under $50</button>
+      <button type="button" class="mp-pill-v2" data-filter="free" aria-pressed="false">Free / curbside</button>
+      <button type="button" class="mp-pill-v2" data-filter="photos" aria-pressed="false">Has photos</button>
+      <button type="button" class="mp-pill-v2" data-filter="verified" aria-pressed="false">Verified</button>
+    </div>
+
+    <div class="mp-discovery__controls">
+      <div class="mp-select-group">
+        <label class="mp-select-field">
+          <span>Price</span>
+          <select id="mpPriceBand" aria-label="Filter by price">
+            <option value="all">Any price</option>
+            <option value="free">Free / contact seller</option>
+            <option value="under50">Under $50</option>
+            <option value="50to200">$50–$200</option>
+            <option value="200plus">$200+</option>
+          </select>
+        </label>
+        <label class="mp-select-field">
+          <span>Sort by</span>
+          <select id="mpSortSelect" aria-label="Sort listings">
+            <option value="relevance">Smart relevance</option>
+            <option value="newest">Newest first</option>
+            <option value="price_low">Price: low to high</option>
+            <option value="price_high">Price: high to low</option>
+            <option value="title_az">Title: A to Z</option>
+          </select>
+        </label>
+      </div>
+      <button type="button" class="mp-clear-filters" id="mpClearFilters">
+        <i class="fa-solid fa-rotate-left" aria-hidden="true"></i> Clear filters
+      </button>
+    </div>
+
+    <div class="mp-tag-rail" id="mpTagRail" hidden aria-label="Popular listing tags"></div>
+  </section>
 
   <!-- Category links -->
-  <div class="mp-category-row">
-    <span class="mp-category-label">Categories:</span>
+  <nav class="mp-category-row" aria-label="Browse by category">
+    <span class="mp-category-label">Browse category</span>
     <div class="mp-category-links" id="mpCategoryLinks">
-      <button class="mp-category-link active" data-category="all">All</button>
-      <button class="mp-category-link" data-category="Furniture & Home" data-category-color="furniture">Furniture & Home</button>
-      <button class="mp-category-link" data-category="Bicycles & Transit" data-category-color="bicycles">Bicycles & Transit</button>
-      <button class="mp-category-link" data-category="Kids & Toys" data-category-color="kids">Kids & Toys</button>
-      <button class="mp-category-link" data-category="Tools & Garden" data-category-color="tools">Tools & Garden</button>
-      <button class="mp-category-link" data-category="Books & Media" data-category-color="books">Books & Media</button>
-      <button class="mp-category-link" data-category="Services" data-category-color="services">Services</button>
-      <button class="mp-category-link" data-category="Food" data-category-color="food">Food</button>
+      <button type="button" class="mp-category-link active" data-category="all" aria-pressed="true">All</button>
+      <button type="button" class="mp-category-link" data-category="Furniture & Home" aria-pressed="false">Furniture &amp; Home</button>
+      <button type="button" class="mp-category-link" data-category="Bicycles & Transit" aria-pressed="false">Bicycles &amp; Transit</button>
+      <button type="button" class="mp-category-link" data-category="Kids & Toys" aria-pressed="false">Kids &amp; Toys</button>
+      <button type="button" class="mp-category-link" data-category="Tools & Garden" aria-pressed="false">Tools &amp; Garden</button>
+      <button type="button" class="mp-category-link" data-category="Books & Media" aria-pressed="false">Books &amp; Media</button>
+      <button type="button" class="mp-category-link" data-category="Services" aria-pressed="false">Services</button>
+      <button type="button" class="mp-category-link" data-category="Food" aria-pressed="false">Food</button>
     </div>
+  </nav>
+
+  <div class="mp-results-bar">
+    <p id="marketplaceResultsInfo" aria-live="polite">Loading listings…</p>
+    <a href="#" class="mp-btn mp-btn--secondary" id="mpSavedBtn" aria-pressed="false">
+      <i class="fa-regular fa-heart" aria-hidden="true"></i>
+      Saved items <span class="mp-btn__badge" id="mpSavedCount">0</span>
+    </a>
   </div>
 
   <!-- Grid (populated by existing marketplace-page.js) -->
@@ -74,116 +121,17 @@ description: Browse local community listings, services, rentals, and goods publi
     {% include classifieds.html ad=ad %}
   {% endfor %}
 </div>
-<script>
-document.addEventListener('DOMContentLoaded', () => {
-  const savedBtn = document.getElementById('mpSavedBtn');
-  const savedCount = document.getElementById('mpSavedCount');
-  
-  // 1. Initialize count from localStorage
-  let saved = JSON.parse(localStorage.getItem('resiHubSavedListings') || '[]');
-  if (savedCount) savedCount.textContent = saved.length;
-
-  // 2. Handle clicking the heart on a card
-  document.querySelectorAll('.mp-card-v2__heart').forEach(heart => {
-    const cardUrl = heart.getAttribute('data-url');
-    
-    // Check if already saved
-    if (saved.includes(cardUrl)) {
-      heart.classList.add('is-saved');
-      heart.innerHTML = '<i class="fa-solid fa-heart"></i>';
-    }
-
-    heart.addEventListener('click', (e) => {
-      e.preventDefault();
-      e.stopPropagation();
-      
-      if (saved.includes(cardUrl)) {
-        // Unsave
-        saved = saved.filter(url => url !== cardUrl);
-        heart.classList.remove('is-saved');
-        heart.innerHTML = '<i class="fa-regular fa-heart"></i>';
-      } else {
-        // Save
-        saved.push(cardUrl);
-        heart.classList.add('is-saved');
-        heart.innerHTML = '<i class="fa-solid fa-heart"></i>';
-      }
-      
-      localStorage.setItem('resiHubSavedListings', JSON.stringify(saved));
-      if (savedCount) savedCount.textContent = saved.length;
-    });
-  });
-
-  // 3. Make the "Saved Items" button filter the grid
-  if (savedBtn) {
-    savedBtn.addEventListener('click', (e) => {
-      e.preventDefault();
-      // Simple logic to toggle showing only saved items
-      const isFiltering = savedBtn.classList.contains('is-active');
-      
-      document.querySelectorAll('.ad-card-wrapper').forEach(card => {
-        const url = card.querySelector('.mp-card-v2').getAttribute('href');
-        if (!isFiltering && !saved.includes(url)) {
-          card.style.display = 'none';
-        } else {
-          card.style.display = '';
-        }
-      });
-      
-      savedBtn.classList.toggle('is-active');
-      savedBtn.style.background = isFiltering ? '' : 'var(--primary-light)';
-      savedBtn.style.borderColor = isFiltering ? '' : 'var(--primary)';
-    });
-  }
-});
-
-document.addEventListener('DOMContentLoaded', () => {
-  const savedBtn = document.getElementById('mpSavedBtn');
-  const savedCount = document.getElementById('mpSavedCount');
-  let saved = JSON.parse(localStorage.getItem('resiHubSavedListings') || '[]');
-  
-  if (savedCount) savedCount.textContent = saved.length;
-
-  document.querySelectorAll('.mp-card-v2__heart').forEach(heart => {
-    const cardUrl = heart.getAttribute('data-url');
-    if (saved.includes(cardUrl)) {
-      heart.classList.add('is-saved');
-      heart.innerHTML = '<i class="fa-solid fa-heart"></i>';
-    }
-
-    heart.addEventListener('click', (e) => {
-      e.preventDefault(); e.stopPropagation();
-      if (saved.includes(cardUrl)) {
-        saved = saved.filter(url => url !== cardUrl);
-        heart.classList.remove('is-saved');
-        heart.innerHTML = '<i class="fa-regular fa-heart"></i>';
-      } else {
-        saved.push(cardUrl);
-        heart.classList.add('is-saved');
-        heart.innerHTML = '<i class="fa-solid fa-heart"></i>';
-      }
-      localStorage.setItem('resiHubSavedListings', JSON.stringify(saved));
-      if (savedCount) savedCount.textContent = saved.length;
-    });
-  });
-
-  if (savedBtn) {
-    savedBtn.addEventListener('click', (e) => {
-      e.preventDefault();
-      const isFiltering = savedBtn.classList.contains('is-active');
-      document.querySelectorAll('.ad-card-wrapper').forEach(card => {
-        const url = card.querySelector('.mp-card-v2').getAttribute('href');
-        if (!isFiltering && !saved.includes(url)) {
-          card.style.display = 'none';
-        } else {
-          card.style.display = '';
-        }
-      });
-      savedBtn.classList.toggle('is-active');
-    });
-  }
-});
-</script>
+<div id="marketplaceNoResults" class="mp-empty-v2" hidden>
+  <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
+  <h2>No listings match those filters</h2>
+  <p>Try a different search or clear filters to see more from your community.</p>
+  <button type="button" class="mp-btn mp-btn--secondary" id="mpEmptyClear">Clear filters</button>
+</div>
+<nav class="mp-pagination" aria-label="Marketplace pages">
+  <button type="button" class="mp-page-btn" id="prevBtn" aria-label="Previous page" onclick="changePage(-1)">← Previous</button>
+  <span id="pageInfo" aria-live="polite">1 / 1</span>
+  <button type="button" class="mp-page-btn" id="nextBtn" aria-label="Next page" onclick="changePage(1)">Next →</button>
+</nav>
 </div>
 
 
