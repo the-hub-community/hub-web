@@ -87,23 +87,39 @@ sitemap: false
               <button type="button" data-cmd="insertUnorderedList" title="Bulleted List"><i class="fa-solid fa-list-ul"></i></button>
               <button type="button" data-cmd="outdent" title="Decrease Indent"><i class="fa-solid fa-outdent"></i></button>
               <button type="button" data-cmd="indent" title="Increase Indent"><i class="fa-solid fa-indent"></i></button>
+              <button type="button" class="inline-media-tool" data-inline-image-trigger title="Insert photo at cursor">
+                <i class="fa-regular fa-image" aria-hidden="true"></i><span>Photo</span>
+              </button>
+              <input type="file" accept="image/*" data-inline-image-input hidden>
+              <button type="button" class="inline-media-tool" data-inline-video-toggle title="Insert YouTube video at cursor">
+                <i class="fa-brands fa-youtube" aria-hidden="true"></i><span>Video</span>
+              </button>
               <button type="button" id="btn-ai-format" class="btn-ai-format" title="Auto-format with AI">
                 <i class="fa-solid fa-wand-magic-sparkles"></i> AI Format
               </button>
             </div>
+            <div class="inline-media-composer" data-inline-video-composer hidden>
+              <label>
+                <span>YouTube link</span>
+                <input type="url" placeholder="https://youtu.be/..." autocomplete="url">
+              </label>
+              <button type="button" class="inline-media-composer__insert" data-inline-video-insert>Insert at cursor</button>
+            </div>
+            <p class="inline-media-hint">Place cursor in text, then add photo or YouTube video where it belongs.</p>
+            <p class="inline-media-status" data-inline-media-status role="status" aria-live="polite" hidden></p>
             <div class="editor-area" contenteditable="true" data-placeholder="Write your content here…" data-char-limit="8000"></div>
           </div>
         </div>
 
         <div class="form-group" style="margin-top: 24px;">
-          <label>Photos <span class="form-optional">(optional)</span></label>
-          <p class="form-hint">Multiple photos become a swipeable gallery. Edit a single photo to change its alignment.</p>
+          <label>Photo gallery <span class="form-optional">(optional)</span></label>
+          <p class="form-hint">Use this for a swipeable gallery; use Photo in the toolbar to place an image within your text.</p>
             <!-- The image picker handles upload and thumbnail editing. -->
             <div class="image-picker" id="wizard-image-picker" style="margin-top: 16px;"></div>
         </div>
 
         <div class="form-group">
-          <label for="wizard-video-url">Video <span class="form-optional">(optional)</span></label>
+          <label for="wizard-video-url">Section video <span class="form-optional">(optional)</span></label>
           <div style="margin-top: 12px;">
             <input type="text" id="wizard-video-url" class="modern-input" placeholder="Paste a YouTube link" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border-default); margin-bottom: 8px;">
             <select id="wizard-video-align" class="modern-input" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border-default);">
@@ -207,7 +223,9 @@ document.addEventListener('DOMContentLoaded', function () {
     }
     const title = document.getElementById('thcPageTitle')?.value.trim() || 'Untitled Page';
     const tags = document.getElementById('thcTags')?.value.trim();
-    const content = document.querySelector('.editor-area')?.innerHTML || '<p class="text-muted">No content provided.</p>';
+    const previewEditor = document.querySelector('.editor-area')?.cloneNode(true);
+    previewEditor?.querySelectorAll('[data-inline-media-remove]').forEach((button) => button.remove());
+    const content = previewEditor?.innerHTML || '<p class="text-muted">No content provided.</p>';
     const previewContainer = document.querySelector('.submit-preview');
     if (!previewContainer) return;
 
@@ -291,7 +309,8 @@ document.addEventListener('DOMContentLoaded', function () {
       e.preventDefault();
       const submitBtn = form.querySelector('button[type="submit"]');
       const originalBtnHtml = submitBtn.innerHTML;
-      const editorHtml = document.querySelector('.editor-area')?.innerHTML || '';
+      const editorArea = document.querySelector('.editor-area');
+      const editorHtml = editorArea?.innerHTML || '';
       if (!editorHtml.trim() || editorHtml === '<br>') { alert('Please write some content before submitting.'); return; }
       
       submitBtn.disabled = true;
@@ -313,20 +332,57 @@ document.addEventListener('DOMContentLoaded', function () {
 
         const images = pickerEl && window.ResiHubImagePicker ? window.ResiHubImagePicker.getImages(pickerEl) : [];
         const imageAlign = images.length === 1 && ['left', 'right'].includes(images[0].align) ? images[0].align : 'center';
-        const sectionsPayload = [{ text: editorHtml, align: imageAlign, video: videoUrl, videoAlign: videoAlign }];
+        const inlineEditor = window.ResiHubEditorInlineMedia?.serialize(editorArea);
+        if (!inlineEditor) throw new Error('Inline media editor is unavailable. Reload and retry.');
+        const sectionsPayload = [{
+          text: inlineEditor.html,
+          align: imageAlign,
+          video: videoUrl,
+          videoAlign,
+          inlineMedia: inlineEditor.inlineMedia.map((media) => ({
+            token: media.token,
+            type: media.type,
+            ...(media.type === 'video' ? { url: media.url } : {}),
+          })),
+        }];
         formData.append('sections_json', JSON.stringify(sectionsPayload));
         formData.append('section_count', '1');
 
         const imageMeta = [];
-        images.forEach((img, idx) => {
+        let imageOrder = 0;
+        images.forEach((img) => {
           const align = images.length === 1 && ['left', 'right'].includes(img.align) ? img.align : 'center';
           if (img.isLocal && img.file) {
             formData.append(`section_images_0`, img.file);
-            imageMeta.push({ isExisting: false, align, alt: img.alt || "", order: idx });
+            imageMeta.push({ isExisting: false, align, alt: img.alt || "", order: imageOrder++ });
           } else if (img.url) {
-            imageMeta.push({ isExisting: true, url: img.url, align, alt: img.alt || "", order: idx });
+            imageMeta.push({ isExisting: true, url: img.url, align, alt: img.alt || "", order: imageOrder++ });
           }
         });
+        inlineEditor.inlineMedia
+          .filter((media) => media.type === 'image')
+          .forEach((media) => {
+            const align = ['left', 'right'].includes(media.align) ? media.align : 'center';
+            if (media.file instanceof File) {
+              formData.append('section_images_0', media.file);
+              imageMeta.push({
+                isExisting: false,
+                align,
+                alt: media.alt || "",
+                order: imageOrder++,
+                inlineToken: media.token,
+              });
+            } else if (media.url) {
+              imageMeta.push({
+                isExisting: true,
+                url: media.url,
+                align,
+                alt: media.alt || "",
+                order: imageOrder++,
+                inlineToken: media.token,
+              });
+            }
+          });
         if (imageMeta.length > 0) formData.append('section_images_meta_0', JSON.stringify(imageMeta));
 
         const endpoint = window.ResiHubApi?.ENDPOINTS?.submit || "https://api.hubcollective.ca/api/submit";

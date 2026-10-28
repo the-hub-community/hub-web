@@ -10,24 +10,61 @@ sitemap: false
 <script>
   document.addEventListener("DOMContentLoaded", () => {
     const params = new URLSearchParams(window.location.search);
-    const submissionId = params.get("submission_id");
+    const submissionId = (params.get("submission_id") || "").trim();
+    const submissionType = params.get("type") || "wiki";
+    const subtitles = {
+      listing: "Your marketplace listing is queued for review.",
+      broadcast: "Your broadcast is queued for review.",
+      notification: "Your notice is queued for review.",
+      wiki: "Your wiki contribution is queued for review.",
+      update: "Your wiki update is queued for review.",
+    };
+    const subtitle = document.getElementById("success-subtitle");
+    if (subtitle) {
+      subtitle.textContent =
+        subtitles[submissionType] || "Your contribution is queued for review.";
+    }
     
     if (submissionId) {
       const panel = document.getElementById("success-submission-id-panel");
       const valueEl = document.getElementById("success-submission-id-value");
       const copyBtn = document.getElementById("success-copy-id-btn");
-      
+      const historyNote = document.createElement("p");
+      historyNote.className = "submission-id-note";
+
       if (panel && valueEl) {
         valueEl.textContent = submissionId;
         panel.hidden = false;
+        panel.appendChild(historyNote);
       }
-      
+
+      try {
+        if (!window.ResiHubSubmissionHistory) {
+          throw new Error("Submission history is unavailable.");
+        }
+        window.ResiHubSubmissionHistory.save({
+          id: submissionId,
+          type: params.get("type") || "submission",
+        });
+        historyNote.textContent =
+          submissionType === "listing"
+            ? "Saved in My Submissions on this device. Your private management code is there too."
+            : "Saved in My Submissions on this device.";
+      } catch (error) {
+        historyNote.textContent =
+          "Could not save on this device. Copy this reference before leaving.";
+        historyNote.setAttribute("role", "alert");
+      }
+
       if (copyBtn) {
-        copyBtn.addEventListener("click", () => {
-          navigator.clipboard.writeText(submissionId).then(() => {
+        copyBtn.addEventListener("click", async () => {
+          try {
+            await navigator.clipboard.writeText(submissionId);
             copyBtn.textContent = "Copied!";
             setTimeout(() => { copyBtn.textContent = "Copy"; }, 2000);
-          });
+          } catch (error) {
+            copyBtn.textContent = "Select number to copy";
+          }
         });
       }
     }

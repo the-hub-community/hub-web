@@ -21,7 +21,8 @@ sitemap: false
       <span class="ed-error__list-label">What we store</span>
     </div>
     <ul class="ed-error__list-items">
-      <li>A random device key in your browser's local storage, so you can check the status of your own submissions.</li>
+      <li>Submission IDs and private marketplace management codes in this browser's local storage. They are available only on this device unless you copy them elsewhere.</li>
+      <li>A one-way hash of each new marketplace management code is stored with its listing so only someone with the private code can request a sold update.</li>
       <li>The content you submit (text, images, and the community you choose).</li>
       <li>Anonymous usage counters. No IP addresses, no fingerprints, no tracking across sites.</li>
     </ul>
@@ -32,7 +33,7 @@ sitemap: false
       <span class="ed-error__list-label">What we don't do</span>
     </div>
     <ul class="ed-error__list-items">
-      <li>No account signup, no passwords, no email required.</li>
+      <li>No account sign-in or email required.</li>
       <li>No third-party analytics scripts.</li>
       <li>No selling or sharing data with advertisers.</li>
       <li>No tracking you across other websites.</li>
@@ -45,11 +46,15 @@ sitemap: false
     </div>
     <div class="ed-error__link-row">
       <a href="/settings.html" class="ed-error__link">
-        <span>Clear your device key in Settings</span>
+        <span>Clear saved submission data in Settings</span>
         <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
       </a>
       <a href="{{ site.baseurl }}/status.html" class="ed-error__link">
-        <span>Check your submission history</span>
+        <span>Track a submission ID</span>
+        <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
+      </a>
+      <a href="{{ site.baseurl }}/my-submissions.html" class="ed-error__link">
+        <span>Open My Submissions</span>
         <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
       </a>
     </div>

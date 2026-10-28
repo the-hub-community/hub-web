@@ -59,7 +59,7 @@ title: Communities
     </div>
   </section>
 
-  <section class="community-dashboard__distribution" aria-labelledby="community-distribution-title">
+  <section class="community-dashboard__distribution" id="community-directory" aria-labelledby="community-distribution-title">
     <div class="community-dashboard__header">
       <div>
         <h2 id="community-distribution-title">Wiki guides by community</h2>
@@ -71,7 +71,7 @@ title: Communities
       </label>
     </div>
 
-    <div class="community-dashboard__chart" role="list" aria-label="Number of wiki guides in each community">
+    <div class="community-dashboard__chart" role="list" aria-label="Number of wiki guides in each community" data-community-list>
       {% for community in communities %}
         {% assign community_name = community.condo | default: community.title %}
         {% assign community_slug = community_name | slugify %}
@@ -90,6 +90,7 @@ title: Communities
            class="community-dashboard__row"
            data-community-name="{{ community_name | downcase | escape }}"
            data-community-page-count="{{ community_page_count }}"
+           data-community-directory-row
            role="listitem">
           <span class="community-dashboard__monogram" data-community-slug="{{ community_slug }}" aria-hidden="true">
             {{ community_name | slice: 0 | upcase }}
@@ -108,34 +109,15 @@ title: Communities
       {% endfor %}
     </div>
     <p class="community-dashboard__empty" role="status" hidden>No communities match your search.</p>
+    <nav class="community-pagination community-pagination--directory" data-community-pagination data-page-size="10" aria-label="Community directory pages">
+      <p class="community-pagination__summary" data-page-summary aria-live="polite"></p>
+      <div class="community-pagination__controls">
+        <button type="button" class="community-pagination__button" data-page-previous aria-label="Previous communities">Previous</button>
+        <span class="community-pagination__page" data-page-indicator aria-live="polite"></span>
+        <button type="button" class="community-pagination__button" data-page-next aria-label="Next communities">Next</button>
+      </div>
+    </nav>
   </section>
 </section>
 
-<script>
-  (function initCommunityDirectorySearch() {
-    "use strict";
-    const searchInput = document.getElementById("community-directory-search");
-    const rows = Array.from(document.querySelectorAll(".community-dashboard__row"));
-    const emptyState = document.querySelector(".community-dashboard__empty");
-    if (!searchInput || !rows.length || !emptyState) return;
-
-    const chart = rows[0].parentElement;
-    rows.sort((a, b) => {
-      const pageDifference =
-        Number(b.dataset.communityPageCount) - Number(a.dataset.communityPageCount);
-      return pageDifference || (a.dataset.communityName || "").localeCompare(b.dataset.communityName || "");
-    });
-    rows.forEach((row) => chart.append(row));
-
-    searchInput.addEventListener("input", () => {
-      const query = searchInput.value.trim().toLocaleLowerCase();
-      let visibleCount = 0;
-      rows.forEach((row) => {
-        const matches = (row.dataset.communityName || "").includes(query);
-        row.hidden = !matches;
-        if (matches) visibleCount += 1;
-      });
-      emptyState.hidden = visibleCount > 0;
-    });
-  })();
-</script>
+<script src="{{ site.baseurl }}/assets/js/pages/community-pagination.js" defer></script>

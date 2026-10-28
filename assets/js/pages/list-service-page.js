@@ -221,9 +221,14 @@ document.getElementById("marketplaceForm").onsubmit = async (e) => {
   }
 
   const submissionId = window.ResiHubApi?.createSubmissionId("listing");
+  const managementToken = Array.from(
+    window.crypto.getRandomValues(new Uint8Array(32)),
+    (byte) => byte.toString(16).padStart(2, "0"),
+  ).join("");
   if (submissionId) {
     formData.append("page_key", submissionId);
   }
+  formData.append("management_token", managementToken);
 
   btn.disabled = true;
   btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> ${i18nText("list_service.uploading_images", "Uploading {count} images...").replace("{count}", files.length)}`;
@@ -265,6 +270,9 @@ document.getElementById("marketplaceForm").onsubmit = async (e) => {
         window.ResiHubSuccessModal.show({
           redirectUrl: resolvePostSubmitRedirectUrl(submissionId),
           submissionId,
+          type: "marketplace",
+          title: document.querySelector('[name="title"]')?.value || "",
+          managementToken,
         });
       }, 1500);
     } else {

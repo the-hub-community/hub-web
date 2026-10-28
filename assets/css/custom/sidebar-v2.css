@@ -356,6 +356,17 @@
   cursor: pointer;
 }
 
+.sidebar-nav__browse-communities {
+  margin: 8px 8px 0;
+  width: auto;
+  text-decoration: none;
+}
+
+.sidebar-nav__browse-communities:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
 .sidebar-nav__browse-pages span {
   flex: 1;
   min-width: 0;
@@ -365,6 +376,58 @@
 .sidebar-nav__browse-pages:focus-visible {
   border-color: color-mix(in srgb, var(--primary) 40%, var(--border-subtle));
   background: color-mix(in srgb, var(--primary) 6%, var(--surface-container-lowest));
+}
+
+.sidebar-nav__group--favorites[hidden] {
+  display: none;
+}
+
+.sidebar-nav__favorites-list {
+  display: grid;
+  gap: 2px;
+}
+
+.sidebar-nav__favorite {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 10px;
+  padding: 7px 12px;
+  border-radius: 9px;
+  color: var(--on-surface-variant);
+  font-size: 0.8rem;
+  line-height: 1.2rem;
+  text-decoration: none;
+}
+
+.sidebar-nav__favorite > i {
+  width: 18px;
+  flex: 0 0 18px;
+  color: var(--primary);
+  text-align: center;
+}
+
+.sidebar-nav__favorite-copy {
+  display: grid;
+  min-width: 0;
+}
+
+.sidebar-nav__favorite-title,
+.sidebar-nav__favorite-community {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.sidebar-nav__favorite-community {
+  color: var(--outline);
+  font-size: 0.69rem;
+}
+
+.sidebar-nav__favorite:hover,
+.sidebar-nav__favorite:focus-visible {
+  background: color-mix(in srgb, var(--primary) 7%, var(--surface-container-lowest));
+  color: var(--primary);
 }
 
 /* Sidebar nav icon refinements */

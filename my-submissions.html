@@ -3,47 +3,267 @@ layout: default
 title: My Submissions
 ---
 <main class="main-content">
-  <div class="status-shell">
+  <div class="status-shell my-submissions">
     <div class="page-hero">
       <div class="page-hero__meta">
         <span class="page-hero__dot"></span>
         <span class="page-hero__eyebrow">Your Activity</span>
       </div>
       <h1 class="page-hero__title">My Submissions</h1>
-      <p class="page-hero__subtitle">Pages, listings, and notices you've submitted from this device.</p>
+      <p class="page-hero__subtitle">Track contributions saved on this device, or add a reference number you kept. Private listing codes stay in this browser. Copy yours before clearing site data or changing devices.</p>
     </div>
 
-    <div id="submissionsList" class="status-result" style="display: none;">
-      <!-- Populated by JS -->
-    </div>
-    
-    <div id="noSubmissions" class="empty-state" style="display: none;">
-      <div class="empty-state__icon"><i class="fa-regular fa-file-lines"></i></div>
-      <p class="empty-state__label">No submissions yet</p>
-      <small class="empty-state__hint">When you contribute to the community, your tracking IDs will appear here.</small>
+    <form id="addSubmissionForm" class="my-submissions__add">
+      <label for="submissionIdToAdd">Add a submission ID / page key</label>
+      <div class="my-submissions__add-row">
+        <input id="submissionIdToAdd" name="submission_id" type="text" autocomplete="off" required>
+        <button type="submit" class="btn btn--primary">Find submission</button>
+      </div>
+      <p id="submissionHistoryMessage" class="my-submissions__message" role="status" hidden></p>
+    </form>
+
+    <div id="submissionsList" class="my-submissions__list" aria-live="polite"></div>
+    <div id="noSubmissions" class="empty-state" hidden>
+      <div class="empty-state__icon"><i class="fa-regular fa-file-lines" aria-hidden="true"></i></div>
+      <p class="empty-state__label">No submissions saved on this device</p>
+      <small class="empty-state__hint">Add a submission ID above. New submissions save here automatically.</small>
     </div>
   </div>
 </main>
 
 <script>
-document.addEventListener("DOMContentLoaded", () => {
-  const subs = JSON.parse(localStorage.getItem("resiHubSubmissions") || "[]");
-  const list = document.getElementById("submissionsList");
-  const empty = document.getElementById("noSubmissions");
-  
-  if (subs.length === 0) {
-    empty.style.display = "block";
-    return;
+document.addEventListener("DOMContentLoaded", function () {
+  var list = document.getElementById("submissionsList");
+  var empty = document.getElementById("noSubmissions");
+  var message = document.getElementById("submissionHistoryMessage");
+  var form = document.getElementById("addSubmissionForm");
+  var submissionInput = document.getElementById("submissionIdToAdd");
+  var history = window.ResiHubSubmissionHistory;
+
+  function showMessage(text, isError) {
+    message.textContent = text;
+    message.classList.toggle("is-error", Boolean(isError));
+    message.hidden = !text;
   }
-  
-  list.style.display = "block";
-  list.innerHTML = `<ul class="ed-error__list-items">` + subs.map(id => `
-    <li style="margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center;">
-      <a href="/status.html?submission_id=${id}" style="color: var(--primary); text-decoration: underline; font-family: var(--font-mono); font-size: 0.9rem;">
-        ${id}
-      </a>
-      <a href="/status.html?submission_id=${id}" class="btn btn--secondary btn--sm">Track</a>
-    </li>
-  `).join("") + `</ul>`;
+
+  function makeButton(text, className) {
+    var button = document.createElement("button");
+    button.type = "button";
+    button.className = className;
+    button.textContent = text;
+    return button;
+  }
+
+  function statusLabel(status) {
+    var labels = {
+      pending: "Pending review",
+      approved: "Accepted",
+      published: "Published",
+      closed: "Closed",
+      not_found: "Not found",
+      invalid: "Invalid reference",
+    };
+    return labels[status] || "Checking status…";
+  }
+
+  function renderRecords(records) {
+    list.replaceChildren();
+    empty.hidden = records.length > 0;
+    if (!records.length) return;
+
+    records.forEach(function (record) {
+      var card = document.createElement("article");
+      card.className = "my-submission-card";
+      card.dataset.submissionId = record.id;
+
+      var heading = document.createElement("div");
+      heading.className = "my-submission-card__heading";
+      var textGroup = document.createElement("div");
+      var title = document.createElement("h2");
+      title.className = "my-submission-card__title";
+      title.textContent = record.title || (record.type === "marketplace" ? "Marketplace listing" : "Community submission");
+      var id = document.createElement("code");
+      id.className = "my-submission-card__id";
+      id.setAttribute("aria-label", "Submission ID / page key");
+      id.textContent = record.id;
+      textGroup.append(title, id);
+
+      var badge = document.createElement("span");
+      badge.className = "my-submission-card__status";
+      badge.textContent = "Checking status…";
+      badge.setAttribute("aria-live", "polite");
+      heading.append(textGroup, badge);
+      card.appendChild(heading);
+
+      var actions = document.createElement("div");
+      actions.className = "my-submission-card__actions";
+      var track = document.createElement("a");
+      track.className = "btn btn--secondary btn--sm";
+      track.href = "/status.html?submission_id=" + encodeURIComponent(record.id);
+      track.textContent = "Track";
+      actions.appendChild(track);
+
+      var copyId = makeButton("Copy ID", "btn btn--secondary btn--sm");
+      copyId.addEventListener("click", async function () {
+        try {
+          await navigator.clipboard.writeText(record.id);
+          showMessage("Submission ID copied.", false);
+        } catch (error) {
+          showMessage("Could not copy ID. Select and copy the number shown above.", true);
+        }
+      });
+      actions.appendChild(copyId);
+
+      if (record.type === "marketplace") {
+        var manage = document.createElement("details");
+        manage.className = "my-submission-card__manage";
+        var summary = document.createElement("summary");
+        summary.textContent = "Manage listing";
+        manage.appendChild(summary);
+
+        var manageForm = document.createElement("form");
+        manageForm.className = "my-submission-card__manage-form";
+        var codeLabel = document.createElement("label");
+        var codeId = "management-code-" + record.id;
+        codeLabel.htmlFor = codeId;
+        codeLabel.textContent = "Private management code";
+        var codeInput = document.createElement("input");
+        codeInput.id = codeId;
+        codeInput.name = "management_token";
+        codeInput.type = "password";
+        codeInput.autocomplete = "off";
+        codeInput.value = record.managementToken || "";
+        codeInput.required = true;
+        codeInput.minLength = 64;
+        codeInput.maxLength = 64;
+        codeInput.pattern = "[a-fA-F0-9]{64}";
+        codeInput.title = "Enter the 64-character private code saved when you created this listing.";
+        var codeActions = document.createElement("div");
+        codeActions.className = "my-submission-card__code-actions";
+        var showCode = makeButton("Show code", "btn btn--secondary btn--sm");
+        showCode.addEventListener("click", function () {
+          codeInput.type = codeInput.type === "password" ? "text" : "password";
+          showCode.textContent = codeInput.type === "password" ? "Show code" : "Hide code";
+        });
+        var copyCode = makeButton("Copy code", "btn btn--secondary btn--sm");
+        copyCode.addEventListener("click", async function () {
+          if (!codeInput.value) {
+            showMessage("No private code saved here. Enter the code you kept.", true);
+            return;
+          }
+          try {
+            await navigator.clipboard.writeText(codeInput.value);
+            showMessage("Private management code copied. Keep it secret.", false);
+          } catch (error) {
+            showMessage("Could not copy code. Use Show code, then copy it manually.", true);
+          }
+        });
+        codeActions.append(showCode, copyCode);
+        var soldButton = document.createElement("button");
+        soldButton.type = "submit";
+        soldButton.className = "btn btn--primary";
+        soldButton.textContent = "Mark as sold";
+        var updateMessage = document.createElement("p");
+        updateMessage.className = "my-submissions__message";
+        updateMessage.setAttribute("role", "status");
+        updateMessage.hidden = true;
+        manageForm.append(codeLabel, codeInput, codeActions, soldButton, updateMessage);
+        manageForm.addEventListener("submit", async function (event) {
+          event.preventDefault();
+          soldButton.disabled = true;
+          updateMessage.textContent = "Sending sold status for review…";
+          updateMessage.classList.remove("is-error");
+          updateMessage.hidden = false;
+          var data = new FormData();
+          data.append("type", "update");
+          data.append("marketplace_status", "sold");
+          data.append("page_key", record.id);
+          data.append("title", record.title || "Marketplace listing");
+          data.append("condo", "General");
+          data.append("management_token", codeInput.value.trim());
+          try {
+            var endpoint = window.ResiHubApi && window.ResiHubApi.ENDPOINTS.submit;
+            if (!endpoint) throw new Error("Submission service is unavailable.");
+            var response = await fetch(endpoint, { method: "POST", body: data });
+            var payload = await response.json();
+            if (!response.ok || !payload || payload.success !== true) {
+              throw new Error(payload && payload.error ? payload.error : "Could not update listing.");
+            }
+            updateMessage.textContent = "Sold update submitted. Listing changes after moderator approval.";
+            soldButton.textContent = "Update submitted";
+            try {
+              if (!history) throw new Error("Submission history is unavailable.");
+              history.save(Object.assign({}, record, { managementToken: codeInput.value.trim() }));
+            } catch (storageError) {
+              updateMessage.textContent += " Code could not be saved on this device; copy it before leaving.";
+            }
+          } catch (error) {
+            updateMessage.textContent = error instanceof Error ? error.message : "Could not update listing.";
+            updateMessage.classList.add("is-error");
+            soldButton.disabled = false;
+          }
+        });
+        manage.appendChild(manageForm);
+        card.appendChild(manage);
+      }
+
+      card.appendChild(actions);
+      list.appendChild(card);
+      lookupStatus(record.id).then(function (result) {
+        badge.textContent = result ? statusLabel(result.status) : "Status unavailable";
+        badge.dataset.status = result ? result.status : "unavailable";
+      }).catch(function () {
+        badge.textContent = "Status unavailable";
+        badge.dataset.status = "unavailable";
+      });
+    });
+  }
+
+  async function lookupStatus(id) {
+    var endpoint = window.ResiHubApi && window.ResiHubApi.ENDPOINTS.submissionStatus;
+    if (!endpoint) throw new Error("Status service is unavailable.");
+    var response = await fetch(endpoint + "?submission_id=" + encodeURIComponent(id));
+    var payload = await response.json();
+    if (payload && ["not_found", "invalid"].indexOf(payload.status) >= 0) return payload;
+    if (!response.ok) throw new Error(payload && payload.error ? payload.error : "Status lookup failed.");
+    return payload;
+  }
+
+  form.addEventListener("submit", async function (event) {
+    event.preventDefault();
+    var id = submissionInput.value.trim();
+    if (!id) return;
+    showMessage("Checking submission ID…", false);
+    try {
+      var result = await lookupStatus(id);
+      if (!result || ["not_found", "invalid"].indexOf(result.status) >= 0) {
+        showMessage("No submission found for that reference. Check it and try again.", true);
+        return;
+      }
+      var isMarketplace =
+        String(result.publishedFile && result.publishedFile.path || "").startsWith("_pros/") ||
+        String(result.pullRequest && result.pullRequest.title || "").startsWith("MARKETPLACE:");
+      var record = history.save({
+        id: id,
+        type: isMarketplace ? "marketplace" : "submission",
+        title: String(result.pullRequest && result.pullRequest.title || "")
+          .replace(/^MARKETPLACE:\s*/i, ""),
+      });
+      submissionInput.value = "";
+      renderRecords(history.getAll());
+      showMessage("Submission added to this device.", false);
+      return record;
+    } catch (error) {
+      showMessage(error instanceof Error ? error.message : "Could not save submission.", true);
+    }
+  });
+
+  try {
+    if (!history) throw new Error("Submission history is unavailable.");
+    renderRecords(history.getAll());
+  } catch (error) {
+    showMessage("Could not read saved submissions: " + (error.message || "storage unavailable"), true);
+    empty.hidden = true;
+  }
 });
 </script>

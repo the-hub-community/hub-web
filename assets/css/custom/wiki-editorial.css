@@ -263,7 +263,8 @@
 }
 
 .wiki-community-nav__home,
-.wiki-community-nav__browse {
+.wiki-community-nav__browse,
+.wiki-community-nav__favorite {
   display: inline-flex;
   min-height: 44px;
   align-items: center;
@@ -283,7 +284,9 @@
 .wiki-community-nav__home:hover,
 .wiki-community-nav__home:focus-visible,
 .wiki-community-nav__browse:hover,
-.wiki-community-nav__browse:focus-visible {
+.wiki-community-nav__browse:focus-visible,
+.wiki-community-nav__favorite:hover,
+.wiki-community-nav__favorite:focus-visible {
   border-color: var(--primary, #35568e);
   color: var(--primary, #35568e);
 }
@@ -296,6 +299,22 @@
 
 .wiki-community-nav__browse {
   cursor: pointer;
+}
+
+.wiki-community-nav__favorite {
+  cursor: pointer;
+}
+
+.wiki-community-nav__favorite[aria-pressed="true"] {
+  border-color: color-mix(in srgb, var(--primary, #35568e) 30%, transparent);
+  background: color-mix(in srgb, var(--primary, #35568e) 9%, #fff);
+  color: var(--primary, #35568e);
+}
+
+.wiki-community-nav__favorite-status {
+  flex-basis: 100%;
+  color: var(--outline, #64748b);
+  font-size: 0.8rem;
 }
 
 .wiki-community-nav__count {

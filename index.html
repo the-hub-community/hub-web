@@ -48,7 +48,7 @@ title: Dashboard
             {% endif %}
             {% capture c_count_output %}{% include community-page-count.html community_key=c_key %}{% endcapture %}
             {% assign c_count = c_count_output | strip | plus: 0 %}
-            <a href="{{ site.baseurl }}/content/{{ c_slug }}/" class="ed-list__row" data-community-slug="{{ c_slug }}">
+            <a href="{{ site.baseurl }}/content/{{ c_slug }}/" class="ed-list__row community-page-row" data-community-slug="{{ c_slug }}">
               <span class="ed-list__monogram" data-community-slug="{{ c_slug }}" aria-hidden="true">
                 {{ c_name | slice: 0 | upcase }}
               </span>
@@ -64,6 +64,14 @@ title: Dashboard
             </a>
           {% endfor %}
         </div>
+        <nav class="community-pagination" data-community-pagination data-page-size="6" aria-label="Dashboard community pages">
+          <p class="community-pagination__summary" data-page-summary aria-live="polite"></p>
+          <div class="community-pagination__controls">
+            <button type="button" class="community-pagination__button" data-page-previous aria-label="Previous communities">Previous</button>
+            <span class="community-pagination__page" data-page-indicator aria-live="polite"></span>
+            <button type="button" class="community-pagination__button" data-page-next aria-label="Next communities">Next</button>
+          </div>
+        </nav>
       </section>
     </div>
 
@@ -172,3 +180,4 @@ title: Dashboard
     if (eyebrowEl) eyebrowEl.textContent = eyebrow;
   })();
 </script>
+<script src="{{ site.baseurl }}/assets/js/pages/community-pagination.js" defer></script>

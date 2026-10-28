@@ -56,7 +56,7 @@ sitemap: false
         <div>
           <div class="settings-item__title">Device identity</div>
           <div class="settings-item__desc">
-            Your submissions are tracked by a random key stored in this browser. Clearing it removes your submission history from this device.
+            Clears saved submission IDs, private marketplace codes, and drafts from this browser. Private codes cannot be recovered after clearing.
           </div>
         </div>
         <button type="button" class="btn btn--secondary btn--sm" id="clearDeviceKey">
@@ -82,11 +82,12 @@ sitemap: false
   "use strict";
 
   document.getElementById("clearDeviceKey")?.addEventListener("click", () => {
-    if (!confirm("This will clear your device key. You won't be able to check the status of your previous submissions from this device. Continue?")) return;
+    if (!confirm("This will clear saved submission IDs, private marketplace management codes, and drafts from this browser. You cannot recover private codes afterward. Continue?")) return;
     localStorage.removeItem("resiHubDeviceKey");
     localStorage.removeItem("resiHubSubmissions");
+    localStorage.removeItem("resihub_submissions");
     localStorage.removeItem("editor-draft");
-    alert("Device key cleared.");
+    alert("Saved submission data cleared.");
     location.reload();
   });
 })();

@@ -49,8 +49,9 @@
                     <div id="drawer-sections-container"></div>
                     <div class="form-actions">
                         <button type="button" onclick="addNewSection()" class="btn-add-sec btn-secondary">
-                            <span data-i18n="common.add_new_section">+ Add New Section</span>
+                            <span>+ Add text section</span>
                         </button>
+                        <p class="editor-section-hint">Start a new section for a different topic; use Photo or Video to place media inside current text.</p>
                     </div>
                 </div>
             </div>
@@ -109,6 +110,18 @@
                             class="fa-solid fa-list-ul" aria-hidden="true"></i></button>
                 </div>
                 <div class="v-sep" aria-hidden="true"></div>
+                <div class="rich-toolbar__group inline-media-tools">
+                    <button type="button" class="inline-media-tool" data-inline-image-trigger title="Insert photo at cursor">
+                        <i class="fa-regular fa-image" aria-hidden="true"></i>
+                        <span>Photo</span>
+                    </button>
+                    <input type="file" accept="image/*" data-inline-image-input hidden>
+                    <button type="button" class="inline-media-tool" data-inline-video-toggle title="Insert YouTube video at cursor">
+                        <i class="fa-brands fa-youtube" aria-hidden="true"></i>
+                        <span>Video</span>
+                    </button>
+                </div>
+                <div class="v-sep" aria-hidden="true"></div>
                 <div class="rich-toolbar__group rich-toolbar__group--history">
                     <button type="button" data-cmd="undo" title="Undo"><i class="fa-solid fa-rotate-left"
                             aria-hidden="true"></i></button>
@@ -130,6 +143,16 @@
             </div>
         </div>
 
+        <div class="inline-media-composer" data-inline-video-composer hidden>
+            <label>
+                <span>YouTube link</span>
+                <input type="url" placeholder="https://youtu.be/..." autocomplete="url">
+            </label>
+            <button type="button" class="inline-media-composer__insert" data-inline-video-insert>Insert at cursor</button>
+        </div>
+        <p class="inline-media-hint">Place cursor in your text, then add a photo or video. Use sections to organize separate topics.</p>
+        <p class="inline-media-status" data-inline-media-status role="status" aria-live="polite" hidden></p>
+
         <div class="section-body">
             <div class="section-text">
                 <div class="editor-area" contenteditable="true" data-char-limit="8000"
@@ -148,8 +171,8 @@
                             style="font-size: 1.5rem; color: var(--primary); margin-bottom: 8px;"></i>
                         <div
                             style="font-family: var(--font-mono); font-size: 0.75rem; font-weight: 600; color: var(--on-surface);">
-                            ADD PHOTOS</div>
-                        <div style="font-size: 0.72rem; color: var(--outline); margin-top: 4px;">Multiple photos form a swipeable gallery</div>
+                            ADD GALLERY PHOTOS</div>
+                        <div style="font-size: 0.72rem; color: var(--outline); margin-top: 4px;">Multiple photos form a swipeable gallery. Use Photo above to insert one within text.</div>
                     </div>
 
                     <!-- 2. Video Input (Keep as is) -->
@@ -210,7 +233,9 @@
 
         function getDrawerSectionPreview(sec) {
             const editor = sec.querySelector('.editor-area');
-            const rawText = editor ? editor.innerHTML : '';
+            const previewEditor = editor?.cloneNode(true);
+            previewEditor?.querySelectorAll('[data-inline-media-remove]').forEach((button) => button.remove());
+            const rawText = previewEditor ? previewEditor.innerHTML : '';
             const cleanedText = typeof normalizeEditorHtml === 'function' ? normalizeEditorHtml(rawText) : rawText;
             const videoUrl = sec.querySelector('.video-input')?.value || '';
             const videoAlign = sec.querySelector('.video-align-select')?.value || 'center';

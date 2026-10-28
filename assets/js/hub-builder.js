@@ -323,22 +323,13 @@ function resolvePostSubmitRedirectUrl(submissionId) {
   });
 }
 
-function showSubmissionSuccessModal(redirectUrl) {
-  const overlay = document.createElement("div");
-  overlay.className = "success-modal-overlay";
-  overlay.innerHTML = `
-    <div class="success-modal-card" role="dialog" aria-modal="true" aria-label="${i18nText("messages.success", "Success")}">
-      <h3>${i18nText("messages.submission_received", "Submission received")}</h3>
-      <p>${i18nText("messages.click_to_continue", "Click anywhere on this message to continue.")}</p>
-    </div>
-  `;
-
-  const goNext = () => {
-    window.location.href = redirectUrl || resolvePostSubmitRedirectUrl();
-  };
-
-  overlay.addEventListener("click", goNext);
-  document.body.appendChild(overlay);
+function showSubmissionSuccessModal(redirectUrl, submissionId) {
+  window.ResiHubSuccessModal.show({
+    redirectUrl: redirectUrl || resolvePostSubmitRedirectUrl(submissionId),
+    submissionId,
+    type: "wiki",
+    title: document.getElementById("title")?.value || "",
+  });
 }
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -884,7 +875,10 @@ async function handleFormSubmit(e) {
       );
 
       setTimeout(() => {
-        showSubmissionSuccessModal(resolvePostSubmitRedirectUrl(submissionId));
+        showSubmissionSuccessModal(
+          resolvePostSubmitRedirectUrl(submissionId),
+          submissionId,
+        );
       }, 1500);
     } else {
       let errorMessage = "Server Error";

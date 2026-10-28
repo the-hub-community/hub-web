@@ -11,6 +11,12 @@
 {% endif %}
 {% endfor %}
 {% assign community_dialog_id = 'wiki-pages-' | append: community_slug %}
+{% assign favorite_page_title = page.title | default: page.name | replace: '.md', '' | replace: '.html', '' | replace: '-', ' ' %}
+{% assign favorite_page_type = 'page' %}
+{% if page.name == 'index.md' or page.name == 'index.html' %}
+{% assign favorite_page_title = current_condo | default: page.title %}
+{% assign favorite_page_type = 'community' %}
+{% endif %}
 <nav class="wiki-community-nav" aria-label="Community pages">
   <a class="wiki-community-nav__home"
      href="{{ community_home_url | relative_url }}"
@@ -18,6 +24,17 @@
     <i class="fa-solid fa-house" aria-hidden="true"></i>
     <span>{{ current_condo }} home</span>
   </a>
+  <button class="wiki-community-nav__favorite" type="button"
+          data-favorite-toggle
+          data-favorite-url="{{ page.url | relative_url | escape }}"
+          data-favorite-title="{{ favorite_page_title | escape }}"
+          data-favorite-community="{{ current_condo | escape }}"
+          data-favorite-type="{{ favorite_page_type }}"
+          aria-pressed="false">
+    <i class="fa-regular fa-star" aria-hidden="true"></i>
+    <span data-favorite-label>Save to favorites</span>
+  </button>
+  <span class="wiki-community-nav__favorite-status" data-favorite-status role="status" aria-live="polite" hidden></span>
   {% if wiki_subpage_count > 0 %}
   <button class="wiki-community-nav__browse" type="button"
           aria-haspopup="dialog" aria-controls="{{ community_dialog_id }}">

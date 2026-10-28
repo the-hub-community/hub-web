@@ -24,7 +24,7 @@
       </button>
     </div>
 
-    <!-- RIGHT: Community switcher + accessibility + Contribute + avatar -->
+    <!-- RIGHT: Accessibility, Contribute, and submissions -->
     <div class="header-right">
       <button type="button" class="header-icon-btn" aria-label="Accessibility settings">
         <i class="fa-solid fa-universal-access"></i>
@@ -35,9 +35,9 @@
         <span>Contribute</span>
       </a>
 
-      <!-- ONLY ONE AVATAR -->
-      <a href="{{ site.baseurl }}/my-submissions.html" class="header-user-avatar" aria-label="My submissions">
-        <span aria-hidden="true">D</span>
+      <a href="{{ '/my-submissions.html' | relative_url }}" class="header-submissions-link">
+        <i class="fa-regular fa-folder-open" aria-hidden="true"></i>
+        <span>My submissions</span>
       </a>
     </div>
 

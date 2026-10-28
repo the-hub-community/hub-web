@@ -175,7 +175,11 @@ async function handleDrawerSubmit(e) {
 
     sections.forEach((sec) => {
       const editor = sec.querySelector(".editor-area");
-      const cleanedContent = deepCleanHTML(editor ? editor.innerHTML : "");
+      const serializedEditor = window.ResiHubEditorInlineMedia?.serialize(editor);
+      if (!serializedEditor) {
+        throw new Error("Inline media editor is unavailable. Reload and retry.");
+      }
+      const cleanedContent = deepCleanHTML(serializedEditor.html);
       const markdownContent = htmlToMarkdown(cleanedContent);
       const normalizedContent = markdownContent.replace(/\s+/g, " ").trim();
       if (normalizedContent === "") return;
@@ -222,17 +226,19 @@ async function handleDrawerSubmit(e) {
         video: videoUrl,
         align: alignValue,
         videoAlign: videoAlignValue,
+        inlineMedia: serializedEditor.inlineMedia.map((media) => ({
+          token: media.token,
+          type: media.type,
+          ...(media.type === "video" ? { url: media.url } : {}),
+        })),
       };
 
       const imageMeta = [];
       let newImageIdx = 0;
 
-      pickedImages.forEach((img) => {
+      const appendImage = (img, inlineToken = "") => {
         const imageAlign =
-          pickedImages.length === 1 &&
-          ["left", "right"].includes(img.align)
-            ? img.align
-            : "center";
+          ["left", "right"].includes(img.align) ? img.align : "center";
         if (img.isLocal && img.file instanceof File) {
           fd.append(`section_images_${count}`, img.file);
           imageMeta.push({
@@ -240,6 +246,7 @@ async function handleDrawerSubmit(e) {
             align: imageAlign,
             alt: img.alt || "",
             order: newImageIdx++,
+            ...(inlineToken ? { inlineToken } : {}),
           });
         } else if (img.url) {
           imageMeta.push({
@@ -248,9 +255,21 @@ async function handleDrawerSubmit(e) {
             align: imageAlign,
             alt: img.alt || "",
             order: newImageIdx++,
+            ...(inlineToken ? { inlineToken } : {}),
           });
         }
-      });
+      };
+
+      pickedImages.forEach((img) => appendImage(img));
+      serializedEditor.inlineMedia
+        .filter((media) => media.type === "image")
+        .forEach((media) => appendImage({
+          isLocal: media.file instanceof File,
+          file: media.file,
+          url: media.url,
+          align: media.align || "center",
+          alt: media.alt || "",
+        }, media.token));
 
       // ── Legacy fallback: old single-image sections ─────────
       if (!imageMeta.length) {
@@ -396,6 +415,8 @@ async function handleDrawerSubmit(e) {
       window.ResiHubSuccessModal.show({
         redirectUrl: resolvePostSubmitRedirectUrl(submissionId),
         submissionId,
+        type: "wiki",
+        title: document.getElementById("title")?.value || "",
       });
     }, 1500);
   } catch (err) {

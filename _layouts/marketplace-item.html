@@ -16,6 +16,10 @@ layout: default
 {% endfor %}
 
 {% assign listing_price = page.price | default: '' | strip %}
+{% assign is_sold = false %}
+{% if page.listing_status == 'sold' %}
+  {% assign is_sold = true %}
+{% endif %}
 {% assign has_listing_price = false %}
 {% unless listing_price == '' %}
   {% assign has_listing_price = true %}
@@ -84,6 +88,9 @@ layout: default
         {% endif %}
 
         <div class="detail-gallery__hero-badges">
+          {% if is_sold %}
+            <span class="mp-badge mp-badge--sold">Sold</span>
+          {% endif %}
           {% if page.verified %}
             <span class="mp-badge mp-badge--verified"><i class="fa-solid fa-circle-check"></i> Verified Neighbor</span>
           {% endif %}
@@ -158,10 +165,34 @@ layout: default
 
 
 
-      <a href="{{ cta_href }}" class="detail-cta">
-        <i class="{{ cta_icon }}"></i>
-        {{ cta_label }}
-      </a>
+      {% if is_sold %}
+        <div class="detail-sold-notice" role="status">
+          <i class="fa-solid fa-circle-check" aria-hidden="true"></i>
+          This listing is marked sold.
+        </div>
+      {% else %}
+        <a href="{{ cta_href }}" class="detail-cta">
+          <i class="{{ cta_icon }}"></i>
+          {{ cta_label }}
+        </a>
+      {% endif %}
+
+      {% unless is_sold %}
+      <details class="detail-owner-tools">
+        <summary>Seller tools</summary>
+        <p>Use your private management code to request a sold update. A moderator reviews the change before it appears.</p>
+        <form class="detail-owner-tools__form" data-page-key="{{ page.page_key | escape }}" data-title="{{ page.title | escape }}" data-condo="{{ page.condo | default: page.target_community | default: 'General' | escape }}">
+          <label for="listingManagementCode">Private management code</label>
+          <input id="listingManagementCode" name="management_token" type="password" inputmode="text" autocomplete="off" minlength="64" maxlength="64" pattern="[a-fA-F0-9]{64}" required>
+          <div class="detail-owner-tools__code-actions">
+            <button type="button" class="btn btn--secondary btn--sm" data-show-management-code>Show code</button>
+            <button type="button" class="btn btn--secondary btn--sm" data-copy-management-code>Copy code</button>
+          </div>
+          <button type="submit" class="btn btn--secondary">Mark as sold</button>
+          <p class="detail-owner-tools__message" role="status" hidden></p>
+        </form>
+      </details>
+      {% endunless %}
 
       <div class="ugc-report-wrap ugc-report-wrap--detail">
         <button type="button" class="report-content-btn" aria-label="Report this listing">
@@ -188,6 +219,80 @@ layout: default
 
 <script>
   document.addEventListener('DOMContentLoaded', () => {
+    const ownerForm = document.querySelector('.detail-owner-tools__form');
+    if (ownerForm) {
+      const codeInput = ownerForm.querySelector('[name="management_token"]');
+      const message = ownerForm.querySelector('.detail-owner-tools__message');
+      const saved = window.ResiHubSubmissionHistory?.find(ownerForm.dataset.pageKey);
+      if (saved?.managementToken) codeInput.value = saved.managementToken;
+      const showCodeButton = ownerForm.querySelector('[data-show-management-code]');
+      const copyCodeButton = ownerForm.querySelector('[data-copy-management-code]');
+      showCodeButton.addEventListener('click', () => {
+        codeInput.type = codeInput.type === 'password' ? 'text' : 'password';
+        showCodeButton.textContent = codeInput.type === 'password' ? 'Show code' : 'Hide code';
+      });
+      copyCodeButton.addEventListener('click', async () => {
+        if (!codeInput.value) {
+          message.textContent = 'Enter your private management code first.';
+          message.hidden = false;
+          return;
+        }
+        try {
+          await navigator.clipboard.writeText(codeInput.value.trim());
+          message.textContent = 'Private management code copied. Keep it secret.';
+          message.hidden = false;
+          message.classList.remove('is-error');
+        } catch (error) {
+          message.textContent = 'Could not copy code. Show it and copy it manually.';
+          message.hidden = false;
+          message.classList.add('is-error');
+        }
+      });
+
+      ownerForm.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        const button = ownerForm.querySelector('button[type="submit"]');
+        button.disabled = true;
+        message.textContent = 'Sending sold status for review…';
+        message.hidden = false;
+        message.classList.remove('is-error');
+        const data = new FormData();
+        data.append('type', 'update');
+        data.append('marketplace_status', 'sold');
+        data.append('page_key', ownerForm.dataset.pageKey || '');
+        data.append('title', ownerForm.dataset.title || 'Marketplace listing');
+        data.append('condo', ownerForm.dataset.condo || 'General');
+        data.append('management_token', codeInput.value.trim());
+        try {
+          const endpoint = window.ResiHubApi?.ENDPOINTS?.submit;
+          if (!endpoint) throw new Error('Submission service is unavailable.');
+          const response = await fetch(endpoint, { method: 'POST', body: data });
+          const payload = await response.json();
+          if (!response.ok || !payload || payload.success !== true) {
+            throw new Error(payload?.error || 'Could not update listing.');
+          }
+          message.textContent = 'Sold update submitted. Listing changes after moderator approval.';
+          try {
+            if (!window.ResiHubSubmissionHistory) {
+              throw new Error('Submission history is unavailable.');
+            }
+            window.ResiHubSubmissionHistory.save({
+              id: ownerForm.dataset.pageKey || '',
+              type: 'marketplace',
+              title: ownerForm.dataset.title || 'Marketplace listing',
+              managementToken: codeInput.value.trim()
+            });
+          } catch (storageError) {
+            message.textContent += ' Code could not be saved on this device; copy it before leaving.';
+          }
+        } catch (error) {
+          message.textContent = error instanceof Error ? error.message : 'Could not update listing.';
+          message.classList.add('is-error');
+          button.disabled = false;
+        }
+      });
+    }
+
     const hero = document.getElementById('detailHeroImg');
     const gallery = document.querySelector('.detail-gallery');
     const thumbs = Array.from(document.querySelectorAll('.detail-thumb'));

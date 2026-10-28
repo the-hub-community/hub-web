@@ -395,6 +395,8 @@ document.getElementById("broadcastForm").onsubmit = async (e) => {
         window.ResiHubSuccessModal.show({
           redirectUrl: resolvePostSubmitRedirectUrl(submissionId),
           submissionId,
+          type: "broadcast",
+          title: document.querySelector('#broadcastForm [name="title"]')?.value || "",
         });
       }, 1800);
     } else {

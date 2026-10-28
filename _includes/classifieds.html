@@ -6,6 +6,7 @@
      data-tags="{{ ad.tags | join: ' ' }}"
      data-community="{{ ad.target_community | default: ad.condo | default: 'General' }}"
      data-community-slug="{{ ad.target_community | default: ad.condo | default: 'General' | slugify }}"
+     data-status="{{ ad.listing_status | default: 'available' | downcase }}"
      data-date="{{ ad.date | date: '%s' }}">
 
   <a href="{{ ad.url | relative_url }}" class="mp-card-v2">
@@ -20,6 +21,9 @@
       <div class="mp-card-v2__badges">
         {% if ad.verified %}
           <span class="mp-badge mp-badge--verified"><i class="fa-solid fa-circle-check"></i> Verified</span>
+        {% endif %}
+        {% if ad.listing_status == "sold" %}
+          <span class="mp-badge mp-badge--sold">Sold</span>
         {% endif %}
         {% if ad.photo_count and ad.photo_count > 1 %}
           <span class="mp-badge mp-badge--count"><i class="fa-solid fa-images"></i> {{ ad.photo_count }} photos</span>
