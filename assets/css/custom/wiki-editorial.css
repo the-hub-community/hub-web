@@ -55,6 +55,52 @@
   }
 }
 
+.lh-inline-image-size-small {
+  width: min(30%, 14rem) !important;
+}
+
+.lh-inline-image-size-medium {
+  width: min(55%, 26rem) !important;
+}
+
+.lh-inline-image-size-large {
+  width: min(75%, 38rem) !important;
+}
+
+.lh-inline-image-size-full {
+  width: 100% !important;
+}
+
+.lh-inline-image-size-small img,
+.lh-inline-image-size-medium img,
+.lh-inline-image-size-large img,
+.lh-inline-image-size-full img {
+  width: 100% !important;
+  height: auto !important;
+}
+
+@media (max-width: 768px) {
+  .lh-inline-image-size-small {
+    width: min(55%, 14rem) !important;
+  }
+
+  .lh-inline-image-size-medium {
+    width: min(75%, 26rem) !important;
+  }
+
+  .lh-inline-image-size-large {
+    width: min(90%, 38rem) !important;
+  }
+
+  .lh-align-left[class*="lh-inline-image-size-"] {
+    margin-right: auto;
+  }
+
+  .lh-align-right[class*="lh-inline-image-size-"] {
+    margin-left: auto;
+  }
+}
+
 /* 3. The Horizontal Reel */
 .lh-image-gallery {
   display: flex;

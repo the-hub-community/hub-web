@@ -261,7 +261,8 @@ export function saveDraft() {
           .replace(/</g, "&lt;")
           .replace(/>/g, "&gt;");
         const alignment = ["left", "right"].includes(media.align) ? media.align : "center";
-        replacement = `<div class="lh-align-${alignment}"><figure class="lh-image-container"><img src="${escapeAttr(media.url)}" alt="${escapeAttr(media.alt)}" title="${escapeAttr(media.alt)}" class="lh-fluid-img"></figure></div>`;
+        const size = ["small", "medium", "large", "full"].includes(media.size) ? media.size : "medium";
+        replacement = `<div class="lh-align-${alignment} lh-inline-image-size-${size}"><figure class="lh-image-container"><img src="${escapeAttr(media.url)}" alt="${escapeAttr(media.alt)}" title="${escapeAttr(media.alt)}" class="lh-fluid-img"></figure></div>`;
       }
       editorHtml = editorHtml.replace(marker, replacement);
     });

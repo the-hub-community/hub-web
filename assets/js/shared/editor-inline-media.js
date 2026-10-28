@@ -92,11 +92,45 @@
     return `<button type="button" class="inline-media-remove" data-inline-media-remove aria-label="${escapeHtml(label)}"><i class="fa-solid fa-xmark" aria-hidden="true"></i></button>`;
   }
 
+  function imageControls(align, size) {
+    const alignments = [
+      ["left", "Place image left", '<i class="fa-solid fa-align-left" aria-hidden="true"></i>'],
+      ["center", "Center image", '<i class="fa-solid fa-align-center" aria-hidden="true"></i>'],
+      ["right", "Place image right", '<i class="fa-solid fa-align-right" aria-hidden="true"></i>'],
+    ];
+    const sizes = [
+      ["small", "Small", "S"],
+      ["medium", "Medium", "M"],
+      ["large", "Large", "L"],
+      ["full", "Full width", "Full"],
+    ];
+    const buttons = (options, attribute, selected) => options.map(([value, label, text]) =>
+      `<button type="button" data-inline-${attribute}-choice="${value}" aria-label="${label}" aria-pressed="${value === selected}" title="${label}">${text}</button>`,
+    ).join("");
+    return `<div class="inline-image-controls" data-inline-media-controls><div class="inline-image-controls__group" role="group" aria-label="Image placement">${buttons(alignments, "align", align)}</div><div class="inline-image-controls__group" role="group" aria-label="Image size">${buttons(sizes, "size", size)}</div></div>`;
+  }
+
+  function imageOption(block, name, value) {
+    block.dataset[`inline${name[0].toUpperCase()}${name.slice(1)}`] = value;
+    block.querySelectorAll(`[data-inline-${name}-choice]`).forEach((button) => {
+      button.setAttribute("aria-pressed", String(button.dataset[`inline${name[0].toUpperCase()}${name.slice(1)}Choice`] === value));
+    });
+  }
+
   function addInlineBlock(editor, block, type, id) {
     block.classList.add("lh-inline-media-block", `lh-inline-media-block--${type}`);
     block.dataset.inlineMediaType = type;
     block.dataset.inlineMediaId = id;
     block.setAttribute("contenteditable", "false");
+    if (type === "image") {
+      const currentAlign = block.dataset.inlineAlign || getAlignment(block);
+      const currentSize = block.dataset.inlineSize || getSize(block);
+      block.dataset.inlineAlign = currentAlign;
+      block.dataset.inlineSize = currentSize;
+      if (!block.querySelector("[data-inline-media-controls]")) {
+        block.insertAdjacentHTML("beforeend", imageControls(currentAlign, currentSize));
+      }
+    }
     if (!block.querySelector("[data-inline-media-remove]")) {
       block.insertAdjacentHTML("beforeend", removeButton("Remove inserted media"));
     }
@@ -122,7 +156,7 @@
     const id = mediaId();
     const source = URL.createObjectURL(file);
     filesById.set(id, file);
-    const html = `<figure class="lh-image-container lh-inline-media-block lh-inline-media-block--image" data-inline-media-type="image" data-inline-media-id="${id}" contenteditable="false"><img src="${source}" alt="${escapeHtml(alt)}" title="${escapeHtml(alt)}" class="lh-fluid-img">${removeButton("Remove inserted photo")}</figure><p><br></p>`;
+    const html = `<figure class="lh-image-container lh-inline-media-block lh-inline-media-block--image" data-inline-media-type="image" data-inline-media-id="${id}" data-inline-align="center" data-inline-size="medium" contenteditable="false"><img src="${source}" alt="${escapeHtml(alt)}" title="${escapeHtml(alt)}" class="lh-fluid-img">${imageControls("center", "medium")}${removeButton("Remove inserted photo")}</figure><p><br></p>`;
     if (!insertHtml(editor, html)) {
       filesById.delete(id);
       URL.revokeObjectURL(source);
@@ -143,10 +177,25 @@
   }
 
   function getAlignment(block) {
+    if (["left", "center", "right"].includes(block.dataset.inlineAlign)) {
+      return block.dataset.inlineAlign;
+    }
     const alignment = block.closest(".lh-align-left, .lh-align-right");
     if (alignment?.classList.contains("lh-align-left")) return "left";
     if (alignment?.classList.contains("lh-align-right")) return "right";
     return "center";
+  }
+
+  function getSize(block) {
+    if (["small", "medium", "large", "full"].includes(block.dataset.inlineSize)) {
+      return block.dataset.inlineSize;
+    }
+    const wrapper = block.closest(
+      ".lh-inline-image-size-small, .lh-inline-image-size-medium, .lh-inline-image-size-large, .lh-inline-image-size-full",
+    );
+    return ["small", "medium", "large", "full"].find((size) =>
+      wrapper?.classList.contains(`lh-inline-image-size-${size}`),
+    ) || "medium";
   }
 
   function serialize(editor) {
@@ -169,6 +218,7 @@
           type,
           alt: image.alt || "",
           align: getAlignment(block),
+          size: getSize(block),
           file: file || null,
           url: file ? "" : image.currentSrc || image.src,
         });
@@ -186,7 +236,16 @@
       } else {
         return;
       }
-      cloned.replaceWith(document.createTextNode(`[[HUB_INLINE_MEDIA:${token}]]`));
+      const marker = document.createTextNode(`[[HUB_INLINE_MEDIA:${token}]]`);
+      const wrapper = cloned.parentElement;
+      if (
+        wrapper?.matches(".lh-align-left, .lh-align-center, .lh-align-right") &&
+        wrapper.children.length === 1
+      ) {
+        wrapper.replaceWith(marker);
+      } else {
+        cloned.replaceWith(marker);
+      }
     });
     return { html: clone.innerHTML, inlineMedia };
   }
@@ -241,6 +300,23 @@
       composer.hidden = true;
       setStatus(editor, "Video inserted at cursor.");
       editor.dispatchEvent(new Event("input", { bubbles: true }));
+      return;
+    }
+
+    const imageOptionButton = event.target.closest("[data-inline-align-choice], [data-inline-size-choice]");
+    if (imageOptionButton) {
+      const block = imageOptionButton.closest(".lh-inline-media-block--image");
+      const editor = block?.closest(".editor-area, [data-editor-area]");
+      if (!block || !editor) return;
+      if (imageOptionButton.hasAttribute("data-inline-align-choice")) {
+        const align = imageOptionButton.dataset.inlineAlignChoice;
+        if (["left", "center", "right"].includes(align)) imageOption(block, "align", align);
+      } else {
+        const size = imageOptionButton.dataset.inlineSizeChoice;
+        if (["small", "medium", "large", "full"].includes(size)) imageOption(block, "size", size);
+      }
+      editor.dispatchEvent(new Event("input", { bubbles: true }));
+      setStatus(editor, "Photo layout updated.");
       return;
     }
 

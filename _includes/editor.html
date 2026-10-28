@@ -150,7 +150,7 @@
             </label>
             <button type="button" class="inline-media-composer__insert" data-inline-video-insert>Insert at cursor</button>
         </div>
-        <p class="inline-media-hint">Place cursor in your text, then add a photo or video. Use sections to organize separate topics.</p>
+        <p class="inline-media-hint">Place cursor in your text, then add a photo or video. Adjust photo placement and size below each image. Use sections to organize separate topics.</p>
         <p class="inline-media-status" data-inline-media-status role="status" aria-live="polite" hidden></p>
 
         <div class="section-body">
@@ -234,7 +234,7 @@
         function getDrawerSectionPreview(sec) {
             const editor = sec.querySelector('.editor-area');
             const previewEditor = editor?.cloneNode(true);
-            previewEditor?.querySelectorAll('[data-inline-media-remove]').forEach((button) => button.remove());
+            previewEditor?.querySelectorAll('[data-inline-media-remove], [data-inline-media-controls]').forEach((control) => control.remove());
             const rawText = previewEditor ? previewEditor.innerHTML : '';
             const cleanedText = typeof normalizeEditorHtml === 'function' ? normalizeEditorHtml(rawText) : rawText;
             const videoUrl = sec.querySelector('.video-input')?.value || '';

@@ -105,7 +105,7 @@ sitemap: false
               </label>
               <button type="button" class="inline-media-composer__insert" data-inline-video-insert>Insert at cursor</button>
             </div>
-            <p class="inline-media-hint">Place cursor in text, then add photo or YouTube video where it belongs.</p>
+            <p class="inline-media-hint">Place cursor in text, then add photo or YouTube video. Adjust photo placement and size below each image.</p>
             <p class="inline-media-status" data-inline-media-status role="status" aria-live="polite" hidden></p>
             <div class="editor-area" contenteditable="true" data-placeholder="Write your content here…" data-char-limit="8000"></div>
           </div>
@@ -224,7 +224,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const title = document.getElementById('thcPageTitle')?.value.trim() || 'Untitled Page';
     const tags = document.getElementById('thcTags')?.value.trim();
     const previewEditor = document.querySelector('.editor-area')?.cloneNode(true);
-    previewEditor?.querySelectorAll('[data-inline-media-remove]').forEach((button) => button.remove());
+    previewEditor?.querySelectorAll('[data-inline-media-remove], [data-inline-media-controls]').forEach((control) => control.remove());
     const content = previewEditor?.innerHTML || '<p class="text-muted">No content provided.</p>';
     const previewContainer = document.querySelector('.submit-preview');
     if (!previewContainer) return;
@@ -342,7 +342,9 @@ document.addEventListener('DOMContentLoaded', function () {
           inlineMedia: inlineEditor.inlineMedia.map((media) => ({
             token: media.token,
             type: media.type,
-            ...(media.type === 'video' ? { url: media.url } : {}),
+            ...(media.type === 'video'
+              ? { url: media.url }
+              : { align: media.align, size: media.size }),
           })),
         }];
         formData.append('sections_json', JSON.stringify(sectionsPayload));
@@ -363,6 +365,7 @@ document.addEventListener('DOMContentLoaded', function () {
           .filter((media) => media.type === 'image')
           .forEach((media) => {
             const align = ['left', 'right'].includes(media.align) ? media.align : 'center';
+            const size = ['small', 'medium', 'large', 'full'].includes(media.size) ? media.size : 'medium';
             if (media.file instanceof File) {
               formData.append('section_images_0', media.file);
               imageMeta.push({
@@ -371,6 +374,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 alt: media.alt || "",
                 order: imageOrder++,
                 inlineToken: media.token,
+                size,
               });
             } else if (media.url) {
               imageMeta.push({
@@ -380,6 +384,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 alt: media.alt || "",
                 order: imageOrder++,
                 inlineToken: media.token,
+                size,
               });
             }
           });

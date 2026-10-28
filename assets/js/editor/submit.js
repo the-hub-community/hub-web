@@ -229,7 +229,9 @@ async function handleDrawerSubmit(e) {
         inlineMedia: serializedEditor.inlineMedia.map((media) => ({
           token: media.token,
           type: media.type,
-          ...(media.type === "video" ? { url: media.url } : {}),
+          ...(media.type === "video"
+            ? { url: media.url }
+            : { align: media.align, size: media.size }),
         })),
       };
 
@@ -239,6 +241,10 @@ async function handleDrawerSubmit(e) {
       const appendImage = (img, inlineToken = "") => {
         const imageAlign =
           ["left", "right"].includes(img.align) ? img.align : "center";
+        const imageSize =
+          ["small", "medium", "large", "full"].includes(img.size)
+            ? img.size
+            : "medium";
         if (img.isLocal && img.file instanceof File) {
           fd.append(`section_images_${count}`, img.file);
           imageMeta.push({
@@ -246,7 +252,7 @@ async function handleDrawerSubmit(e) {
             align: imageAlign,
             alt: img.alt || "",
             order: newImageIdx++,
-            ...(inlineToken ? { inlineToken } : {}),
+            ...(inlineToken ? { inlineToken, size: imageSize } : {}),
           });
         } else if (img.url) {
           imageMeta.push({
@@ -255,7 +261,7 @@ async function handleDrawerSubmit(e) {
             align: imageAlign,
             alt: img.alt || "",
             order: newImageIdx++,
-            ...(inlineToken ? { inlineToken } : {}),
+            ...(inlineToken ? { inlineToken, size: imageSize } : {}),
           });
         }
       };
@@ -268,6 +274,7 @@ async function handleDrawerSubmit(e) {
           file: media.file,
           url: media.url,
           align: media.align || "center",
+          size: media.size,
           alt: media.alt || "",
         }, media.token));
 
