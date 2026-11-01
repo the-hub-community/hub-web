@@ -853,6 +853,75 @@ form select {
   pointer-events: none;
 }
 
+.submit-media-options {
+  margin-top: 20px;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  background: var(--surface-container-lowest);
+}
+
+.submit-media-options > summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 48px;
+  padding: 12px 14px;
+  color: var(--on-surface);
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  list-style: none;
+}
+
+.submit-media-options > summary::-webkit-details-marker {
+  display: none;
+}
+
+.submit-media-options > summary::after {
+  content: "+";
+  color: var(--primary);
+  font-size: 1.2rem;
+  line-height: 1;
+}
+
+.submit-media-options[open] > summary::after {
+  content: "−";
+}
+
+.submit-media-options__hint {
+  margin-left: auto;
+  color: var(--on-surface-variant);
+  font-size: 0.75rem;
+  font-weight: 400;
+  text-align: right;
+}
+
+.submit-media-options__content {
+  display: grid;
+  gap: 18px;
+  padding: 0 14px 16px;
+}
+
+.submit-media-options__content .form-group {
+  margin: 0 !important;
+}
+
+.submit-media-options__fields {
+  display: grid;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.submit-media-options__fields .modern-input {
+  width: 100%;
+  min-height: 44px;
+  padding: 10px 12px;
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-lg);
+  background: var(--surface-container-lowest);
+}
+
 /* Submit wizard notice */
 .submit-notice {
   display: flex;

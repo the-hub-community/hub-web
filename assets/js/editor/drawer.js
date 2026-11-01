@@ -7,6 +7,55 @@ import {
 let previousActiveElement = null;
 let trapFocusHandler = null;
 let mobileScrollLock = null;
+let drawerKeyboardTrackingInitialized = false;
+let drawerCaretScrollScheduled = false;
+
+function keepDrawerCaretVisible() {
+  const viewport = window.visualViewport;
+  const editorPanel = document.getElementById("editor-panel");
+  const scrollArea = document.getElementById("drawer-edit-view");
+  const editor = document.activeElement?.closest?.(".editor-area");
+  if (
+    !viewport ||
+    !editorPanel?.classList.contains("is-open") ||
+    !editor ||
+    !scrollArea ||
+    !window.matchMedia("(max-width: 768px)").matches ||
+    drawerCaretScrollScheduled
+  ) {
+    return;
+  }
+
+  drawerCaretScrollScheduled = true;
+  requestAnimationFrame(() => {
+    drawerCaretScrollScheduled = false;
+    const selection = window.getSelection();
+    if (!selection?.rangeCount) return;
+    const caret = selection.getRangeAt(0).getBoundingClientRect();
+    if (!caret.height && !caret.width) return;
+
+    const areaBounds = scrollArea.getBoundingClientRect();
+    const visibleTop = Math.max(areaBounds.top, viewport.offsetTop + 64);
+    const visibleBottom = Math.min(
+      areaBounds.bottom - 88,
+      viewport.offsetTop + viewport.height - 16,
+    );
+    if (caret.bottom > visibleBottom) {
+      scrollArea.scrollTop += caret.bottom - visibleBottom;
+    } else if (caret.top < visibleTop) {
+      scrollArea.scrollTop += caret.top - visibleTop;
+    }
+  });
+}
+
+function initDrawerKeyboardTracking() {
+  if (drawerKeyboardTrackingInitialized || !window.visualViewport) return;
+  drawerKeyboardTrackingInitialized = true;
+  window.visualViewport.addEventListener("resize", keepDrawerCaretVisible);
+  window.visualViewport.addEventListener("scroll", keepDrawerCaretVisible);
+  document.addEventListener("input", keepDrawerCaretVisible);
+  document.addEventListener("focusin", keepDrawerCaretVisible);
+}
 
 function getDraftKey() {
   return `editor-draft-${document.body?.dataset?.pageKey || "global"}`;
@@ -507,6 +556,7 @@ export function togglePanel(mode = "create") {
   }
 
   if (isOpening) {
+    initDrawerKeyboardTracking();
     previousActiveElement = document.activeElement;
     if (editBtn) editBtn.setAttribute("aria-expanded", "true");
     editorPanel.setAttribute("aria-hidden", "false");

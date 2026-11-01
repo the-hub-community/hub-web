@@ -111,24 +111,31 @@ sitemap: false
           </div>
         </div>
 
-        <div class="form-group" style="margin-top: 24px;">
-          <label>Photo gallery <span class="form-optional">(optional)</span></label>
-          <p class="form-hint">Use this for a swipeable gallery; use Photo in the toolbar to place an image within your text.</p>
-            <!-- The image picker handles upload and thumbnail editing. -->
-            <div class="image-picker" id="wizard-image-picker" style="margin-top: 16px;"></div>
-        </div>
+        <details class="submit-media-options">
+          <summary>
+            <span>Optional media and layout</span>
+            <span class="submit-media-options__hint">Gallery and section video</span>
+          </summary>
+          <div class="submit-media-options__content">
+            <div class="form-group">
+              <label>Photo gallery <span class="form-optional">(optional)</span></label>
+              <p class="form-hint">Use this for a swipeable gallery; use Photo in the toolbar to place an image within your text.</p>
+              <div class="image-picker" id="wizard-image-picker" style="margin-top: 16px;"></div>
+            </div>
 
-        <div class="form-group">
-          <label for="wizard-video-url">Section video <span class="form-optional">(optional)</span></label>
-          <div style="margin-top: 12px;">
-            <input type="text" id="wizard-video-url" class="modern-input" placeholder="Paste a YouTube link" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border-default); margin-bottom: 8px;">
-            <select id="wizard-video-align" class="modern-input" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border-default);">
-              <option value="center">Video: Center (Full width)</option>
-              <option value="left">Video: Float Left</option>
-              <option value="right">Video: Float Right</option>
-            </select>
+            <div class="form-group">
+              <label for="wizard-video-url">Section video <span class="form-optional">(optional)</span></label>
+              <div class="submit-media-options__fields">
+                <input type="text" id="wizard-video-url" class="modern-input" placeholder="Paste a YouTube link">
+                <select id="wizard-video-align" class="modern-input">
+                  <option value="center">Video: Center (Full width)</option>
+                  <option value="left">Video: Float Left</option>
+                  <option value="right">Video: Float Right</option>
+                </select>
+              </div>
+            </div>
           </div>
-        </div>
+        </details>
 
         <div class="submit-actions">
           <button type="button" class="btn btn--secondary submit-back" data-back="1">← Back</button>
@@ -187,6 +194,41 @@ document.addEventListener('DOMContentLoaded', function () {
 
   const editor = document.querySelector('.editor-area');
   if (editor) {
+    const viewport = window.visualViewport;
+    let editorFocused = false;
+    let caretScrollScheduled = false;
+    const keepCaretVisible = () => {
+      if (!editorFocused || !viewport || caretScrollScheduled) return;
+      caretScrollScheduled = true;
+      requestAnimationFrame(() => {
+        caretScrollScheduled = false;
+        const selection = window.getSelection();
+        if (!selection?.rangeCount) return;
+        const caret = selection.getRangeAt(0).getBoundingClientRect();
+        if (!caret.height && !caret.width) return;
+
+        const visibleTop = viewport.offsetTop + 8;
+        const visibleBottom = viewport.offsetTop + viewport.height - 16;
+        if (caret.bottom > visibleBottom) {
+          window.scrollBy({ top: caret.bottom - visibleBottom, behavior: 'auto' });
+        } else if (caret.top < visibleTop) {
+          window.scrollBy({ top: caret.top - visibleTop, behavior: 'auto' });
+        }
+      });
+    };
+    const onViewportChange = () => keepCaretVisible();
+    editor.addEventListener('focus', () => {
+      editorFocused = true;
+      viewport?.addEventListener('resize', onViewportChange);
+      viewport?.addEventListener('scroll', onViewportChange);
+      keepCaretVisible();
+    });
+    editor.addEventListener('blur', () => {
+      editorFocused = false;
+      viewport?.removeEventListener('resize', onViewportChange);
+      viewport?.removeEventListener('scroll', onViewportChange);
+    });
+    editor.addEventListener('input', keepCaretVisible);
     editor.addEventListener('paste', (e) => {
       e.preventDefault();
       const html = (e.originalEvent || e).clipboardData.getData('text/html');

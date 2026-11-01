@@ -248,6 +248,62 @@
 
 @media (max-width: 768px) {
   .editor-toolbar {
-    flex-wrap: wrap;
+    flex-wrap: nowrap !important;
+    gap: 8px;
+    min-height: 60px;
+    padding: 8px 12px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    overscroll-behavior-x: contain;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+    touch-action: pan-x;
+  }
+
+  .editor-toolbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  .editor-toolbar > button {
+    flex: 0 0 auto;
+    min-width: 44px;
+    min-height: 44px;
+    margin: 0 !important;
+  }
+
+  .editor-toolbar > button:not(.inline-media-tool):not(.btn-ai-format) {
+    width: 44px;
+    height: 44px;
+  }
+
+  .editor-toolbar .inline-media-tool {
+    width: auto;
+    min-width: 44px;
+    min-height: 44px;
+    padding: 0 10px;
+    gap: 8px;
+    white-space: nowrap;
+  }
+
+  #btn-ai-format {
+    width: auto !important;
+    min-width: max-content;
+    min-height: 44px;
+    margin-left: 0 !important;
+    padding: 0 12px;
+  }
+
+  .editor-shell .editor-area {
+    min-height: 220px;
+    padding: 16px;
+    overflow: visible;
+    font-size: 16px;
+    line-height: 1.6;
+  }
+}
+
+@media (max-width: 380px) {
+  .submit-media-options__hint {
+    display: none;
   }
 }

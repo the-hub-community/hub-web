@@ -1649,6 +1649,27 @@
     top: 0 !important;
   }
 
+  #editor-panel .rich-toolbar {
+    flex-wrap: nowrap !important;
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
+    overscroll-behavior-x: contain;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  #editor-panel .rich-toolbar button {
+    flex: 0 0 auto !important;
+    min-width: 44px !important;
+    min-height: 44px !important;
+  }
+
+  #editor-panel .rich-toolbar .inline-media-tool {
+    width: auto !important;
+    min-width: 44px !important;
+    padding-inline: 10px !important;
+    white-space: nowrap;
+  }
+
   /* Sticky Footer */
   #editor-panel .drawer-footer {
     position: fixed !important;
