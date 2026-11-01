@@ -3173,6 +3173,43 @@ form select {
   .listing-form .form-actions .btn { width: 100%; }
 }
 
+@media (max-width: 768px) {
+  .editor-shell {
+    overflow: visible;
+  }
+
+  .editor-toolbar {
+    position: sticky;
+    top: calc(64px + env(safe-area-inset-top, 0px));
+    z-index: 30;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scrollbar-width: none;
+    background: var(--surface-container-lowest);
+    box-shadow: 0 5px 12px rgba(4, 23, 72, 0.08);
+  }
+
+  .editor-toolbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  .editor-toolbar > button {
+    flex: 0 0 auto;
+  }
+
+  .editor-toolbar .inline-media-tool {
+    width: auto;
+    min-width: max-content;
+    padding-inline: 8px;
+    white-space: nowrap;
+  }
+
+  #btn-ai-format {
+    margin-left: 0 !important;
+  }
+}
+
 /* ── Wiki section image alignment ──────────────────────── */
 .lh-section { position: relative; }
 .lh-clear { clear: both; }
@@ -6675,8 +6712,16 @@ form select {
     display: none;
   }
 
+  .drawer-section-card {
+    overflow: visible;
+  }
+
   .rich-toolbar-shell {
-    position: static;
+    position: sticky;
+    top: calc(52px + env(safe-area-inset-top, 0px));
+    z-index: 6;
+    background: var(--surface-container-lowest);
+    box-shadow: 0 5px 12px rgba(4, 23, 72, 0.08);
   }
 
   .rich-toolbar-toggle {
@@ -6706,23 +6751,30 @@ form select {
     font-weight: 500;
   }
 
-  .rich-toolbar-shell:not([open]) .rich-toolbar {
-    display: none;
-  }
-
   .rich-toolbar {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 8px;
+    flex-direction: row;
+    align-items: center;
+    flex-wrap: nowrap;
+    gap: 4px;
+    padding: 6px;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
   }
 
   .rich-toolbar__group {
-    width: 100%;
+    width: auto;
+    flex: 0 0 auto;
     justify-content: flex-start;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
   }
 
   .rich-toolbar .v-sep { display: none; }
+  .rich-toolbar .inline-media-tool {
+    width: auto;
+    min-width: max-content;
+    flex: 0 0 auto;
+    padding-inline: 8px;
+  }
 
   .drawer-section-card .section-body {
     padding: 14px;
@@ -6892,6 +6944,11 @@ form select {
   .drawer-section-card {
     margin-bottom: 16px;
     border-radius: 12px;
+    overflow: visible;
+  }
+
+  .rich-toolbar-shell {
+    top: calc(52px + env(safe-area-inset-top, 0px));
   }
   
   .drawer-section-card .editor-area {
@@ -6988,6 +7045,12 @@ form select {
    FINAL FORCE OVERRIDE FOR MOBILE DRAWER
    ================================================================ */
 @media screen and (max-width: 768px) {
+  html.editor-drawer-open,
+  body.editor-drawer-open {
+    overflow: hidden !important;
+    overscroll-behavior: none;
+  }
+
   /* Force full screen */
   #editor-panel.editor-drawer {
     position: fixed !important;
@@ -7056,19 +7119,42 @@ form select {
 
   /* Fix scrolling areas */
   #editor-panel .drawer-inner {
+    display: flex !important;
+    flex-direction: column !important;
     padding: 0 !important;
     height: 100% !important;
+    min-height: 0 !important;
   }
 
   #editor-panel #drawer-form {
     padding: 0 !important;
-    height: calc(100dvh - 65px) !important; /* Subtract header height */
-    overflow-y: auto !important;
+    flex: 1 1 auto !important;
+    height: auto !important;
+    min-height: 0 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    overflow: hidden !important;
   }
-  
-  #editor-panel #drawer-edit-view {
+
+  #editor-panel #drawer-edit-view,
+  #editor-panel #drawer-preview-view {
+    flex: 1 1 auto !important;
+    min-height: 0 !important;
     padding: 16px !important;
     padding-bottom: 100px !important;
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  #editor-panel .drawer-section-card .editor-area {
+    max-height: none !important;
+    overflow: visible !important;
+  }
+
+  #editor-panel .rich-toolbar-shell {
+    top: 0 !important;
   }
 
   /* Sticky Footer */

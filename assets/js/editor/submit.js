@@ -448,6 +448,12 @@ async function handleDrawerSubmit(e) {
     if (drawerSubmissionError) {
       drawerSubmissionError.textContent = errorMsg;
       drawerSubmissionError.style.display = "block";
+      if (window.matchMedia("(max-width: 768px)").matches) {
+        drawerSubmissionError.scrollIntoView({
+          block: "nearest",
+          behavior: "smooth",
+        });
+      }
     } else {
       alert(`❌ ${errorMsg}`);
     }

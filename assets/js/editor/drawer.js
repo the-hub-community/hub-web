@@ -6,9 +6,50 @@ import {
 
 let previousActiveElement = null;
 let trapFocusHandler = null;
+let mobileScrollLock = null;
 
 function getDraftKey() {
   return `editor-draft-${document.body?.dataset?.pageKey || "global"}`;
+}
+
+function lockMobilePageScroll() {
+  if (
+    mobileScrollLock ||
+    !window.matchMedia("(max-width: 768px)").matches
+  ) {
+    return;
+  }
+
+  const body = document.body;
+  const scrollY = window.scrollY;
+  const styleProperties = ["position", "top", "left", "right", "width", "overflow"];
+  mobileScrollLock = {
+    scrollY,
+    styles: Object.fromEntries(
+      styleProperties.map((property) => [property, body.style[property]]),
+    ),
+  };
+  document.documentElement.classList.add("editor-drawer-open");
+  body.classList.add("editor-drawer-open");
+  body.style.position = "fixed";
+  body.style.top = `-${scrollY}px`;
+  body.style.left = "0";
+  body.style.right = "0";
+  body.style.width = "100%";
+  body.style.overflow = "hidden";
+}
+
+function unlockMobilePageScroll() {
+  if (!mobileScrollLock) return;
+
+  const { scrollY, styles } = mobileScrollLock;
+  mobileScrollLock = null;
+  document.documentElement.classList.remove("editor-drawer-open");
+  document.body.classList.remove("editor-drawer-open");
+  Object.entries(styles).forEach(([property, value]) => {
+    document.body.style[property] = value;
+  });
+  window.scrollTo(0, scrollY);
 }
 
 function mountSectionImagePicker(section) {
@@ -510,6 +551,12 @@ export function togglePanel(mode = "create") {
       }
     }
 
+    const metaPanel = editorPanel.querySelector(".editor-meta-panel");
+    if (metaPanel && window.matchMedia("(max-width: 768px)").matches) {
+      metaPanel.open = mode !== "edit";
+    }
+
+    lockMobilePageScroll();
     editorPanel.classList.add("is-open");
     trapFocus(editorPanel);
     const focusTarget = editorPanel.querySelector(
@@ -518,6 +565,7 @@ export function togglePanel(mode = "create") {
     if (focusTarget) setTimeout(() => focusTarget.focus(), 100);
   } else {
     editorPanel.classList.remove("is-open");
+    unlockMobilePageScroll();
     editorPanel.setAttribute("aria-hidden", "true");
     if (editBtn) editBtn.setAttribute("aria-expanded", "false");
     if (trapFocusHandler) {

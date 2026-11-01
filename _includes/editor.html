@@ -54,6 +54,7 @@
                         <p class="editor-section-hint">Start a new section for a different topic; use Photo or Video to place media inside current text.</p>
                     </div>
                 </div>
+                <p id="drawerSubmissionError" class="submission-error-inline" style="display: none;"></p>
             </div>
 
             <div id="drawer-preview-view" class="drawer-preview-hidden">
@@ -67,7 +68,6 @@
                     data-i18n="common.cancel">Cancel</button>
                 <button type="submit" id="sync-btn" class="btn-sync" data-i18n="common.update">Update</button>
             </div>
-            <p id="drawerSubmissionError" class="submission-error-inline" style="display: none;"></p>
         </form>
     </div>
 </div>
@@ -113,7 +113,7 @@
                 <div class="rich-toolbar__group inline-media-tools">
                     <button type="button" class="inline-media-tool" data-inline-image-trigger title="Insert photo at cursor">
                         <i class="fa-regular fa-image" aria-hidden="true"></i>
-                        <span>Photo</span>
+                        <span>Add image</span>
                     </button>
                     <input type="file" accept="image/*" data-inline-image-input hidden>
                     <button type="button" class="inline-media-tool" data-inline-video-toggle title="Insert YouTube video at cursor">

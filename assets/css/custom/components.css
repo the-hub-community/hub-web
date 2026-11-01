@@ -1011,6 +1011,43 @@ form select {
   .listing-form .form-actions .btn { width: 100%; }
 }
 
+@media (max-width: 768px) {
+  .editor-shell {
+    overflow: visible;
+  }
+
+  .editor-toolbar {
+    position: sticky;
+    top: calc(64px + env(safe-area-inset-top, 0px));
+    z-index: 30;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scrollbar-width: none;
+    background: var(--surface-container-lowest);
+    box-shadow: 0 5px 12px rgba(4, 23, 72, 0.08);
+  }
+
+  .editor-toolbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  .editor-toolbar > button {
+    flex: 0 0 auto;
+  }
+
+  .editor-toolbar .inline-media-tool {
+    width: auto;
+    min-width: max-content;
+    padding-inline: 8px;
+    white-space: nowrap;
+  }
+
+  #btn-ai-format {
+    margin-left: 0 !important;
+  }
+}
+
 /* ── Wiki section image alignment ──────────────────────── */
 .lh-section { position: relative; }
 .lh-clear { clear: both; }
