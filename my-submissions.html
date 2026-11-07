@@ -114,7 +114,7 @@ document.addEventListener("DOMContentLoaded", function () {
       });
       actions.appendChild(copyId);
 
-      if (record.type === "marketplace") {
+      if (record.type === "marketplace" && record.listingType !== "borrow_lend") {
         var manage = document.createElement("details");
         manage.className = "my-submission-card__manage";
         var summary = document.createElement("summary");
@@ -134,10 +134,9 @@ document.addEventListener("DOMContentLoaded", function () {
         codeInput.autocomplete = "off";
         codeInput.value = record.managementToken || "";
         codeInput.required = true;
-        codeInput.minLength = 64;
-        codeInput.maxLength = 64;
-        codeInput.pattern = "[a-fA-F0-9]{64}";
-        codeInput.title = "Enter the 64-character private code saved when you created this listing.";
+        codeInput.minLength = 16;
+        codeInput.maxLength = 128;
+        codeInput.title = "Enter the private listing code saved when you created this listing.";
         var codeActions = document.createElement("div");
         codeActions.className = "my-submission-card__code-actions";
         var showCode = makeButton("Show code", "btn btn--secondary btn--sm");
@@ -171,7 +170,7 @@ document.addEventListener("DOMContentLoaded", function () {
         manageForm.addEventListener("submit", async function (event) {
           event.preventDefault();
           soldButton.disabled = true;
-          updateMessage.textContent = "Sending sold status for review…";
+          updateMessage.textContent = "Marking listing sold…";
           updateMessage.classList.remove("is-error");
           updateMessage.hidden = false;
           var data = new FormData();
@@ -189,8 +188,9 @@ document.addEventListener("DOMContentLoaded", function () {
             if (!response.ok || !payload || payload.success !== true) {
               throw new Error(payload && payload.error ? payload.error : "Could not update listing.");
             }
-            updateMessage.textContent = "Sold update submitted. Listing changes after moderator approval.";
-            soldButton.textContent = "Update submitted";
+            updateMessage.textContent = "Listing marked sold. Marketplace may take a moment to refresh.";
+            soldButton.textContent = "Marked sold";
+            soldButton.disabled = true;
             try {
               if (!history) throw new Error("Submission history is unavailable.");
               history.save(Object.assign({}, record, { managementToken: codeInput.value.trim() }));
@@ -246,6 +246,7 @@ document.addEventListener("DOMContentLoaded", function () {
       var record = history.save({
         id: id,
         type: isMarketplace ? "marketplace" : "submission",
+        listingType: String(result.listingType || "").trim().toLowerCase(),
         title: String(result.pullRequest && result.pullRequest.title || "")
           .replace(/^MARKETPLACE:\s*/i, ""),
       });

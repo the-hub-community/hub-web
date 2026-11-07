@@ -37,6 +37,12 @@ description: Browse local community listings, services, rentals, and goods publi
     </div>
   </div>
 
+  <nav class="mp-mode-switch" aria-label="Marketplace listing type">
+    <button type="button" class="mp-mode-switch__button is-active" data-listing-type="all" aria-pressed="true" data-i18n="marketplace_ui.all_listings">All listings</button>
+    <button type="button" class="mp-mode-switch__button" data-listing-type="sale" aria-pressed="false" data-i18n="marketplace_ui.for_sale">For sale</button>
+    <button type="button" class="mp-mode-switch__button" data-listing-type="borrow_lend" aria-pressed="false" data-i18n="marketplace_ui.borrow_lend">Borrow &amp; Lend</button>
+  </nav>
+
   <section class="mp-discovery" aria-label="Find marketplace listings">
     <div class="mp-discovery__search">
       <label class="mp-search" for="adSearch">

@@ -10,6 +10,11 @@ const marketplaceCommunitySelect = document.getElementById(
 const marketplaceCommunityKey = document.getElementById(
   "marketplaceCommunityKey",
 );
+const listingTypeSelect = document.getElementById("listingType");
+const listingPriceField = document.getElementById("listingPriceField");
+const loanTermsField = document.getElementById("loanTermsField");
+const customManagementCode = document.getElementById("customManagementCode");
+const listingContact = document.getElementById("listingContact");
 const REPO_DETAIL_PATTERN =
   /(api\.github\.com|github\.com\/|\brepos\/[A-Za-z0-9_.-]+\/[A-Za-z0-9_.-]+)/i;
 
@@ -31,6 +36,26 @@ if (marketplaceCommunitySelect) {
     syncMarketplaceCommunityKey,
   );
 }
+
+function syncListingTypeFields() {
+  const isBorrowLend = listingTypeSelect?.value === "borrow_lend";
+  if (listingPriceField) listingPriceField.hidden = Boolean(isBorrowLend);
+  if (loanTermsField) loanTermsField.hidden = !isBorrowLend;
+  const priceInput = listingPriceField?.querySelector("input");
+  const loanTermsInput = loanTermsField?.querySelector("textarea");
+  if (listingContact) {
+    listingContact.type = isBorrowLend ? "email" : "text";
+    listingContact.required = Boolean(isBorrowLend);
+    listingContact.placeholder = isBorrowLend
+      ? "Email for borrowing notifications"
+      : "Phone, Email, or WhatsApp";
+  }
+  if (priceInput) priceInput.disabled = Boolean(isBorrowLend);
+  if (loanTermsInput) loanTermsInput.disabled = !isBorrowLend;
+}
+
+listingTypeSelect?.addEventListener("change", syncListingTypeFields);
+syncListingTypeFields();
 
 function i18nText(key, fallback) {
   if (typeof window.t === "function") {
@@ -211,6 +236,7 @@ document.getElementById("marketplaceForm").onsubmit = async (e) => {
     'input:not([type="file"]), select, textarea',
   );
   inputs.forEach((input) => {
+    if (input.disabled || input.name === "custom_management_code") return;
     formData.append(input.name, input.value);
   });
 
@@ -221,10 +247,19 @@ document.getElementById("marketplaceForm").onsubmit = async (e) => {
   }
 
   const submissionId = window.ResiHubApi?.createSubmissionId("listing");
-  const managementToken = Array.from(
+  const generatedManagementToken = Array.from(
     window.crypto.getRandomValues(new Uint8Array(32)),
     (byte) => byte.toString(16).padStart(2, "0"),
   ).join("");
+  const managementToken = customManagementCode?.value.trim() || generatedManagementToken;
+  if (managementToken.length < 16 || managementToken.length > 128) {
+    customManagementCode?.setCustomValidity(
+      "Private listing code must be between 16 and 128 characters.",
+    );
+    customManagementCode?.reportValidity();
+    return;
+  }
+  customManagementCode?.setCustomValidity("");
   if (submissionId) {
     formData.append("page_key", submissionId);
   }
@@ -271,6 +306,7 @@ document.getElementById("marketplaceForm").onsubmit = async (e) => {
           redirectUrl: resolvePostSubmitRedirectUrl(submissionId),
           submissionId,
           type: "marketplace",
+          listingType: listingTypeSelect?.value || "sale",
           title: document.querySelector('[name="title"]')?.value || "",
           managementToken,
         });

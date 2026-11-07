@@ -128,16 +128,14 @@ body::after {
 
 /* ── 5. CARD HOVER LIFT (unified) ───────────────────────────── */
 .hub-card,
-.asymmetric-card,
-.ad-card-wrapper {
+.asymmetric-card {
   transition: transform var(--duration-base) var(--ease-out),
               box-shadow var(--duration-base) var(--ease-out);
   will-change: transform;
 }
 
 .hub-card:hover,
-.asymmetric-card:hover,
-.ad-card-wrapper:hover {
+.asymmetric-card:hover {
   transform: translateY(-2px);
   box-shadow: var(--shadow-lg);
 }
@@ -176,8 +174,7 @@ html.theme-transitioning * {
     transition: none !important;
   }
   .hub-card:hover,
-  .asymmetric-card:hover,
-  .ad-card-wrapper:hover {
+  .asymmetric-card:hover {
     transform: none;
   }
 }

@@ -15,7 +15,7 @@ sitemap: false
       </div>
       <h1 class="page-hero__title" data-i18n="list_service.heading">Create Marketplace Listing</h1>
       <p class="page-hero__subtitle">
-        Post a listing to your community. Approved listings appear in the marketplace within 24 hours.
+        Post an item for sale or offer it to borrow. New listings appear after community review.
       </p>
     </div>
 
@@ -38,7 +38,34 @@ sitemap: false
         <div id="fileError" class="form-error" hidden></div>
       </div>
 
-      <!-- Title + Price -->
+      <div class="form-row-2col">
+        <div class="form-group">
+          <label for="listingType" data-i18n="list_service.listing_type">Listing type</label>
+          <select name="listing_type" id="listingType" required class="modern-input">
+            <option value="sale" selected data-i18n="list_service.for_sale">For sale</option>
+            <option value="borrow_lend" data-i18n="list_service.borrow_or_lend">Borrow or lend for free</option>
+          </select>
+        </div>
+        <div class="form-group" id="listingPriceField">
+          <label data-i18n="list_service.price">Price ($)</label>
+          <input type="number" name="price" placeholder="0.00" class="modern-input" min="0" step="0.01">
+        </div>
+      </div>
+
+      <div class="form-group" id="loanTermsField" hidden>
+        <label for="loanTerms" data-i18n="list_service.loan_terms">Borrowing details (optional)</label>
+        <textarea
+          name="loan_terms"
+          id="loanTerms"
+          rows="2"
+          data-i18n-placeholder="list_service.loan_terms_placeholder"
+          placeholder="Availability, loan length, pickup details, or return expectations"
+          class="modern-input"
+          data-char-limit="500"
+        ></textarea>
+      </div>
+
+      <!-- Title -->
       <div class="form-row-2col">
         <div class="form-group">
           <label data-i18n="list_service.listing_title">Listing Title</label>
@@ -51,10 +78,6 @@ sitemap: false
             class="modern-input"
             data-char-limit="140"
           >
-        </div>
-        <div class="form-group">
-          <label data-i18n="list_service.price">Price ($)</label>
-          <input type="number" name="price" placeholder="0.00" class="modern-input">
         </div>
       </div>
 
@@ -84,8 +107,30 @@ sitemap: false
             <option value="Rentals" data-i18n="list_service.category_rentals">Rentals</option>
             <option value="Food" data-i18n="list_service.category_food">Food</option>
             <option value="Items for Sale" data-i18n="list_service.category_items_for_sale">Items for Sale</option>
+            <option value="Books & Media">Books &amp; Media</option>
+            <option value="Kids & Toys">Kids &amp; Toys</option>
+            <option value="Tools & Garden">Tools &amp; Garden</option>
+            <option value="Furniture & Home">Furniture &amp; Home</option>
+            <option value="Bicycles & Transit">Bicycles &amp; Transit</option>
           </select>
         </div>
+      </div>
+
+      <div class="form-group">
+        <label for="customManagementCode" data-i18n="list_service.custom_code">Private listing code (optional)</label>
+        <input
+          type="password"
+          name="custom_management_code"
+          id="customManagementCode"
+          class="modern-input"
+          minlength="16"
+          maxlength="128"
+          autocomplete="new-password"
+          data-i18n-placeholder="list_service.custom_code_placeholder"
+          placeholder="Leave blank to generate a secure code"
+          aria-describedby="managementCodeHint"
+        >
+        <small id="managementCodeHint" data-i18n="list_service.custom_code_hint">Use at least 16 characters. Code is shown once after submission; save it privately.</small>
       </div>
 
       <!-- Contact -->
@@ -94,6 +139,7 @@ sitemap: false
         <input
           type="text"
           name="contact"
+          id="listingContact"
           data-i18n-placeholder="list_service.contact_placeholder"
           placeholder="Phone, Email, or WhatsApp"
           class="modern-input"

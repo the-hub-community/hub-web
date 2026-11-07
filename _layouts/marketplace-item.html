@@ -16,6 +16,11 @@ layout: default
 {% endfor %}
 
 {% assign listing_price = page.price | default: '' | strip %}
+{% assign listing_type = page.listing_type | default: 'sale' %}
+{% assign is_borrow_lend = false %}
+{% if listing_type == 'borrow_lend' %}
+  {% assign is_borrow_lend = true %}
+{% endif %}
 {% assign is_sold = false %}
 {% if page.listing_status == 'sold' %}
   {% assign is_sold = true %}
@@ -31,6 +36,9 @@ layout: default
 {% assign cta_href = "" %}
 {% assign cta_label = "Contact Seller" %}
 {% assign cta_icon = "fa-solid fa-message" %}
+{% if is_borrow_lend %}
+  {% assign cta_label = "Ask to borrow or share" %}
+{% endif %}
 
 {% assign is_email = false %}
 {% if contact_lower contains "@" and contact_lower contains "." %}
@@ -62,6 +70,10 @@ layout: default
     {% assign cta_label = "Contact via Community" %}
     {% assign cta_icon = "fa-solid fa-users" %}
   {% endif %}
+{% endif %}
+
+{% if is_borrow_lend and raw_contact != '' %}
+  {% assign cta_label = "Ask to borrow or share" %}
 {% endif %}
 
 <div class="detail-shell">
@@ -145,11 +157,24 @@ layout: default
       </div>
       {% endif %}
 
-      {% if has_listing_price %}
+      {% if is_borrow_lend %}
+      <div class="detail-price-card detail-price-card--borrow">
+              <span class="detail-price-card__label" data-i18n="marketplace_ui.borrow_badge">Borrow &amp; Lend</span>
+              <div class="detail-price-card__value" data-i18n="marketplace_ui.free_to_borrow">Free to borrow</div>
+              <span class="detail-price-card__hint" data-i18n="marketplace_ui.arrange_sharing">Contact your neighbor to arrange sharing.</span>
+      </div>
+      {% elsif has_listing_price %}
       <div class="detail-price-card">
         <span class="detail-price-card__label">Community Price</span>
         <div class="detail-price-card__value">${{ listing_price }}<span>CAD</span></div>
         <span class="detail-price-card__hint">Fair value · <strong>no fees</strong> on The Hub Community</span>
+      </div>
+      {% endif %}
+
+      {% if page.loan_terms and page.loan_terms != '' %}
+      <div class="detail-loan-terms">
+        <strong data-i18n="marketplace_ui.borrowing_details">Borrowing details</strong>
+        <p>{{ page.loan_terms | escape }}</p>
       </div>
       {% endif %}
 
@@ -165,7 +190,51 @@ layout: default
 
 
 
-      {% if is_sold %}
+      {% if is_borrow_lend %}
+        <section class="detail-borrow-booking" data-borrow-booking
+          data-page-key="{{ page.page_key | escape }}"
+          data-title="{{ page.title | escape }}"
+          data-community="{{ page.target_community | default: page.condo | default: 'General' | escape }}"
+          data-owner-email="{{ raw_contact | escape }}"
+          data-bookings="{{ page.borrow_bookings | default: '' | escape }}">
+          <div class="detail-borrow-booking__availability" role="status">
+            <span class="detail-borrow-booking__dot" aria-hidden="true"></span>
+            <span data-borrow-availability data-i18n="marketplace_ui.status_available">Available to borrow</span>
+          </div>
+          <h2 data-i18n="marketplace_ui.booking_heading">Choose borrowing time</h2>
+          <p data-i18n="marketplace_ui.booking_hint">Your selected time is reserved immediately. Owner and borrower get email confirmation.</p>
+          <form class="detail-borrow-booking__form" data-borrow-form>
+            <div class="detail-borrow-booking__dates">
+              <label>
+                <span data-i18n="marketplace_ui.from">From</span>
+                <input type="datetime-local" name="start_at" required>
+              </label>
+              <label>
+                <span data-i18n="marketplace_ui.until">Until</span>
+                <input type="datetime-local" name="end_at" required>
+              </label>
+            </div>
+            <label>
+              <span data-i18n="marketplace_ui.your_name">Your name</span>
+              <input type="text" name="borrower_name" maxlength="100" autocomplete="name" required>
+            </label>
+            <label>
+              <span data-i18n="marketplace_ui.your_email">Your email</span>
+              <input type="email" name="borrower_email" maxlength="254" autocomplete="email" required>
+            </label>
+            <label>
+              <span data-i18n="marketplace_ui.booking_note">Note for owner (optional)</span>
+              <textarea name="note" maxlength="500" rows="2"></textarea>
+            </label>
+            <p class="detail-borrow-booking__trust" data-i18n="marketplace_ui.trust_note">No platform fee. Agree on pickup and any refundable deposit directly. Never send payment before confirming with the owner.</p>
+            <button type="submit" class="detail-cta" data-borrow-submit>
+              <i class="fa-solid fa-calendar-check" aria-hidden="true"></i>
+              <span data-i18n="marketplace_ui.reserve_item">Reserve this item</span>
+            </button>
+            <p class="detail-borrow-booking__message" data-borrow-message role="status" hidden></p>
+          </form>
+        </section>
+      {% elsif is_sold %}
         <div class="detail-sold-notice" role="status">
           <i class="fa-solid fa-circle-check" aria-hidden="true"></i>
           This listing is marked sold.
@@ -173,17 +242,19 @@ layout: default
       {% else %}
         <a href="{{ cta_href }}" class="detail-cta">
           <i class="{{ cta_icon }}"></i>
+          {% if is_borrow_lend %}<span data-i18n="marketplace_ui.ask_to_borrow">{{ cta_label }}</span>{% else %}
           {{ cta_label }}
+          {% endif %}
         </a>
       {% endif %}
 
-      {% unless is_sold %}
+      {% unless is_sold or is_borrow_lend %}
       <details class="detail-owner-tools">
         <summary>Seller tools</summary>
-        <p>Use your private management code to request a sold update. A moderator reviews the change before it appears.</p>
+        <p>Use your private listing code to mark this item sold. Verified updates publish directly.</p>
         <form class="detail-owner-tools__form" data-page-key="{{ page.page_key | escape }}" data-title="{{ page.title | escape }}" data-condo="{{ page.condo | default: page.target_community | default: 'General' | escape }}">
           <label for="listingManagementCode">Private management code</label>
-          <input id="listingManagementCode" name="management_token" type="password" inputmode="text" autocomplete="off" minlength="64" maxlength="64" pattern="[a-fA-F0-9]{64}" required>
+          <input id="listingManagementCode" name="management_token" type="password" inputmode="text" autocomplete="off" minlength="16" maxlength="128" required>
           <div class="detail-owner-tools__code-actions">
             <button type="button" class="btn btn--secondary btn--sm" data-show-management-code>Show code</button>
             <button type="button" class="btn btn--secondary btn--sm" data-copy-management-code>Copy code</button>
@@ -219,6 +290,125 @@ layout: default
 
 <script>
   document.addEventListener('DOMContentLoaded', () => {
+    const borrowBooking = document.querySelector('[data-borrow-booking]');
+    if (borrowBooking) {
+      const availabilityLabel = borrowBooking.querySelector('[data-borrow-availability]');
+      const bookingForm = borrowBooking.querySelector('[data-borrow-form]');
+      const bookingButton = borrowBooking.querySelector('[data-borrow-submit]');
+      const bookingMessage = borrowBooking.querySelector('[data-borrow-message]');
+      const startInput = bookingForm.querySelector('[name="start_at"]');
+      const endInput = bookingForm.querySelector('[name="end_at"]');
+      const localValue = (date) => {
+        const offsetDate = new Date(date.getTime() - date.getTimezoneOffset() * 60000);
+        return offsetDate.toISOString().slice(0, 16);
+      };
+      const nextHour = new Date(Date.now() + 60 * 60 * 1000);
+      nextHour.setMinutes(Math.ceil(nextHour.getMinutes() / 15) * 15, 0, 0);
+      const defaultEnd = new Date(nextHour.getTime() + 2 * 60 * 60 * 1000);
+      startInput.min = localValue(new Date());
+      startInput.value = localValue(nextHour);
+      endInput.min = startInput.value;
+      endInput.value = localValue(defaultEnd);
+      startInput.addEventListener('change', () => {
+        endInput.min = startInput.value;
+        if (!endInput.value || endInput.value <= startInput.value) {
+          endInput.value = localValue(new Date(new Date(startInput.value).getTime() + 2 * 60 * 60 * 1000));
+        }
+      });
+
+      const readBookings = () => {
+        const encoded = borrowBooking.dataset.bookings || '';
+        if (!encoded) return [];
+        try {
+          return JSON.parse(atob(encoded));
+        } catch (error) {
+          bookingMessage.textContent = 'Booking schedule unavailable. Please contact the owner.';
+          bookingMessage.hidden = false;
+          bookingMessage.classList.add('is-error');
+          bookingButton.disabled = true;
+          return [];
+        }
+      };
+      const bookings = readBookings();
+      const getAvailability = () => {
+        const now = Date.now();
+        if (bookings.some((booking) => Date.parse(booking.startAt) <= now && Date.parse(booking.endAt) > now)) {
+          return 'in_use';
+        }
+        return bookings.some((booking) => Date.parse(booking.endAt) > now)
+          ? 'reserved'
+          : 'available';
+      };
+      const updateAvailability = () => {
+        const status = getAvailability();
+        const labels = {
+          available: ['marketplace_ui.status_available', 'Available to borrow'],
+          reserved: ['marketplace_ui.status_reserved', 'Reserved for another time'],
+          in_use: ['marketplace_ui.status_in_use', 'Currently in use'],
+        };
+        const [key, fallback] = labels[status];
+        availabilityLabel.textContent = window.t ? window.t(key, fallback) : fallback;
+        borrowBooking.dataset.status = status;
+      };
+      updateAvailability();
+      window.setInterval(updateAvailability, 60_000);
+
+      bookingForm.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        if (!bookingForm.reportValidity()) return;
+        bookingButton.disabled = true;
+        bookingMessage.hidden = true;
+        bookingMessage.classList.remove('is-error');
+        bookingMessage.textContent = 'Reserving item…';
+        bookingMessage.hidden = false;
+        const bookingId = window.ResiHubApi?.createSubmissionId('booking') ||
+          `booking-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`;
+        const payload = {
+          page_key: borrowBooking.dataset.pageKey,
+          booking_id: bookingId,
+          borrower_name: bookingForm.elements.borrower_name.value.trim(),
+          borrower_email: bookingForm.elements.borrower_email.value.trim(),
+          start_at: new Date(startInput.value).toISOString(),
+          end_at: new Date(endInput.value).toISOString(),
+          note: bookingForm.elements.note.value.trim(),
+        };
+        try {
+          const endpoint = window.ResiHubApi?.ENDPOINTS?.borrowRequest;
+          if (!endpoint) throw new Error('Borrowing service is unavailable.');
+          const response = await fetch(endpoint, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload),
+          });
+          const result = await response.json();
+          if (result?.booking_committed) {
+            bookingButton.textContent = 'Reserved';
+            bookingButton.disabled = true;
+            bookingMessage.textContent = result.error;
+            bookingMessage.classList.add('is-error');
+            return;
+          }
+          if (!response.ok || result?.success !== true) {
+            throw new Error(result?.error || 'Could not reserve this time.');
+          }
+          bookings.push({
+            id: bookingId,
+            startAt: payload.start_at,
+            endAt: payload.end_at,
+          });
+          updateAvailability();
+          bookingButton.textContent = 'Reserved';
+          bookingMessage.textContent = `Booking confirmed. Reference: ${bookingId}. Owner and borrower notified by email.`;
+          bookingForm.reset();
+          bookingButton.disabled = true;
+        } catch (error) {
+          bookingMessage.textContent = error instanceof Error ? error.message : 'Could not reserve this time.';
+          bookingMessage.classList.add('is-error');
+          bookingButton.disabled = false;
+        }
+      });
+    }
+
     const ownerForm = document.querySelector('.detail-owner-tools__form');
     if (ownerForm) {
       const codeInput = ownerForm.querySelector('[name="management_token"]');
@@ -253,7 +443,7 @@ layout: default
         event.preventDefault();
         const button = ownerForm.querySelector('button[type="submit"]');
         button.disabled = true;
-        message.textContent = 'Sending sold status for review…';
+        message.textContent = 'Marking listing sold…';
         message.hidden = false;
         message.classList.remove('is-error');
         const data = new FormData();
@@ -271,7 +461,9 @@ layout: default
           if (!response.ok || !payload || payload.success !== true) {
             throw new Error(payload?.error || 'Could not update listing.');
           }
-          message.textContent = 'Sold update submitted. Listing changes after moderator approval.';
+          message.textContent = 'Listing marked sold. Marketplace may take a moment to refresh.';
+          button.textContent = 'Marked sold';
+          button.disabled = true;
           try {
             if (!window.ResiHubSubmissionHistory) {
               throw new Error('Submission history is unavailable.');

@@ -7144,8 +7144,27 @@ form select {
     transform: translateY(0) !important;
   }
 
-  /* Hide the desktop header actions (Editor/Preview/X) */
+  /* Keep the view switcher available while editing or previewing. */
   #editor-panel .drawer-header-actions {
+    display: flex !important;
+    align-items: center !important;
+    flex: 0 0 auto !important;
+    gap: 0 !important;
+  }
+
+  #editor-panel .drawer-view-switcher {
+    gap: 2px !important;
+    padding: 2px !important;
+  }
+
+  #editor-panel .drawer-view-btn {
+    min-height: 40px !important;
+    padding: 6px 9px !important;
+    font-size: 0.75rem !important;
+    white-space: nowrap;
+  }
+
+  #editor-panel .drawer-close {
     display: none !important;
   }
 
@@ -7166,24 +7185,27 @@ form select {
     display: flex !important;
     align-items: center !important;
     justify-content: space-between !important;
-    padding: 16px !important;
+    gap: 8px !important;
+    padding: calc(8px + env(safe-area-inset-top, 0px)) 12px 8px !important;
     background: var(--surface-container-lowest) !important;
     border-bottom: 1px solid var(--border-subtle) !important;
     margin: 0 !important;
   }
 
   #editor-panel .drawer-header h2 {
-    font-size: 1rem !important;
+    min-width: 0 !important;
+    font-size: 0.9rem !important;
     margin: 0 !important;
     text-align: center !important;
     flex: 1 !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
   }
 
-  /* Spacer to keep title centered */
+  /* The cancel button and view switcher balance the centered title. */
   #editor-panel .drawer-header::after {
-    content: "";
-    display: block;
-    width: 60px;
+    display: none !important;
   }
 
   /* Fix scrolling areas */
@@ -7227,11 +7249,21 @@ form select {
   }
 
   #editor-panel .rich-toolbar {
-    flex-wrap: nowrap !important;
-    overflow-x: auto !important;
-    overflow-y: hidden !important;
-    overscroll-behavior-x: contain;
-    -webkit-overflow-scrolling: touch;
+    flex-wrap: wrap !important;
+    overflow: visible !important;
+    align-items: center !important;
+    gap: 4px 8px !important;
+    padding-inline: 8px !important;
+  }
+
+  #editor-panel .rich-toolbar__group.inline-media-tools {
+    order: -1 !important;
+    flex: 1 0 100% !important;
+    gap: 8px !important;
+  }
+
+  #editor-panel .rich-toolbar .v-sep {
+    display: none !important;
   }
 
   #editor-panel .rich-toolbar button {
@@ -7240,11 +7272,31 @@ form select {
     min-height: 44px !important;
   }
 
+  #editor-panel .rich-toolbar button:not(.inline-media-tool) {
+    min-width: 40px !important;
+  }
+
   #editor-panel .rich-toolbar .inline-media-tool {
     width: auto !important;
     min-width: 44px !important;
+    min-height: 44px !important;
     padding-inline: 10px !important;
     white-space: nowrap;
+  }
+
+  #editor-panel .drawer-section-card .sec-label,
+  #editor-panel .section-text .content-label-fix,
+  #editor-panel .section-text .floating-label,
+  #editor-panel .section-settings-panel .editor-accordion__summary {
+    font-size: max(0.75rem, 12px) !important;
+    line-height: 1.4 !important;
+    letter-spacing: 0.06em !important;
+  }
+
+  #editor-panel .section-text .content-label-fix,
+  #editor-panel .section-text .floating-label {
+    padding-top: 18px !important;
+    padding-bottom: 8px !important;
   }
 
   /* Sticky Footer */
@@ -8916,6 +8968,34 @@ body {
   background: var(--surface-container-low);
   color: var(--on-surface-variant);
   border: 1px solid var(--border-default);
+}
+
+.success-modal-card__secret .btn-secondary {
+  display: inline-flex;
+  min-height: 40px;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 14px;
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-xl);
+  background: var(--surface-container-lowest);
+  color: var(--on-surface-variant);
+  font: inherit;
+  font-size: 0.86rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background var(--duration-fast) var(--ease-out),
+              border-color var(--duration-fast) var(--ease-out);
+}
+
+.success-modal-card__secret .btn-secondary:hover {
+  border-color: var(--border-strong);
+  background: var(--surface-container-low);
+}
+
+.success-modal-card__secret .btn-secondary:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
 }
 
 .success-modal-card__actions .btn-primary {
@@ -12140,16 +12220,14 @@ body::after {
 
 /* ── 5. CARD HOVER LIFT (unified) ───────────────────────────── */
 .hub-card,
-.asymmetric-card,
-.ad-card-wrapper {
+.asymmetric-card {
   transition: transform var(--duration-base) var(--ease-out),
               box-shadow var(--duration-base) var(--ease-out);
   will-change: transform;
 }
 
 .hub-card:hover,
-.asymmetric-card:hover,
-.ad-card-wrapper:hover {
+.asymmetric-card:hover {
   transform: translateY(-2px);
   box-shadow: var(--shadow-lg);
 }
@@ -12188,8 +12266,7 @@ html.theme-transitioning * {
     transition: none !important;
   }
   .hub-card:hover,
-  .asymmetric-card:hover,
-  .ad-card-wrapper:hover {
+  .asymmetric-card:hover {
     transform: none;
   }
 }
@@ -17023,5 +17100,193 @@ html.theme-transitioning * {
   .my-submission-card__heading {
     align-items: flex-start;
     flex-direction: column;
+  }
+}
+
+.mp-mode-switch {
+  display: flex;
+  gap: 8px;
+  margin: 0 0 20px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.mp-mode-switch__button {
+  min-height: 42px;
+  padding: 0 16px;
+  border: 1px solid var(--border-default);
+  border-radius: 999px;
+  background: var(--surface-container-lowest);
+  color: var(--on-surface-variant);
+  font: inherit;
+  font-size: 0.86rem;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.mp-mode-switch__button.is-active {
+  border-color: var(--primary);
+  background: var(--primary);
+  color: #fff;
+}
+
+.mp-badge--borrow {
+  background: #e7f2ff;
+  color: #174b84;
+}
+
+.detail-price-card--borrow {
+  border-color: color-mix(in srgb, var(--primary) 22%, var(--border-subtle));
+}
+
+.detail-loan-terms {
+  margin: 16px 0;
+  padding: 16px;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  background: var(--surface-container-low);
+  color: var(--on-surface);
+}
+
+.detail-loan-terms p {
+  margin: 6px 0 0;
+  color: var(--on-surface-variant);
+  line-height: 1.6;
+}
+
+@media (max-width: 600px) {
+  .mp-mode-switch {
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+  }
+
+  .mp-mode-switch__button {
+    flex: 0 0 auto;
+  }
+}
+
+.mp-borrow-availability {
+  color: var(--primary);
+  font-size: 0.88em;
+}
+
+.detail-borrow-booking {
+  display: grid;
+  gap: 14px;
+  margin: 20px 0;
+  padding: 18px;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  background: var(--surface-container-lowest);
+}
+
+.detail-borrow-booking h2,
+.detail-borrow-booking p {
+  margin: 0;
+}
+
+.detail-borrow-booking h2 {
+  color: var(--on-surface);
+  font-size: 1.05rem;
+}
+
+.detail-borrow-booking__availability {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--primary);
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.detail-borrow-booking[data-status="reserved"] .detail-borrow-booking__availability {
+  color: #a16207;
+}
+
+.detail-borrow-booking[data-status="in_use"] .detail-borrow-booking__availability {
+  color: #b91c1c;
+}
+
+.detail-borrow-booking__dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.detail-borrow-booking__form,
+.detail-borrow-booking__form label {
+  display: grid;
+  gap: 7px;
+}
+
+.detail-borrow-booking__form {
+  gap: 12px;
+}
+
+.detail-borrow-booking__form label > span {
+  color: var(--on-surface-variant);
+  font-size: 0.82rem;
+  font-weight: 650;
+}
+
+.detail-borrow-booking__form input,
+.detail-borrow-booking__form textarea {
+  width: 100%;
+  min-height: 44px;
+  padding: 10px 12px;
+  border: 1px solid var(--border-default);
+  border-radius: 10px;
+  background: var(--surface-container-lowest);
+  color: var(--on-surface);
+  font: inherit;
+}
+
+.detail-borrow-booking__form textarea {
+  min-height: 78px;
+  resize: vertical;
+}
+
+.detail-borrow-booking__dates {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.detail-borrow-booking__trust {
+  color: var(--on-surface-variant);
+  font-size: 0.78rem;
+  line-height: 1.5;
+}
+
+.detail-borrow-booking__form .detail-cta {
+  width: 100%;
+  border: 0;
+  cursor: pointer;
+}
+
+.detail-borrow-booking__form .detail-cta:disabled {
+  cursor: not-allowed;
+  opacity: 0.65;
+}
+
+.detail-borrow-booking__message {
+  color: var(--primary);
+  font-size: 0.85rem;
+  line-height: 1.5;
+}
+
+.detail-borrow-booking__message.is-error {
+  color: #b91c1c;
+}
+
+@media (max-width: 520px) {
+  .detail-borrow-booking {
+    padding: 14px;
+  }
+
+  .detail-borrow-booking__dates {
+    grid-template-columns: 1fr;
   }
 }

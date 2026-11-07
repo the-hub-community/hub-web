@@ -18,6 +18,7 @@
     submissionId = "",
     type = "submission",
     title = "",
+    listingType = "",
     managementToken = "",
   } = {}) {
     const existing = document.getElementById("resihub-success-modal");
@@ -33,6 +34,7 @@
           id: submissionId,
           type,
           title,
+          listingType,
           managementToken,
         });
       } catch (error) {

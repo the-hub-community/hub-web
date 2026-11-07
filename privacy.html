@@ -22,7 +22,7 @@ sitemap: false
     </div>
     <ul class="ed-error__list-items">
       <li>Submission IDs and private marketplace management codes in this browser's local storage. They are available only on this device unless you copy them elsewhere.</li>
-      <li>A one-way hash of each new marketplace management code is stored with its listing so only someone with the private code can request a sold update.</li>
+      <li>New marketplace listings store only a server-keyed, one-way HMAC verifier for the private management code. The original code cannot be recovered from listing metadata. Older listings retain their existing one-way hash.</li>
       <li>The content you submit (text, images, and the community you choose).</li>
       <li>Anonymous usage counters. No IP addresses, no fingerprints, no tracking across sites.</li>
     </ul>

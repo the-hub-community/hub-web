@@ -205,6 +205,34 @@
   border: 1px solid var(--border-default);
 }
 
+.success-modal-card__secret .btn-secondary {
+  display: inline-flex;
+  min-height: 40px;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 14px;
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-xl);
+  background: var(--surface-container-lowest);
+  color: var(--on-surface-variant);
+  font: inherit;
+  font-size: 0.86rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background var(--duration-fast) var(--ease-out),
+              border-color var(--duration-fast) var(--ease-out);
+}
+
+.success-modal-card__secret .btn-secondary:hover {
+  border-color: var(--border-strong);
+  background: var(--surface-container-low);
+}
+
+.success-modal-card__secret .btn-secondary:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
 .success-modal-card__actions .btn-primary {
   background: var(--primary-container);
   color: var(--on-primary-container);

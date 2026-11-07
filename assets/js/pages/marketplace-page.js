@@ -3,6 +3,7 @@
    ================================================================ */
 
 let currentCategory = "all";
+let currentListingType = "all";
 let currentCommunity = "all";
 let currentPage = 1;
 const adsPerPage = 6; // Adjust based on your preference
@@ -36,6 +37,14 @@ function normalizeCommunity(value) {
   return (value || "").toString().trim().toLowerCase();
 }
 
+function updateListingTypeState() {
+  document.querySelectorAll(".mp-mode-switch__button").forEach((button) => {
+    const active = button.dataset.listingType === currentListingType;
+    button.classList.toggle("is-active", active);
+    button.setAttribute("aria-pressed", String(active));
+  });
+}
+
 function slugifyCommunity(value) {
   return normalizeCommunity(value)
     .replace(/[^a-z0-9]+/g, "-")
@@ -54,6 +63,9 @@ function parseUrlState() {
 
   return {
     category: (params.get("category") || "all").trim() || "all",
+    listingType: ["sale", "borrow_lend"].includes(params.get("listing") || "")
+      ? params.get("listing")
+      : "all",
     community: normalizeCommunity(params.get("community") || "all") || "all",
     q: (params.get("q") || "").trim(),
     sort: (params.get("sort") || "relevance").trim() || "relevance",
@@ -73,6 +85,7 @@ function writeUrlState() {
   const searchValue = document.getElementById("adSearch")?.value?.trim() || "";
 
   if (currentCategory !== "all") params.set("category", currentCategory);
+  if (currentListingType !== "all") params.set("listing", currentListingType);
   if (currentCommunity !== "all") params.set("community", currentCommunity);
   if (searchValue) params.set("q", searchValue);
   if (currentSort !== "relevance") params.set("sort", currentSort);
@@ -193,10 +206,46 @@ function getPriceLabel(priceBand) {
   return PRICE_LABELS[priceBand] || PRICE_LABELS.all;
 }
 
+function updateBorrowAvailability(card) {
+  if (card.dataset.listingType !== "borrow_lend") return;
+  let bookings = [];
+  try {
+    if (card.dataset.borrowBookings) {
+      bookings = JSON.parse(atob(card.dataset.borrowBookings));
+    }
+  } catch (error) {
+    card.dataset.status = "unavailable";
+    const label = card.querySelector("[data-borrow-availability]");
+    if (label) label.textContent = "Availability unavailable";
+    return;
+  }
+
+  const now = Date.now();
+  const inUse = bookings.some(
+    (booking) =>
+      Date.parse(booking.startAt) <= now && Date.parse(booking.endAt) > now,
+  );
+  const reserved = !inUse && bookings.some(
+    (booking) => Date.parse(booking.endAt) > now,
+  );
+  const status = inUse ? "in_use" : reserved ? "reserved" : "available";
+  card.dataset.status = status;
+  const label = card.querySelector("[data-borrow-availability]");
+  if (!label) return;
+  const labels = {
+    available: ["marketplace_ui.status_available", "Available to borrow"],
+    reserved: ["marketplace_ui.status_reserved", "Reserved for another time"],
+    in_use: ["marketplace_ui.status_in_use", "Currently in use"],
+  };
+  const [key, fallback] = labels[status];
+  label.textContent = window.t ? window.t(key, fallback) : fallback;
+}
+
 function buildListingIndex() {
   const cards = Array.from(document.querySelectorAll(".ad-card-wrapper"));
 
   listingIndex = cards.map((card) => {
+    updateBorrowAvailability(card);
     const category = String(card.dataset.category || "").trim();
     const categoryNorm = normalizeToken(category);
     const titleNorm = normalizeToken(card.dataset.title || "");
@@ -219,12 +268,17 @@ function buildListingIndex() {
       card.dataset.communitySlug || card.dataset.community || communityLabel,
     );
     const price = parsePrice(card.dataset.price);
+    const listingType =
+      card.dataset.listingType === "borrow_lend" ? "borrow_lend" : "sale";
     const date = Number.parseInt(card.dataset.date || "0", 10);
-    const searchBlob = `${titleNorm} ${tags.join(" ")} ${categoryNorm} ${communityNorm} ${communitySlug}`;
+    const typeTerms =
+      listingType === "borrow_lend" ? "borrow lend loan share" : "sale sell buy";
+    const searchBlob = `${titleNorm} ${tags.join(" ")} ${categoryNorm} ${communityNorm} ${communitySlug} ${typeTerms}`;
 
     return {
       card,
       category,
+      listingType,
       categoryNorm,
       titleNorm,
       tags,
@@ -389,6 +443,7 @@ function updateCategoryPillState() {
 function updateQuickFilterState() {
   const filters = {
     all:
+      currentListingType === "all" &&
       normalizeToken(currentCategory) === "all" &&
       currentDateFilter === "all" &&
       currentPriceBand === "all" &&
@@ -709,6 +764,9 @@ function applyLogic() {
     .filter((item) => {
       const categoryMatch =
         currentCategory === "all" || item.categoryNorm === categoryNorm;
+      const listingTypeMatch =
+        currentListingType === "all" ||
+        item.listingType === currentListingType;
       const communityMatch =
         currentCommunity === "all" ||
         item.communityNorm === currentCommunity ||
@@ -748,6 +806,7 @@ function applyLogic() {
 
       return (
         categoryMatch &&
+        listingTypeMatch &&
         communityMatch &&
         priceMatch &&
         tagMatch &&
@@ -942,6 +1001,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const parsedState = parseUrlState();
 
   currentCategory = parsedState.category || "all";
+  currentListingType = parsedState.listingType || "all";
   currentCommunity =
     parsedState.community || resolveCommunityFilterFromUrl() || "all";
   currentSort = SORT_LABELS[parsedState.sort] ? parsedState.sort : "relevance";
@@ -952,13 +1012,15 @@ document.addEventListener("DOMContentLoaded", () => {
   currentPage = parsedState.page || 1;
   parsedState.tags.forEach((tag) => activeTags.add(tag));
   savedListingUrls = readSavedListingUrls();
-
   const searchInput = document.getElementById("adSearch");
   if (searchInput && parsedState.q) {
     searchInput.value = parsedState.q;
   }
 
   buildListingIndex();
+  window.setInterval(() => {
+    document.querySelectorAll(".ad-card-wrapper").forEach(updateBorrowAvailability);
+  }, 60_000);
   populateCommunityOptions();
   buildCategoryLinks();
   buildTagRail();
@@ -967,6 +1029,7 @@ document.addEventListener("DOMContentLoaded", () => {
   initCommunityNavigation();
   initMarketplaceImageLightbox();
   syncSavedListingControls();
+  updateListingTypeState();
   applyLogic();
   writeUrlState();
 
@@ -992,6 +1055,26 @@ document.addEventListener("DOMContentLoaded", () => {
   // "new today" = listing date within 24h
 
   document.addEventListener("click", (e) => {
+    const listingTypeButton = e.target.closest(".mp-mode-switch__button");
+    if (listingTypeButton) {
+      e.preventDefault();
+      currentListingType = listingTypeButton.dataset.listingType || "all";
+      currentCategory = "all";
+      currentPriceBand = "all";
+      currentDateFilter = "all";
+      currentPhotosOnly = false;
+      currentVerifiedOnly = false;
+      currentSavedOnly = false;
+      currentPage = 1;
+      activeTags.clear();
+      updateListingTypeState();
+      updateCategoryPillState();
+      syncControlsWithState();
+      applyLogic();
+      writeUrlState();
+      return;
+    }
+
     const savedHeart = e.target.closest(".mp-card-v2__heart");
     if (savedHeart) {
       e.preventDefault();
@@ -1020,6 +1103,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (e.target.closest("#mpClearFilters, #mpEmptyClear")) {
       currentCategory = "all";
+      currentListingType = "all";
       currentCommunity = "all";
       currentSort = "relevance";
       currentPriceBand = "all";
@@ -1032,6 +1116,7 @@ document.addEventListener("DOMContentLoaded", () => {
       if (searchInput) searchInput.value = "";
       initCommunityNavigation();
       syncControlsWithState();
+      updateListingTypeState();
       applyLogic();
       writeUrlState();
       return;

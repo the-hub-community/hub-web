@@ -1,12 +1,15 @@
 {% assign primary_img = ad.image_url | default: "" | split: "," | first | strip %}
+{% assign listing_type = ad.listing_type | default: "sale" %}
 <div class="ad-card-wrapper"
      data-category="{{ ad.category }}"
+     data-listing-type="{{ listing_type }}"
      data-title="{{ ad.title }}"
      data-price="{{ ad.price }}"
      data-tags="{{ ad.tags | join: ' ' }}"
      data-community="{{ ad.target_community | default: ad.condo | default: 'General' }}"
      data-community-slug="{{ ad.target_community | default: ad.condo | default: 'General' | slugify }}"
      data-status="{{ ad.listing_status | default: 'available' | downcase }}"
+     data-borrow-bookings="{{ ad.borrow_bookings | default: '' | escape }}"
      data-date="{{ ad.date | date: '%s' }}">
 
   <a href="{{ ad.url | relative_url }}" class="mp-card-v2">
@@ -25,6 +28,9 @@
         {% if ad.listing_status == "sold" %}
           <span class="mp-badge mp-badge--sold">Sold</span>
         {% endif %}
+        {% if listing_type == "borrow_lend" %}
+          <span class="mp-badge mp-badge--borrow" data-i18n="marketplace_ui.borrow_badge">Borrow &amp; Lend</span>
+        {% endif %}
         {% if ad.photo_count and ad.photo_count > 1 %}
           <span class="mp-badge mp-badge--count"><i class="fa-solid fa-images"></i> {{ ad.photo_count }} photos</span>
         {% endif %}
@@ -40,7 +46,9 @@
       <h3 class="mp-card-v2__title">{{ ad.title }}</h3>
       <p class="mp-card-v2__meta">{{ ad.target_community | default: ad.condo | default: "General" }} · {{ ad.date | date: "%-d %b" }}</p>
       <div class="mp-card-v2__price">
-       {% if ad.price and ad.price != "" %} ${{ ad.price }}<span>CAD</span> {% else %} Contact for price {% endif %}
+       {% if listing_type == "borrow_lend" %}
+         <span class="mp-borrow-availability" data-borrow-availability>Available to borrow</span>
+       {% elsif ad.price and ad.price != "" %} ${{ ad.price }}<span>CAD</span> {% else %} Contact for price {% endif %}
       </div>
     </div>
 

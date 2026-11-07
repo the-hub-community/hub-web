@@ -21,6 +21,7 @@
       id: id,
       type: type,
       title: String(value.title || "").trim(),
+      listingType: String(value.listingType || "").trim().toLowerCase(),
       managementToken: String(value.managementToken || "").trim(),
       savedAt: String(value.savedAt || ""),
     };
@@ -77,6 +78,7 @@
         type:
           normalized.type === "submission" ? existing.type : normalized.type,
         title: normalized.title || existing.title,
+        listingType: normalized.listingType || existing.listingType,
         managementToken: normalized.managementToken || existing.managementToken,
       });
       records.splice(index, 1);
