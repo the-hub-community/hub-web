@@ -53,6 +53,13 @@ sitemap: false
                             <option value="event" data-i18n="notification.category_event">Event Notice</option>
                             <option value="other" data-i18n="notification.category_other">Other</option>
                         </select>
+                        <label for="notificationUrgencySelect" data-i18n="notification.severity">Severity</label>
+                        <select name="alert_type" id="notificationUrgencySelect" class="modern-input urgency-select">
+                            <option value="low" data-i18n="broadcast.urgency_low">Low (Information)</option>
+                            <option value="medium" selected data-i18n="broadcast.urgency_medium">Medium (Notice)</option>
+                            <option value="high" data-i18n="broadcast.urgency_high">High (Urgent)</option>
+                            <option value="critical" data-i18n="broadcast.urgency_critical">Critical (Emergency)</option>
+                        </select>
                     </div>
                 </div>
 
@@ -105,6 +112,7 @@ sitemap: false
             <aside class="broadcast-live-card" aria-live="polite">
                 <div class="broadcast-live-card__header">
                     <span id="liveCategoryBadge" class="broadcast-live-card__badge category-safety">Safety Alert</span>
+                    <span id="liveUrgencyBadge" class="notice-severity" data-urgency="medium">Medium</span>
                     <span class="broadcast-live-card__ttl">Off-site in <strong id="broadcastExpiryTimerMirror">48h 00m</strong></span>
                 </div>
                 <div id="livePreviewImage" style="display: none; margin-bottom: 1rem;">

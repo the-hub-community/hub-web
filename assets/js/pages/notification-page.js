@@ -21,9 +21,11 @@
   const NOTICE_TITLE_ID = "notice_title";
   const NOTICE_MESSAGE_ID = "messageTextarea";
   const CATEGORY_SELECT_ID = "categorySelect";
+  const URGENCY_SELECT_ID = "notificationUrgencySelect";
   const LIVE_PREVIEW_ID = "livePreviewBody";
   const LIVE_PREVIEW_TITLE_ID = "livePreviewTitle";
   const LIVE_PREVIEW_CATEGORY_ID = "liveCategoryBadge";
+  const LIVE_PREVIEW_URGENCY_ID = "liveUrgencyBadge";
   const LIVE_PREVIEW_IMG_ID = "livePreviewImg";
   const LIVE_PREVIEW_IMAGE_SECTION_ID = "livePreviewImage";
   const TITLE_COUNT_ID = "titleCount";
@@ -86,6 +88,7 @@
 
     // Category selector
     setupCategorySelector();
+    setupUrgencySelector();
 
     // Text input listeners
     setupTextInputListeners();
@@ -341,6 +344,24 @@
       badge.textContent = label;
       badge.className = `broadcast-live-card__badge ${CATEGORY_COLORS[value] || "category-other"}`;
     }
+  }
+
+  function setupUrgencySelector() {
+    const select = document.getElementById(URGENCY_SELECT_ID);
+    if (!select) return;
+    select.addEventListener("change", updateUrgencyBadge);
+    updateUrgencyBadge();
+  }
+
+  function updateUrgencyBadge() {
+    const select = document.getElementById(URGENCY_SELECT_ID);
+    const badge = document.getElementById(LIVE_PREVIEW_URGENCY_ID);
+    if (!select || !badge) return;
+
+    badge.dataset.urgency = select.value;
+    badge.textContent =
+      select.options[select.selectedIndex]?.textContent.split(" (")[0] ||
+      select.value;
   }
 
   // ===== Text Input Listeners =====

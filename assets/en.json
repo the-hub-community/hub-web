@@ -217,6 +217,7 @@
     "subheading": "Share official notices you've received with a screenshot and description. Help keep your community informed.",
     "target_community": "Target Community",
     "category": "Category",
+    "severity": "Severity",
     "category_maintenance": "Maintenance",
     "category_safety": "Safety Alert",
     "category_policy": "Policy Update",

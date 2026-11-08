@@ -5604,6 +5604,12 @@ form select {
   overflow: hidden;
 }
 
+html.editor-drawer-open,
+body.editor-drawer-open {
+  overflow: hidden !important;
+  overscroll-behavior: none;
+}
+
 /* ── Mobile: drawer becomes a bottom sheet ─────────────────── */
 /* ================================================================
    MOBILE DRAWER & TOAST FIXES
@@ -5882,6 +5888,10 @@ form select {
   flex: 1;
   min-height: 0;
   overflow-y: auto;
+}
+
+.drawer-section-card .editor-area {
+  overflow: visible;
 }
 
 #drawer-edit-view.drawer-preview-hidden,
@@ -6733,7 +6743,7 @@ form select {
   background: var(--surface-container-lowest);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-2xl);
-  overflow-y: auto;
+  overflow: visible;
 }
 
 .drawer-preview-canvas .lh-section {
@@ -7114,12 +7124,6 @@ form select {
    FINAL FORCE OVERRIDE FOR MOBILE DRAWER
    ================================================================ */
 @media screen and (max-width: 768px) {
-  html.editor-drawer-open,
-  body.editor-drawer-open {
-    overflow: hidden !important;
-    overscroll-behavior: none;
-  }
-
   /* Force full screen */
   #editor-panel.editor-drawer {
     position: fixed !important;
@@ -12273,6 +12277,60 @@ html.theme-transitioning * {
 /* ================================================================
    Wiki Alerts — stacked, urgency-coded notices
    ================================================================ */
+
+.notice-severity,
+.notification-severity {
+  --notice-accent: #2563a6;
+  --notice-soft: rgba(37, 99, 166, 0.12);
+  display: inline-flex;
+  align-items: center;
+  padding: 0.4rem 0.75rem;
+  border-radius: 999px;
+  background: var(--notice-soft);
+  color: var(--notice-accent);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.notice-severity[data-urgency="low"],
+.notification-severity[data-urgency="low"] {
+  --notice-accent: #64748b;
+  --notice-soft: rgba(100, 116, 139, 0.12);
+}
+
+.notice-severity[data-urgency="medium"],
+.notification-severity[data-urgency="medium"] {
+  --notice-accent: #2563a6;
+  --notice-soft: rgba(37, 99, 166, 0.12);
+}
+
+.notice-severity[data-urgency="high"],
+.notification-severity[data-urgency="high"] {
+  --notice-accent: #b45309;
+  --notice-soft: rgba(180, 83, 9, 0.14);
+}
+
+.notice-severity[data-urgency="critical"],
+.notification-severity[data-urgency="critical"] {
+  --notice-accent: #b42318;
+  --notice-soft: rgba(180, 35, 24, 0.13);
+}
+
+.notification-card[data-urgency="low"] { --notice-accent: #64748b; --notice-soft: rgba(100, 116, 139, 0.08); }
+.notification-card[data-urgency="medium"] { --notice-accent: #2563a6; --notice-soft: rgba(37, 99, 166, 0.08); }
+.notification-card[data-urgency="high"] { --notice-accent: #b45309; --notice-soft: rgba(180, 83, 9, 0.09); }
+.notification-card[data-urgency="critical"] { --notice-accent: #b42318; --notice-soft: rgba(180, 35, 24, 0.09); }
+
+[data-theme="dark"] .notice-severity[data-urgency="low"],
+[data-theme="dark"] .notification-severity[data-urgency="low"] { --notice-accent: #cbd5e1; --notice-soft: rgba(203, 213, 225, 0.14); }
+[data-theme="dark"] .notice-severity[data-urgency="medium"],
+[data-theme="dark"] .notification-severity[data-urgency="medium"] { --notice-accent: #7dd3fc; --notice-soft: rgba(125, 211, 252, 0.14); }
+[data-theme="dark"] .notice-severity[data-urgency="high"],
+[data-theme="dark"] .notification-severity[data-urgency="high"] { --notice-accent: #fbbf24; --notice-soft: rgba(251, 191, 36, 0.15); }
+[data-theme="dark"] .notice-severity[data-urgency="critical"],
+[data-theme="dark"] .notification-severity[data-urgency="critical"] { --notice-accent: #fca5a5; --notice-soft: rgba(252, 165, 165, 0.14); }
 
 .wiki-alerts {
   display: flex;

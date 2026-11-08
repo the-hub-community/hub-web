@@ -27,6 +27,12 @@
   overflow: hidden;
 }
 
+html.editor-drawer-open,
+body.editor-drawer-open {
+  overflow: hidden !important;
+  overscroll-behavior: none;
+}
+
 /* ── Mobile: drawer becomes a bottom sheet ─────────────────── */
 /* ================================================================
    MOBILE DRAWER & TOAST FIXES
@@ -662,6 +668,10 @@
   overflow-y: auto;
 }
 
+.drawer-section-card .editor-area {
+  overflow: visible;
+}
+
 .editor-area:focus {
   background: var(--surface-container-lowest);
   border: none;
@@ -1156,7 +1166,7 @@
   background: var(--surface-container-lowest);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-2xl);
-  overflow-y: auto;
+  overflow: visible;
 }
 
 .drawer-preview-canvas .lh-section {
@@ -1537,12 +1547,6 @@
    FINAL FORCE OVERRIDE FOR MOBILE DRAWER
    ================================================================ */
 @media screen and (max-width: 768px) {
-  html.editor-drawer-open,
-  body.editor-drawer-open {
-    overflow: hidden !important;
-    overscroll-behavior: none;
-  }
-
   /* Force full screen */
   #editor-panel.editor-drawer {
     position: fixed !important;

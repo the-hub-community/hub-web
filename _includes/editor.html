@@ -1,7 +1,7 @@
 <link rel="stylesheet" href="{{ '/assets/css/custom/ai-assistant.css' | relative_url }}">
 <script src="{{ '/assets/js/editor/ai-assistant.js' | relative_url }}" defer></script>
 <input type="hidden" name="type" id="type" value="update">
-<div id="editor-panel" class="editor-drawer">
+<div id="editor-panel" class="editor-drawer" role="dialog" aria-modal="true" aria-labelledby="drawerTitle" aria-hidden="true" tabindex="-1">
     <div class="drawer-inner">
         <div class="drawer-header">
             <!-- Mobile Close/Cancel -->

@@ -6,7 +6,7 @@ import {
 
 let previousActiveElement = null;
 let trapFocusHandler = null;
-let mobileScrollLock = null;
+let pageScrollLock = null;
 let drawerKeyboardTrackingInitialized = false;
 let drawerCaretScrollScheduled = false;
 
@@ -61,18 +61,13 @@ function getDraftKey() {
   return `editor-draft-${document.body?.dataset?.pageKey || "global"}`;
 }
 
-function lockMobilePageScroll() {
-  if (
-    mobileScrollLock ||
-    !window.matchMedia("(max-width: 768px)").matches
-  ) {
-    return;
-  }
+function lockPageScroll() {
+  if (pageScrollLock) return;
 
   const body = document.body;
   const scrollY = window.scrollY;
   const styleProperties = ["position", "top", "left", "right", "width", "overflow"];
-  mobileScrollLock = {
+  pageScrollLock = {
     scrollY,
     styles: Object.fromEntries(
       styleProperties.map((property) => [property, body.style[property]]),
@@ -88,11 +83,11 @@ function lockMobilePageScroll() {
   body.style.overflow = "hidden";
 }
 
-function unlockMobilePageScroll() {
-  if (!mobileScrollLock) return;
+function unlockPageScroll() {
+  if (!pageScrollLock) return;
 
-  const { scrollY, styles } = mobileScrollLock;
-  mobileScrollLock = null;
+  const { scrollY, styles } = pageScrollLock;
+  pageScrollLock = null;
   document.documentElement.classList.remove("editor-drawer-open");
   document.body.classList.remove("editor-drawer-open");
   Object.entries(styles).forEach(([property, value]) => {
@@ -135,28 +130,42 @@ function showUndoToast(message, undoCallback) {
 function trapFocus(element) {
   if (trapFocusHandler)
     document.removeEventListener("keydown", trapFocusHandler);
+  const getFocusableElements = () =>
+    Array.from(
+      element.querySelectorAll(
+        'a[href], area[href], button, input, select, textarea, [contenteditable="true"], [tabindex]:not([tabindex="-1"])',
+      ),
+    ).filter(
+      (candidate) =>
+        !candidate.disabled &&
+        candidate.tabIndex >= 0 &&
+        !candidate.closest("[inert]") &&
+        candidate.getClientRects().length > 0,
+    );
+
   trapFocusHandler = function (e) {
     if (e.key === "Escape") {
       togglePanel();
       return;
     }
     if (e.key !== "Tab") return;
-    const focusableEls = element.querySelectorAll(
-      'a[href]:not([disabled]), button:not([disabled]), textarea:not([disabled]), input[type="text"]:not([disabled]), input[type="radio"]:not([disabled]), input[type="checkbox"]:not([disabled]), select:not([disabled]), [contenteditable]',
-    );
+    const focusableEls = getFocusableElements();
     if (focusableEls.length === 0) return;
     const firstFocusableEl = focusableEls[0];
     const lastFocusableEl = focusableEls[focusableEls.length - 1];
     if (e.shiftKey) {
       if (
         document.activeElement === firstFocusableEl ||
-        document.activeElement === element
+        !element.contains(document.activeElement)
       ) {
         lastFocusableEl.focus();
         e.preventDefault();
       }
     } else {
-      if (document.activeElement === lastFocusableEl) {
+      if (
+        document.activeElement === lastFocusableEl ||
+        !element.contains(document.activeElement)
+      ) {
         firstFocusableEl.focus();
         e.preventDefault();
       }
@@ -606,16 +615,24 @@ export function togglePanel(mode = "create") {
       metaPanel.open = mode !== "edit";
     }
 
-    lockMobilePageScroll();
+    lockPageScroll();
     editorPanel.classList.add("is-open");
     trapFocus(editorPanel);
-    const focusTarget = editorPanel.querySelector(
-      "input, button, [contenteditable]",
+    const focusTarget = Array.from(
+      editorPanel.querySelectorAll(
+        'a[href], button, input, select, textarea, [contenteditable="true"], [tabindex]:not([tabindex="-1"])',
+      ),
+    ).find(
+      (candidate) =>
+        !candidate.disabled &&
+        candidate.tabIndex >= 0 &&
+        !candidate.closest("[inert]") &&
+        candidate.getClientRects().length > 0,
     );
     if (focusTarget) setTimeout(() => focusTarget.focus(), 100);
   } else {
     editorPanel.classList.remove("is-open");
-    unlockMobilePageScroll();
+    unlockPageScroll();
     editorPanel.setAttribute("aria-hidden", "true");
     if (editBtn) editBtn.setAttribute("aria-expanded", "false");
     if (trapFocusHandler) {

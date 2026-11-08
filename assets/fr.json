@@ -215,6 +215,7 @@
     "subheading": "Partagez les avis officiels que vous avez recus avec une capture d'ecran et une description. Aidez votre communaute a rester informee.",
     "target_community": "Communaute cible",
     "category": "Categorie",
+    "severity": "Gravite",
     "category_maintenance": "Maintenance",
     "category_safety": "Alerte de securite",
     "category_policy": "Mise a jour de politique",

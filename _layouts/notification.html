@@ -7,11 +7,16 @@
     {% include header.html %}
     
     <div class="notification-container">
-        <article class="notification-card">
+        {% assign notice_urgency = page.urgency | default: 'medium' %}
+        {% assign notice_category = page.notice_category | default: 'other' %}
+        <article class="notification-card" data-urgency="{{ notice_urgency }}">
             <div class="notification-header">
                 <div class="notification-header__meta">
-                    <span class="notification-badge" data-category="{{ page.notice_category | default: 'other' }}">
-                        {{ page.notice_category | capitalize | default: 'Notice' }}
+                    <span class="notification-badge" data-category="{{ notice_category }}">
+                        {{ notice_category | capitalize }}
+                    </span>
+                    <span class="notification-severity" data-urgency="{{ notice_urgency }}">
+                        {{ notice_urgency | capitalize }} severity
                     </span>
                     <span class="notification-date">
                         <i class="fa-regular fa-calendar"></i>
@@ -48,12 +53,20 @@
         }
 
         .notification-card {
+            --notice-accent: #35568e;
+            --notice-soft: rgba(53, 86, 142, 0.07);
             background: var(--card-bg, #fff);
-            border: 1px solid var(--border, #e0e0e0);
+            border: 1px solid color-mix(in srgb, var(--notice-accent) 32%, var(--border, #e0e0e0));
+            border-top: 5px solid var(--notice-accent);
             border-radius: 12px;
             padding: 2rem;
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
         }
+
+        .notification-card[data-urgency="low"] { --notice-accent: #64748b; --notice-soft: rgba(100, 116, 139, 0.08); }
+        .notification-card[data-urgency="medium"] { --notice-accent: #2563a6; --notice-soft: rgba(37, 99, 166, 0.08); }
+        .notification-card[data-urgency="high"] { --notice-accent: #b45309; --notice-soft: rgba(180, 83, 9, 0.09); }
+        .notification-card[data-urgency="critical"] { --notice-accent: #b42318; --notice-soft: rgba(180, 35, 24, 0.09); }
 
         .notification-header {
             margin-bottom: 2rem;
