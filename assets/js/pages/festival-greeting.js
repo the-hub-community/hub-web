@@ -49,6 +49,10 @@
     titleEl.textContent = festival.title;
     if (eyebrowEl) eyebrowEl.textContent = festival.eyebrow;
     if (subtitleEl) subtitleEl.textContent = festival.subtitle;
+    const heroEl = titleEl.closest(".community-hero");
+    if (heroEl && festival.theme) {
+      heroEl.dataset.festivalTheme = festival.theme;
+    }
     if (celebrationEl) {
       celebrationEl.dataset.decoration = festival.decoration || "fireworks";
       celebrationEl.hidden = false;
