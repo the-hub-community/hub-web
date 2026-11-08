@@ -760,68 +760,29 @@
   font-size: 0.88em;
 }
 
-.detail-borrow-booking {
+.detail-borrow-status {
   display: grid;
-  gap: 14px;
+  gap: 5px;
   margin: 20px 0;
-  padding: 18px;
-  border: 1px solid var(--border-subtle);
+  padding: 14px 16px;
+  border: 1px solid rgba(53, 86, 142, 0.22);
   border-radius: var(--radius-lg);
-  background: var(--surface-container-lowest);
-}
-
-.detail-borrow-booking h2,
-.detail-borrow-booking p {
-  margin: 0;
-}
-
-.detail-borrow-booking h2 {
-  color: var(--on-surface);
-  font-size: 1.05rem;
-}
-
-.detail-borrow-booking__availability {
-  display: flex;
-  align-items: center;
-  gap: 8px;
+  background: rgba(53, 86, 142, 0.06);
   color: var(--primary);
-  font-size: 0.85rem;
-  font-weight: 700;
 }
 
-.detail-borrow-booking[data-status="reserved"] .detail-borrow-booking__availability {
-  color: #a16207;
+.detail-borrow-status.is-borrowed {
+  border-color: rgba(161, 98, 7, 0.25);
+  background: rgba(161, 98, 7, 0.07);
+  color: #854d0e;
 }
 
-.detail-borrow-booking[data-status="in_use"] .detail-borrow-booking__availability {
-  color: #b91c1c;
-}
-
-.detail-borrow-booking__dot {
-  width: 9px;
-  height: 9px;
-  border-radius: 50%;
-  background: currentColor;
-}
-
-.detail-borrow-booking__form,
-.detail-borrow-booking__form label {
-  display: grid;
-  gap: 7px;
-}
-
-.detail-borrow-booking__form {
-  gap: 12px;
-}
-
-.detail-borrow-booking__form label > span {
+.detail-borrow-status span {
   color: var(--on-surface-variant);
   font-size: 0.82rem;
-  font-weight: 650;
 }
 
-.detail-borrow-booking__form input,
-.detail-borrow-booking__form textarea {
+.detail-owner-tools__form select {
   width: 100%;
   min-height: 44px;
   padding: 10px 12px;
@@ -832,50 +793,6 @@
   font: inherit;
 }
 
-.detail-borrow-booking__form textarea {
-  min-height: 78px;
-  resize: vertical;
-}
-
-.detail-borrow-booking__dates {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 10px;
-}
-
-.detail-borrow-booking__trust {
-  color: var(--on-surface-variant);
-  font-size: 0.78rem;
-  line-height: 1.5;
-}
-
-.detail-borrow-booking__form .detail-cta {
-  width: 100%;
-  border: 0;
-  cursor: pointer;
-}
-
-.detail-borrow-booking__form .detail-cta:disabled {
-  cursor: not-allowed;
-  opacity: 0.65;
-}
-
-.detail-borrow-booking__message {
-  color: var(--primary);
-  font-size: 0.85rem;
-  line-height: 1.5;
-}
-
-.detail-borrow-booking__message.is-error {
-  color: #b91c1c;
-}
-
-@media (max-width: 520px) {
-  .detail-borrow-booking {
-    padding: 14px;
-  }
-
-  .detail-borrow-booking__dates {
-    grid-template-columns: 1fr;
-  }
+.ad-card-wrapper[data-status="borrowed"] .mp-borrow-availability {
+  color: #854d0e;
 }

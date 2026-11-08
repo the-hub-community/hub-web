@@ -21,8 +21,6 @@
     notification: baseUrl + "/api/notification",
     broadcast: baseUrl + "/api/submit",
     submissionStatus: statusBaseUrl + "/api/submission-status",
-    borrowRequest: baseUrl + "/api/borrow/request",
-
     // Public routes - handled by the API Gateway (hub-community-apis)
     comments: baseUrl + "/api/comments",
     newsLatest: baseUrl + "/api/news/latest",

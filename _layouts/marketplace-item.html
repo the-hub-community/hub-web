@@ -25,6 +25,10 @@ layout: default
 {% if page.listing_status == 'sold' %}
   {% assign is_sold = true %}
 {% endif %}
+{% assign is_borrowed = false %}
+{% if page.listing_status == 'borrowed' or page.listing_status == 'reserved' or page.listing_status == 'in_use' %}
+  {% assign is_borrowed = true %}
+{% endif %}
 {% assign has_listing_price = false %}
 {% unless listing_price == '' %}
   {% assign has_listing_price = true %}
@@ -191,49 +195,20 @@ layout: default
 
 
       {% if is_borrow_lend %}
-        <section class="detail-borrow-booking" data-borrow-booking
-          data-page-key="{{ page.page_key | escape }}"
-          data-title="{{ page.title | escape }}"
-          data-community="{{ page.target_community | default: page.condo | default: 'General' | escape }}"
-          data-owner-email="{{ raw_contact | escape }}"
-          data-bookings="{{ page.borrow_bookings | default: '' | escape }}">
-          <div class="detail-borrow-booking__availability" role="status">
-            <span class="detail-borrow-booking__dot" aria-hidden="true"></span>
-            <span data-borrow-availability data-i18n="marketplace_ui.status_available">Available to borrow</span>
-          </div>
-          <h2 data-i18n="marketplace_ui.booking_heading">Choose borrowing time</h2>
-          <p data-i18n="marketplace_ui.booking_hint">Your selected time is reserved immediately. Owner and borrower get email confirmation.</p>
-          <form class="detail-borrow-booking__form" data-borrow-form>
-            <div class="detail-borrow-booking__dates">
-              <label>
-                <span data-i18n="marketplace_ui.from">From</span>
-                <input type="datetime-local" name="start_at" required>
-              </label>
-              <label>
-                <span data-i18n="marketplace_ui.until">Until</span>
-                <input type="datetime-local" name="end_at" required>
-              </label>
-            </div>
-            <label>
-              <span data-i18n="marketplace_ui.your_name">Your name</span>
-              <input type="text" name="borrower_name" maxlength="100" autocomplete="name" required>
-            </label>
-            <label>
-              <span data-i18n="marketplace_ui.your_email">Your email</span>
-              <input type="email" name="borrower_email" maxlength="254" autocomplete="email" required>
-            </label>
-            <label>
-              <span data-i18n="marketplace_ui.booking_note">Note for owner (optional)</span>
-              <textarea name="note" maxlength="500" rows="2"></textarea>
-            </label>
-            <p class="detail-borrow-booking__trust" data-i18n="marketplace_ui.trust_note">No platform fee. Agree on pickup and any refundable deposit directly. Never send payment before confirming with the owner.</p>
-            <button type="submit" class="detail-cta" data-borrow-submit>
-              <i class="fa-solid fa-calendar-check" aria-hidden="true"></i>
-              <span data-i18n="marketplace_ui.reserve_item">Reserve this item</span>
-            </button>
-            <p class="detail-borrow-booking__message" data-borrow-message role="status" hidden></p>
-          </form>
-        </section>
+        <div class="detail-borrow-status{% if is_borrowed %} is-borrowed{% endif %}"
+          data-borrow-status="{% if is_borrowed %}borrowed{% else %}available{% endif %}"
+          role="status">
+          <strong data-borrow-availability data-i18n="{% if is_borrowed %}marketplace_ui.currently_borrowed{% else %}marketplace_ui.available_to_borrow{% endif %}">
+            {% if is_borrowed %}Currently borrowed{% else %}Available to borrow{% endif %}
+          </strong>
+          <span>Contact owner to arrange borrowing.</span>
+        </div>
+        {% unless is_sold %}
+        <a href="{{ cta_href }}" class="detail-cta">
+          <i class="{{ cta_icon }}" aria-hidden="true"></i>
+          <span data-i18n="marketplace_ui.ask_to_borrow">{{ cta_label }}</span>
+        </a>
+        {% endunless %}
       {% elsif is_sold %}
         <div class="detail-sold-notice" role="status">
           <i class="fa-solid fa-circle-check" aria-hidden="true"></i>
@@ -248,18 +223,33 @@ layout: default
         </a>
       {% endif %}
 
-      {% unless is_sold or is_borrow_lend %}
+      {% unless is_sold %}
       <details class="detail-owner-tools">
-        <summary>Seller tools</summary>
-        <p>Use your private listing code to mark this item sold. Verified updates publish directly.</p>
-        <form class="detail-owner-tools__form" data-page-key="{{ page.page_key | escape }}" data-title="{{ page.title | escape }}" data-condo="{{ page.condo | default: page.target_community | default: 'General' | escape }}">
-          <label for="listingManagementCode">Private management code</label>
+        <summary>{% if is_borrow_lend %}Listing owner tools{% else %}Seller tools{% endif %}</summary>
+        <p>{% if is_borrow_lend %}Use your private listing key to set this item as available or borrowed. Updates publish directly.{% else %}Use your private listing key to mark this item sold. Updates publish directly.{% endif %}</p>
+        <form class="detail-owner-tools__form"
+          data-page-key="{{ page.page_key | escape }}"
+          data-title="{{ page.title | escape }}"
+          data-condo="{{ page.condo | default: page.target_community | default: 'General' | escape }}"
+          data-listing-type="{{ listing_type }}"
+          data-current-status="{{ page.listing_status | default: 'available' | escape }}">
+          <label for="listingManagementCode" data-i18n="marketplace_ui.owner_key">Private listing key</label>
           <input id="listingManagementCode" name="management_token" type="password" inputmode="text" autocomplete="off" minlength="16" maxlength="128" required>
           <div class="detail-owner-tools__code-actions">
             <button type="button" class="btn btn--secondary btn--sm" data-show-management-code>Show code</button>
             <button type="button" class="btn btn--secondary btn--sm" data-copy-management-code>Copy code</button>
           </div>
+          {% if is_borrow_lend %}
+          <label for="listingBorrowStatus">Item status</label>
+          <select id="listingBorrowStatus" name="marketplace_status" required>
+            <option value="available" {% unless is_borrowed %}selected{% endunless %}>Available</option>
+            <option value="borrowed" {% if is_borrowed %}selected{% endif %}>Borrowed</option>
+          </select>
+          <button type="submit" class="btn btn--secondary">Update status</button>
+          {% else %}
+          <input type="hidden" name="marketplace_status" value="sold">
           <button type="submit" class="btn btn--secondary">Mark as sold</button>
+          {% endif %}
           <p class="detail-owner-tools__message" role="status" hidden></p>
         </form>
       </details>
@@ -290,125 +280,6 @@ layout: default
 
 <script>
   document.addEventListener('DOMContentLoaded', () => {
-    const borrowBooking = document.querySelector('[data-borrow-booking]');
-    if (borrowBooking) {
-      const availabilityLabel = borrowBooking.querySelector('[data-borrow-availability]');
-      const bookingForm = borrowBooking.querySelector('[data-borrow-form]');
-      const bookingButton = borrowBooking.querySelector('[data-borrow-submit]');
-      const bookingMessage = borrowBooking.querySelector('[data-borrow-message]');
-      const startInput = bookingForm.querySelector('[name="start_at"]');
-      const endInput = bookingForm.querySelector('[name="end_at"]');
-      const localValue = (date) => {
-        const offsetDate = new Date(date.getTime() - date.getTimezoneOffset() * 60000);
-        return offsetDate.toISOString().slice(0, 16);
-      };
-      const nextHour = new Date(Date.now() + 60 * 60 * 1000);
-      nextHour.setMinutes(Math.ceil(nextHour.getMinutes() / 15) * 15, 0, 0);
-      const defaultEnd = new Date(nextHour.getTime() + 2 * 60 * 60 * 1000);
-      startInput.min = localValue(new Date());
-      startInput.value = localValue(nextHour);
-      endInput.min = startInput.value;
-      endInput.value = localValue(defaultEnd);
-      startInput.addEventListener('change', () => {
-        endInput.min = startInput.value;
-        if (!endInput.value || endInput.value <= startInput.value) {
-          endInput.value = localValue(new Date(new Date(startInput.value).getTime() + 2 * 60 * 60 * 1000));
-        }
-      });
-
-      const readBookings = () => {
-        const encoded = borrowBooking.dataset.bookings || '';
-        if (!encoded) return [];
-        try {
-          return JSON.parse(atob(encoded));
-        } catch (error) {
-          bookingMessage.textContent = 'Booking schedule unavailable. Please contact the owner.';
-          bookingMessage.hidden = false;
-          bookingMessage.classList.add('is-error');
-          bookingButton.disabled = true;
-          return [];
-        }
-      };
-      const bookings = readBookings();
-      const getAvailability = () => {
-        const now = Date.now();
-        if (bookings.some((booking) => Date.parse(booking.startAt) <= now && Date.parse(booking.endAt) > now)) {
-          return 'in_use';
-        }
-        return bookings.some((booking) => Date.parse(booking.endAt) > now)
-          ? 'reserved'
-          : 'available';
-      };
-      const updateAvailability = () => {
-        const status = getAvailability();
-        const labels = {
-          available: ['marketplace_ui.status_available', 'Available to borrow'],
-          reserved: ['marketplace_ui.status_reserved', 'Reserved for another time'],
-          in_use: ['marketplace_ui.status_in_use', 'Currently in use'],
-        };
-        const [key, fallback] = labels[status];
-        availabilityLabel.textContent = window.t ? window.t(key, fallback) : fallback;
-        borrowBooking.dataset.status = status;
-      };
-      updateAvailability();
-      window.setInterval(updateAvailability, 60_000);
-
-      bookingForm.addEventListener('submit', async (event) => {
-        event.preventDefault();
-        if (!bookingForm.reportValidity()) return;
-        bookingButton.disabled = true;
-        bookingMessage.hidden = true;
-        bookingMessage.classList.remove('is-error');
-        bookingMessage.textContent = 'Reserving item…';
-        bookingMessage.hidden = false;
-        const bookingId = window.ResiHubApi?.createSubmissionId('booking') ||
-          `booking-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`;
-        const payload = {
-          page_key: borrowBooking.dataset.pageKey,
-          booking_id: bookingId,
-          borrower_name: bookingForm.elements.borrower_name.value.trim(),
-          borrower_email: bookingForm.elements.borrower_email.value.trim(),
-          start_at: new Date(startInput.value).toISOString(),
-          end_at: new Date(endInput.value).toISOString(),
-          note: bookingForm.elements.note.value.trim(),
-        };
-        try {
-          const endpoint = window.ResiHubApi?.ENDPOINTS?.borrowRequest;
-          if (!endpoint) throw new Error('Borrowing service is unavailable.');
-          const response = await fetch(endpoint, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload),
-          });
-          const result = await response.json();
-          if (result?.booking_committed) {
-            bookingButton.textContent = 'Reserved';
-            bookingButton.disabled = true;
-            bookingMessage.textContent = result.error;
-            bookingMessage.classList.add('is-error');
-            return;
-          }
-          if (!response.ok || result?.success !== true) {
-            throw new Error(result?.error || 'Could not reserve this time.');
-          }
-          bookings.push({
-            id: bookingId,
-            startAt: payload.start_at,
-            endAt: payload.end_at,
-          });
-          updateAvailability();
-          bookingButton.textContent = 'Reserved';
-          bookingMessage.textContent = `Booking confirmed. Reference: ${bookingId}. Owner and borrower notified by email.`;
-          bookingForm.reset();
-          bookingButton.disabled = true;
-        } catch (error) {
-          bookingMessage.textContent = error instanceof Error ? error.message : 'Could not reserve this time.';
-          bookingMessage.classList.add('is-error');
-          bookingButton.disabled = false;
-        }
-      });
-    }
-
     const ownerForm = document.querySelector('.detail-owner-tools__form');
     if (ownerForm) {
       const codeInput = ownerForm.querySelector('[name="management_token"]');
@@ -442,13 +313,15 @@ layout: default
       ownerForm.addEventListener('submit', async (event) => {
         event.preventDefault();
         const button = ownerForm.querySelector('button[type="submit"]');
+        const status = ownerForm.elements.marketplace_status.value;
+        const isBorrowLend = ownerForm.dataset.listingType === 'borrow_lend';
         button.disabled = true;
-        message.textContent = 'Marking listing sold…';
+        message.textContent = isBorrowLend ? 'Updating item status…' : 'Marking listing sold…';
         message.hidden = false;
         message.classList.remove('is-error');
         const data = new FormData();
         data.append('type', 'update');
-        data.append('marketplace_status', 'sold');
+        data.append('marketplace_status', status);
         data.append('page_key', ownerForm.dataset.pageKey || '');
         data.append('title', ownerForm.dataset.title || 'Marketplace listing');
         data.append('condo', ownerForm.dataset.condo || 'General');
@@ -461,9 +334,24 @@ layout: default
           if (!response.ok || !payload || payload.success !== true) {
             throw new Error(payload?.error || 'Could not update listing.');
           }
-          message.textContent = 'Listing marked sold. Marketplace may take a moment to refresh.';
-          button.textContent = 'Marked sold';
-          button.disabled = true;
+          if (isBorrowLend) {
+            const borrowed = status === 'borrowed';
+            const statusPanel = document.querySelector('[data-borrow-status]');
+            const statusLabel = statusPanel?.querySelector('[data-borrow-availability]');
+            statusPanel?.classList.toggle('is-borrowed', borrowed);
+            statusPanel?.setAttribute('data-borrow-status', status);
+            if (statusLabel) {
+              const key = borrowed ? 'marketplace_ui.currently_borrowed' : 'marketplace_ui.available_to_borrow';
+              const fallback = borrowed ? 'Currently borrowed' : 'Available to borrow';
+              statusLabel.textContent = window.t ? window.t(key, fallback) : fallback;
+            }
+            message.textContent = `Listing status updated to ${borrowed ? 'borrowed' : 'available'}.`;
+            button.disabled = false;
+          } else {
+            message.textContent = 'Listing marked sold. Marketplace may take a moment to refresh.';
+            button.textContent = 'Marked sold';
+            button.disabled = true;
+          }
           try {
             if (!window.ResiHubSubmissionHistory) {
               throw new Error('Submission history is unavailable.');
@@ -475,7 +363,9 @@ layout: default
               managementToken: codeInput.value.trim()
             });
           } catch (storageError) {
-            message.textContent += ' Code could not be saved on this device; copy it before leaving.';
+            if (!isBorrowLend) {
+              message.textContent += ' Code could not be saved on this device; copy it before leaving.';
+            }
           }
         } catch (error) {
           message.textContent = error instanceof Error ? error.message : 'Could not update listing.';

@@ -151,18 +151,9 @@
     "borrowing_details": "Borrowing details",
     "free_to_borrow": "Free to borrow",
     "arrange_sharing": "Contact your neighbor to arrange sharing.",
-    "status_available": "Available to borrow",
-    "status_reserved": "Reserved for another time",
-    "status_in_use": "Currently in use",
-    "booking_heading": "Choose borrowing time",
-    "booking_hint": "Your selected time is reserved immediately. Owner and borrower get email confirmation.",
-    "from": "From",
-    "until": "Until",
-    "your_name": "Your name",
-    "your_email": "Your email",
-    "booking_note": "Note for owner (optional)",
-    "trust_note": "No platform fee. Agree on pickup and any refundable deposit directly. Never send payment before confirming with the owner.",
-    "reserve_item": "Reserve this item"
+    "owner_status": "Listing owner status",
+    "owner_key": "Private listing key",
+    "owner_status_hint": "Use your private listing key to set this item as available or borrowed."
   },
   "list_service": {
     "heading": "Create Marketplace Listing",

@@ -9,7 +9,6 @@
      data-community="{{ ad.target_community | default: ad.condo | default: 'General' }}"
      data-community-slug="{{ ad.target_community | default: ad.condo | default: 'General' | slugify }}"
      data-status="{{ ad.listing_status | default: 'available' | downcase }}"
-     data-borrow-bookings="{{ ad.borrow_bookings | default: '' | escape }}"
      data-date="{{ ad.date | date: '%s' }}">
 
   <a href="{{ ad.url | relative_url }}" class="mp-card-v2">
@@ -47,7 +46,12 @@
       <p class="mp-card-v2__meta">{{ ad.target_community | default: ad.condo | default: "General" }} · {{ ad.date | date: "%-d %b" }}</p>
       <div class="mp-card-v2__price">
        {% if listing_type == "borrow_lend" %}
-         <span class="mp-borrow-availability" data-borrow-availability>Available to borrow</span>
+         {% assign borrow_status = ad.listing_status | default: "available" | downcase %}
+         {% if borrow_status == "borrowed" or borrow_status == "reserved" or borrow_status == "in_use" %}
+           <span class="mp-borrow-availability" data-borrow-availability data-i18n="marketplace_ui.currently_borrowed">Currently borrowed</span>
+         {% else %}
+           <span class="mp-borrow-availability" data-borrow-availability data-i18n="marketplace_ui.available_to_borrow">Available to borrow</span>
+         {% endif %}
        {% elsif ad.price and ad.price != "" %} ${{ ad.price }}<span>CAD</span> {% else %} Contact for price {% endif %}
       </div>
     </div>

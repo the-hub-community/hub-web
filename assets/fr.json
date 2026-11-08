@@ -149,18 +149,9 @@
     "borrowing_details": "Details du pret",
     "free_to_borrow": "Emprunt gratuit",
     "arrange_sharing": "Contactez votre voisin pour organiser le partage.",
-    "status_available": "Disponible a emprunter",
-    "status_reserved": "Reserve pour une autre periode",
-    "status_in_use": "Actuellement utilise",
-    "booking_heading": "Choisir l'heure d'emprunt",
-    "booking_hint": "L'heure choisie est reservee immediatement. Proprietaire et emprunteur recoivent une confirmation par courriel.",
-    "from": "Debut",
-    "until": "Fin",
-    "your_name": "Votre nom",
-    "your_email": "Votre courriel",
-    "booking_note": "Note au proprietaire (facultatif)",
-    "trust_note": "Aucun frais de plateforme. Convenez directement du ramassage et de tout depot remboursable. Ne payez jamais avant d'avoir confirme avec le proprietaire.",
-    "reserve_item": "Reserver cet article"
+    "owner_status": "Statut du proprietaire",
+    "owner_key": "Cle privee de l'annonce",
+    "owner_status_hint": "Utilisez votre cle privee pour indiquer si cet article est disponible ou emprunte."
   },
   "list_service": {
     "heading": "Creer une annonce de marche",

@@ -44,11 +44,9 @@ function syncListingTypeFields() {
   const priceInput = listingPriceField?.querySelector("input");
   const loanTermsInput = loanTermsField?.querySelector("textarea");
   if (listingContact) {
-    listingContact.type = isBorrowLend ? "email" : "text";
-    listingContact.required = Boolean(isBorrowLend);
-    listingContact.placeholder = isBorrowLend
-      ? "Email for borrowing notifications"
-      : "Phone, Email, or WhatsApp";
+    listingContact.type = "text";
+    listingContact.required = false;
+    listingContact.placeholder = "Phone, Email, or WhatsApp";
   }
   if (priceInput) priceInput.disabled = Boolean(isBorrowLend);
   if (loanTermsInput) loanTermsInput.disabled = !isBorrowLend;

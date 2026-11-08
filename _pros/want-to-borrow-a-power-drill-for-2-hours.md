@@ -12,7 +12,6 @@ image_url: ""
 community_key: "comm-elm-drive"
 page_key: "listing-mw5z8imb-rk1bfajk"
 listing_status: available
-borrow_bookings: ""
 management_token_hash: "hmac-sha256:460f55f948baf3f96187e4279278dbeb0868134d53436c00f5431e68f62e142d"
 date: 2026-11-07T05:42:40.677Z
 ---

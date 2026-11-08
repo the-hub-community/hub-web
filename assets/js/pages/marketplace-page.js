@@ -208,34 +208,17 @@ function getPriceLabel(priceBand) {
 
 function updateBorrowAvailability(card) {
   if (card.dataset.listingType !== "borrow_lend") return;
-  let bookings = [];
-  try {
-    if (card.dataset.borrowBookings) {
-      bookings = JSON.parse(atob(card.dataset.borrowBookings));
-    }
-  } catch (error) {
-    card.dataset.status = "unavailable";
-    const label = card.querySelector("[data-borrow-availability]");
-    if (label) label.textContent = "Availability unavailable";
-    return;
-  }
-
-  const now = Date.now();
-  const inUse = bookings.some(
-    (booking) =>
-      Date.parse(booking.startAt) <= now && Date.parse(booking.endAt) > now,
-  );
-  const reserved = !inUse && bookings.some(
-    (booking) => Date.parse(booking.endAt) > now,
-  );
-  const status = inUse ? "in_use" : reserved ? "reserved" : "available";
+  const status = ["borrowed", "reserved", "in_use"].includes(
+    String(card.dataset.status || "").toLowerCase(),
+  )
+    ? "borrowed"
+    : "available";
   card.dataset.status = status;
   const label = card.querySelector("[data-borrow-availability]");
   if (!label) return;
   const labels = {
-    available: ["marketplace_ui.status_available", "Available to borrow"],
-    reserved: ["marketplace_ui.status_reserved", "Reserved for another time"],
-    in_use: ["marketplace_ui.status_in_use", "Currently in use"],
+    available: ["marketplace_ui.available_to_borrow", "Available to borrow"],
+    borrowed: ["marketplace_ui.currently_borrowed", "Currently borrowed"],
   };
   const [key, fallback] = labels[status];
   label.textContent = window.t ? window.t(key, fallback) : fallback;
