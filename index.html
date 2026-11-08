@@ -1,6 +1,8 @@
 ---
 layout: default
 title: Dashboard
+custom_stylesheets:
+  - custom/festival-celebration
 ---
 
 {% assign communities = site.pages | where_exp: "p", "p.path contains 'content/'" | where_exp: "p", "p.name == 'index.md' or p.name == 'index.html'" %}
@@ -151,33 +153,6 @@ title: Dashboard
 
 </section>
 
-<script>
-  (function initDashboardGreeting() {
-    "use strict";
-    const titleEl = document.getElementById("ed-greeting-title");
-    const eyebrowEl = document.getElementById("ed-greeting-eyebrow");
-    if (!titleEl) return;
-
-    const hour = new Date().getHours();
-    let greeting = "Good evening.";
-    let eyebrow = "Welcome back";
-
-    if (hour >= 5 && hour < 12) {
-      greeting = "Good morning.";
-      eyebrow = "Fresh start";
-    } else if (hour >= 12 && hour < 18) {
-      greeting = "Good afternoon.";
-      eyebrow = "Mid-day check-in";
-    } else if (hour >= 18 && hour < 22) {
-      greeting = "Good evening.";
-      eyebrow = "Evening roundup";
-    } else {
-      greeting = "Welcome back.";
-      eyebrow = "Late night";
-    }
-
-    titleEl.textContent = greeting;
-    if (eyebrowEl) eyebrowEl.textContent = eyebrow;
-  })();
-</script>
+<script type="application/json" id="festival-greeting-schedule">{{ site.data.festivals | jsonify }}</script>
+<script src="{{ site.baseurl }}/assets/js/pages/festival-greeting.js" defer></script>
 <script src="{{ site.baseurl }}/assets/js/pages/community-pagination.js" defer></script>

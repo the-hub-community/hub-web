@@ -64,6 +64,10 @@ UI text should use:
 - `data-i18n-placeholder`
 - `data-i18n-aria-label`
 
+## Dashboard Festival Greetings
+
+The dashboard uses local browser dates to show recurring and scheduled festival greetings. Edit `_data/festivals.yml` to add fixed-date greetings or update year-specific dates for lunar-calendar festivals. Greetings use inclusive wording; decorative fireworks are hidden from assistive technology and respect reduced-motion settings.
+
 ## Resource Mode (Dev vs Prod)
 
 Config flags are defined in:
