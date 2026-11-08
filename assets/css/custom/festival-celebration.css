@@ -43,6 +43,17 @@
   animation-delay: 0.6s;
 }
 
+.community-hero__celebration[data-decoration="sky"] .community-hero__firework {
+  width: 4px;
+  background: #ffe28a;
+  box-shadow:
+    0 0 8px 3px rgba(255, 226, 138, 0.72),
+    24px 20px 0 -1px #fff3bd,
+    -20px 30px 0 -1px #c7e7ff,
+    32px -18px 0 -1px #c7e7ff,
+    -26px -14px 0 -1px #fff3bd;
+}
+
 @keyframes community-firework {
   0% {
     opacity: 0;

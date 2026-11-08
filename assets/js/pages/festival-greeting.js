@@ -21,18 +21,38 @@
     console.error("Could not read festival greeting schedule.", error);
   }
 
+  const findEvent = (events, date) =>
+    (events || [])
+      .filter(
+        (item) =>
+          item.date === date ||
+          (item.start && item.end && item.start <= date && date <= item.end),
+      )
+      .sort((left, right) => {
+        const rangeDays = (item) => {
+          if (item.date) return 0;
+          const normalizeDate = (value) =>
+            /^\d{2}-\d{2}$/.test(value) ? `2000-${value}` : value;
+          return (
+            (Date.parse(`${normalizeDate(item.end)}T00:00:00Z`) -
+              Date.parse(`${normalizeDate(item.start)}T00:00:00Z`)) /
+            86400000
+          );
+        };
+        return rangeDays(left) - rangeDays(right);
+      })[0];
+
   const festival =
-    schedule.fixed?.find(
-      (item) =>
-        item.date === monthDay ||
-        (item.start <= monthDay && monthDay <= item.end),
-    ) || schedule.annual?.find((item) => item.date === isoDate);
+    findEvent(schedule.annual, isoDate) || findEvent(schedule.fixed, monthDay);
 
   if (festival) {
     titleEl.textContent = festival.title;
     if (eyebrowEl) eyebrowEl.textContent = festival.eyebrow;
     if (subtitleEl) subtitleEl.textContent = festival.subtitle;
-    if (celebrationEl) celebrationEl.hidden = false;
+    if (celebrationEl) {
+      celebrationEl.dataset.decoration = festival.decoration || "fireworks";
+      celebrationEl.hidden = false;
+    }
     return;
   }
 

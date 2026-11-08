@@ -66,7 +66,7 @@ UI text should use:
 
 ## Dashboard Festival Greetings
 
-The dashboard uses local browser dates to show recurring and scheduled festival greetings. Edit `_data/festivals.yml` to add fixed-date greetings or update year-specific dates for lunar-calendar festivals. Greetings use inclusive wording; decorative fireworks are hidden from assistive technology and respect reduced-motion settings.
+The dashboard uses local browser dates for global cultural festivals, international observances, and skywatching events. Edit `_data/festivals.yml` to add recurring month/day events under `fixed` or year-specific/movable dates under `annual`. Lunar-calendar dates can vary by region or moon sighting; meteor-shower peaks and equinox/solstice windows are approximate. Astronomy greetings note that visibility depends on location and conditions. Decorations are hidden from assistive technology and respect reduced-motion settings.
 
 ## Resource Mode (Dev vs Prod)
 
