@@ -69,6 +69,47 @@
     return `hub-inline-${Date.now().toString(36)}-${mediaCounter.toString(36)}`;
   }
 
+  function linkifyText(root) {
+    if (!root) return;
+    const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+    const textNodes = [];
+    while (walker.nextNode()) {
+      const node = walker.currentNode;
+      if (node.parentElement?.closest("a, code, pre, script, style, [contenteditable='false']")) {
+        continue;
+      }
+      if (/https?:\/\/[^\s<>"']+/i.test(node.textContent || "")) {
+        textNodes.push(node);
+      }
+    }
+
+    textNodes.forEach((node) => {
+      const value = node.textContent || "";
+      const fragment = document.createDocumentFragment();
+      const pattern = /https?:\/\/[^\s<>"']+/gi;
+      let lastIndex = 0;
+      let match;
+      while ((match = pattern.exec(value))) {
+        let urlText = match[0];
+        const trailing = urlText.match(/[.,!?;:)\]}]+$/)?.[0] || "";
+        urlText = trailing ? urlText.slice(0, -trailing.length) : urlText;
+        if (!urlText) continue;
+
+        fragment.append(document.createTextNode(value.slice(lastIndex, match.index)));
+        const anchor = document.createElement("a");
+        anchor.href = urlText;
+        anchor.textContent = urlText;
+        anchor.target = "_blank";
+        anchor.rel = "noopener noreferrer";
+        fragment.append(anchor);
+        if (trailing) fragment.append(document.createTextNode(trailing));
+        lastIndex = match.index + match[0].length;
+      }
+      fragment.append(document.createTextNode(value.slice(lastIndex)));
+      node.replaceWith(fragment);
+    });
+  }
+
   function insertHtml(editor, html) {
     restoreRange(editor);
     if (!document.execCommand("insertHTML", false, html)) {
@@ -201,6 +242,7 @@
   function serialize(editor) {
     decorateExistingMedia(editor);
     const clone = editor.cloneNode(true);
+    linkifyText(clone);
     const inlineMedia = [];
     editor.querySelectorAll(".lh-inline-media-block").forEach((block) => {
       const id = block.dataset.inlineMediaId || mediaId();
@@ -258,6 +300,11 @@
       captureRange(editor);
       event.preventDefault();
     }
+  });
+
+  document.addEventListener("focusout", (event) => {
+    const editor = event.target.closest?.(".editor-area, [data-editor-area]");
+    if (editor) linkifyText(editor);
   });
 
   document.addEventListener("click", (event) => {
@@ -366,6 +413,7 @@
 
   window.ResiHubEditorInlineMedia = {
     decorateExistingMedia,
+    linkify: linkifyText,
     getFile(id) {
       return filesById.get(id) || null;
     },

@@ -57,8 +57,8 @@ document.addEventListener("DOMContentLoaded", function () {
   function statusLabel(status) {
     var labels = {
       pending: "Pending review",
-      approved: "Accepted",
-      published: "Published",
+      approved: "Approved",
+      published: "Live",
       closed: "Closed",
       not_found: "Not found",
       invalid: "Invalid reference",
@@ -212,6 +212,22 @@ document.addEventListener("DOMContentLoaded", function () {
       lookupStatus(record.id).then(function (result) {
         badge.textContent = result ? statusLabel(result.status) : "Status unavailable";
         badge.dataset.status = result ? result.status : "unavailable";
+        if (result && result.status === "published" && result.pageUrl) {
+          try {
+            var pageUrl = new URL(result.pageUrl, window.location.origin);
+            if (pageUrl.protocol === "https:" && pageUrl.hostname === "hubcollective.ca") {
+              var liveLink = document.createElement("a");
+              liveLink.className = "btn btn--secondary btn--sm";
+              liveLink.href = pageUrl.href;
+              liveLink.target = "_blank";
+              liveLink.rel = "noopener noreferrer";
+              liveLink.textContent = "View live page";
+              actions.insertBefore(liveLink, track);
+            }
+          } catch (error) {
+            showMessage("Could not read the live page link.", true);
+          }
+        }
       }).catch(function () {
         badge.textContent = "Status unavailable";
         badge.dataset.status = "unavailable";

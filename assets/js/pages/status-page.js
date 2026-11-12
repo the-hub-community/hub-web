@@ -5,6 +5,7 @@
   var resultEl = document.getElementById("statusResult");
   var badgeEl = document.getElementById("statusBadge");
   var descEl = document.getElementById("statusDescription");
+  var pageLinkEl = document.getElementById("statusPageLink");
 
   function text(key, fallback) {
     return typeof window.t === "function" ? window.t(key, fallback) : fallback;
@@ -18,6 +19,10 @@
 
   function renderStatus(data, submissionId) {
     resultEl.hidden = false;
+    if (pageLinkEl) {
+      pageLinkEl.hidden = true;
+      pageLinkEl.removeAttribute("href");
+    }
     var status = String(data.status || "pending").toLowerCase();
     var knownStatuses = {
       pending: true,
@@ -33,8 +38,8 @@
 
     var badgeLabels = {
       pending: text("status.badge_pending", "Pending"),
-      approved: text("status.badge_approved", "Accepted"),
-      published: text("status.badge_published", "Published"),
+      approved: text("status.badge_approved", "Approved"),
+      published: text("status.badge_published", "Live"),
       closed: text("status.badge_closed", "Unavailable"),
       not_found: text("status.badge_not_found", "Not Found"),
       invalid: text("status.badge_invalid", "Invalid ID"),
@@ -50,7 +55,7 @@
       ),
       approved: text(
         "status.description_approved",
-        "Your submission was accepted and will be available soon.",
+        "Your submission was approved and is waiting for the site to publish it.",
       ),
       published: text(
         "status.description_published",
@@ -71,6 +76,17 @@
     };
 
     descEl.textContent = descriptions[status] || descriptions.pending;
+    if (status === "published" && pageLinkEl && data.pageUrl) {
+      try {
+        var pageUrl = new URL(data.pageUrl, window.location.origin);
+        if (pageUrl.protocol === "https:" && pageUrl.hostname === "hubcollective.ca") {
+          pageLinkEl.href = pageUrl.href;
+          pageLinkEl.hidden = false;
+        }
+      } catch (_) {
+        pageLinkEl.hidden = true;
+      }
+    }
   }
 
   async function lookupStatus(submissionId) {

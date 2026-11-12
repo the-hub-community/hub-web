@@ -29,6 +29,7 @@ sitemap: false
       const panel = document.getElementById("success-submission-id-panel");
       const valueEl = document.getElementById("success-submission-id-value");
       const copyBtn = document.getElementById("success-copy-id-btn");
+      const statusLink = document.getElementById("success-track-status-link");
       const historyNote = document.createElement("p");
       historyNote.className = "submission-id-note";
 
@@ -36,6 +37,12 @@ sitemap: false
         valueEl.textContent = submissionId;
         panel.hidden = false;
         panel.appendChild(historyNote);
+      }
+      if (statusLink) {
+        statusLink.href =
+          window.ResiHubApi?.buildStatusPageUrl(submissionId) ||
+          `/status.html?submission_id=${encodeURIComponent(submissionId)}`;
+        statusLink.hidden = false;
       }
 
       try {

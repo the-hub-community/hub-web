@@ -7,9 +7,10 @@ sitemap: false
 <style>
   .editor-area, .submit-preview {
     white-space: pre-wrap !important; word-wrap: break-word !important;
-    overflow-wrap: break-word !important; max-width: 100% !important;
+    overflow-wrap: anywhere !important; max-width: 100% !important;
     font-family: var(--font-body, 'Inter', sans-serif) !important;
   }
+  .submit-preview img { max-width: 100%; height: auto; }
   .editor-area p { margin-bottom: 12px; }
   .editor-toolbar button { margin-right: 4px; }
   
@@ -59,16 +60,17 @@ sitemap: false
         </div>
         <div class="form-group" id="newCommunityGroup" hidden>
           <label for="thcNewCommunity">New community name</label>
-          <input type="text" id="thcNewCommunity" name="new_community" placeholder="e.g. Elm Drive Neighbours" data-char-limit="60">
+          <input type="text" id="thcNewCommunity" name="new_community" placeholder="e.g. Elm Drive Neighbours" maxlength="60" data-char-limit="60">
         </div>
         <div class="form-group">
           <label for="thcPageTitle">Page Title</label>
-          <input type="text" id="thcPageTitle" name="title" placeholder="e.g. Best dog-walking routes" required data-char-limit="140">
+          <input type="text" id="thcPageTitle" name="title" placeholder="e.g. Best dog-walking routes" required maxlength="140" data-char-limit="140">
+          <small class="form-hint">Maximum 140 characters</small>
         </div>
         <div class="form-group">
           <label for="thcTags">Tags <span class="form-optional">(optional)</span></label>
-          <input type="text" id="thcTags" name="tags" placeholder="e.g. dogs, parks, outdoors" data-char-limit="120">
-          <small class="form-hint">Helps people find your page</small>
+          <input type="text" id="thcTags" name="tags" placeholder="e.g. dogs, parks, outdoors" maxlength="120" data-char-limit="120">
+          <small class="form-hint">Maximum 120 characters. Helps people find your page.</small>
         </div>
         <div class="submit-actions">
           <button type="button" class="btn btn--primary submit-next" data-next="2">Continue →</button>
@@ -105,7 +107,8 @@ sitemap: false
               </label>
               <button type="button" class="inline-media-composer__insert" data-inline-video-insert>Insert at cursor</button>
             </div>
-            <p class="inline-media-hint">Place cursor in text, then add photo or YouTube video. Adjust photo placement and size below each image.</p>
+            <p class="inline-media-hint">Place cursor beside the text, then choose <strong>Add image</strong> to put a photo in this section. Paste a web address to make it clickable. Maximum 8,000 characters.</p>
+            <p id="editorLimitError" class="submission-error-inline" role="alert" hidden>Content limit is 8,000 characters. Shorten text before submitting.</p>
             <p class="inline-media-status" data-inline-media-status role="status" aria-live="polite" hidden></p>
             <div class="editor-area" contenteditable="true" data-placeholder="Write your content here…" data-char-limit="8000"></div>
           </div>
@@ -193,6 +196,14 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   const editor = document.querySelector('.editor-area');
+  const editorLimitError = document.getElementById('editorLimitError');
+  if (editor) {
+    editor.addEventListener('input', () => {
+      const overLimit = (editor.innerText || '').length > 8000;
+      if (editorLimitError) editorLimitError.hidden = !overLimit;
+      editor.setAttribute('aria-invalid', String(overLimit));
+    });
+  }
   if (editor) {
     const viewport = window.visualViewport;
     let editorFocused = false;
@@ -266,6 +277,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const title = document.getElementById('thcPageTitle')?.value.trim() || 'Untitled Page';
     const tags = document.getElementById('thcTags')?.value.trim();
     const previewEditor = document.querySelector('.editor-area')?.cloneNode(true);
+    if (previewEditor) window.ResiHubEditorInlineMedia?.linkify(previewEditor);
     previewEditor?.querySelectorAll('[data-inline-media-remove], [data-inline-media-controls]').forEach((control) => control.remove());
     const content = previewEditor?.innerHTML || '<p class="text-muted">No content provided.</p>';
     const previewContainer = document.querySelector('.submit-preview');
@@ -354,6 +366,12 @@ document.addEventListener('DOMContentLoaded', function () {
       const editorArea = document.querySelector('.editor-area');
       const editorHtml = editorArea?.innerHTML || '';
       if (!editorHtml.trim() || editorHtml === '<br>') { alert('Please write some content before submitting.'); return; }
+      if ((editorArea?.innerText || '').length > 8000) {
+        if (editorLimitError) editorLimitError.hidden = false;
+        showStep('2');
+        editorArea?.focus();
+        return;
+      }
       
       submitBtn.disabled = true;
       submitBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Submitting...`;
