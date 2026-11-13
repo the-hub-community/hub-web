@@ -199,12 +199,6 @@
       });
       nestStandaloneUrlItems(container);
       container.querySelectorAll("p").forEach(formatParagraph);
-      container.querySelectorAll(".lh-detail-row").forEach((row) => {
-        const lastChild = row.lastChild;
-        if (lastChild?.nodeType !== Node.TEXT_NODE) return;
-        lastChild.textContent = lastChild.textContent.replace(/[ \t]+$/, "");
-        if (!lastChild.textContent) lastChild.remove();
-      });
       highlightEntryNames(container);
       if (addDirections) addDirectionsLinks(container);
       highlightMapEntityNames(container);
@@ -327,7 +321,10 @@
       .reverse();
 
     labels.forEach((label) => {
-      if (label.parentElement?.classList.contains("lh-detail-row")) return;
+      if (label.parentElement?.classList.contains("lh-detail-row")) {
+        trimDetailRowEnd(label.parentElement);
+        return;
+      }
 
       let previous = label.previousSibling;
       while (
@@ -362,8 +359,22 @@
         row.append(node);
         node = next;
       }
-
+      trimDetailRowEnd(row);
     });
+  }
+
+  function trimDetailRowEnd(row) {
+    let node = row.lastChild;
+    while (node?.nodeType === Node.TEXT_NODE) {
+      const trimmed = node.textContent.replace(/[ \t]+$/, "");
+      if (trimmed) {
+        node.textContent = trimmed;
+        return;
+      }
+      const previous = node.previousSibling;
+      node.remove();
+      node = previous;
+    }
   }
 
   function highlightEntryNames(container) {
