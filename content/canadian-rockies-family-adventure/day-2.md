@@ -4,7 +4,7 @@ title: "Day 2: Jasper Highlights – Maligne Lake, SkyTram & Wildlife"
 condo: "canadian-rockies-family-adventure"
 community_key: "comm-canadian-rockies-family-adventure"
 page_key: "page-day-2-jasper-highlights"
-date: 2026-10-27T10:15:00.000Z
+date: 2026-11-13T02:50:32.242Z
 ---
 
 # Day 2: Jasper Highlights – Maligne Lake, SkyTram & Wildlife
@@ -12,49 +12,88 @@ date: 2026-10-27T10:15:00.000Z
 <div class="lh-content-body">
 
 <div class="lh-section">
+<div class="lh-align-center"><div class="lh-video-container"><iframe src="https://www.youtube.com/embed/CLUw6LevPiY" allowfullscreen></iframe></div></div>
+<div class="lh-align-center"><figure class="lh-image-container">
+<img src="https://pub-b0e952c65fd94549b83646f95f2b354b.r2.dev/update-1794538230834-sec0-img0-jasper.jpg" alt="Maligne Lake in Jasper National Park, with forested shoreline and mountains reflected in the water" title="Maligne Lake in Jasper National Park, with forested shoreline and mountains reflected in the water" class="lh-fluid-img">
+</figure></div>
 <div class="lh-text">
-**Overview:** A day dedicated to the best of Jasper, with a mix of a boat cruise, a scenic tram, and an evening wildlife drive. This itinerary is designed to be flexible and includes a dedicated rest window for the infant.
+**Jasper at a glance**
+
+- Jasper National Park is the largest national park in the Canadian Rockies.
+- It covers 10,878 square kilometres.
+- It is a UNESCO World Heritage Site.
+- It is a Dark Sky Preserve.
+- The town of Jasper is a useful base for exploring the park, Maligne Lake, and the Icefields Parkway.
 </div>
 <div class="lh-clear"></div>
 </div>
 
 <div class="lh-section">
+
+
 <div class="lh-text">
-**Morning: Maligne Lake & Spirit Island**
-*   **Drive to Maligne Lake:** A scenic 45-minute drive from Jasper.
-*   **Maligne Lake Boat Cruise:** This 2-hour cruise to Spirit Island is a highlight. The boat is enclosed and heated, making it perfect for all. Pre-booking is essential.
-*   **Picnic Lunch at Maligne Complex:** A relaxed lunch spot with high chairs and space for kids to run around.
+**How to get there**
+
+- From Edmonton, Jasper is about a 4-hour drive via Highway 16.
+- From Calgary, allow about 5 hours via the Icefields Parkway.
+- The Icefields Parkway is a 232-kilometre scenic route.
+- VIA Rail also serves Jasper.
+- A national park pass is required.
+- The pass is $10 CAD per person per day.
 </div>
 <div class="lh-clear"></div>
 </div>
 
 <div class="lh-section">
+
+
 <div class="lh-text">
-**Afternoon: SkyTram & Rest**
-*   **Jasper SkyTram:** A 15-minute ride takes you to the upper deck for spectacular views.
-*   **Dedicated Infant Rest:** A protected 2-hour window at your accommodation for the baby to nap. Adults can take turns resting or preparing dinner.
+**3-day itinerary**
+**Day 1**
+
+- Drive the Icefields Parkway.
+- Stop at Athabasca Falls.
+- Visit the Columbia Icefield.
+
+**Day 2**
+- Take the Maligne Lake cruise to Spirit Island.
+- Walk Maligne Canyon.
+- Visit Pyramid Lake.
+
+**Day 3**
+- Ride the Jasper SkyTram.
+- Visit Miette Hot Springs.
+- Walk the Valley of the Five Lakes.
 </div>
 <div class="lh-clear"></div>
 </div>
 
 <div class="lh-section">
+
+
 <div class="lh-text">
-**Evening: Wildlife Drive & Stargazing**
-*   **Evening Wildlife Drive:** Take a slow drive along Maligne Lake Road. **Stay in your vehicle** and watch for elk, sheep, and deer from a safe distance[reference:17].
-*   **Stargazing (Adults Only):** Jasper is a Dark Sky Preserve. One or two adults can head out for a short stargazing session while the other stays with the children.
+**What to check before you go**
+
+- Jasper is still recovering from the 2024 wildfire.
+- Check Parks Canada trail and road conditions before you travel.
+- Book the Maligne Lake cruise 2 to 3 months ahead.
+- Book early especially for June to September.
+- The Jasper SkyTram runs from March to October.
+- A national park pass is required.
+- The pass is $10 CAD per person per day.
+- First-time international visitors should check entry, driving, and weather information before **arrival.**
+
+Reference links
+- Parks Canada Jasper page:
+- https://parks.canada.ca/pn-np/ab/jasper
+- Jasper travel information:
+- https://www.jasper.travel/
+- Guide to Jasper National Park:
+- https://www.afar.com/magazine/the-essential-guide-to-jasper-national-park-canada
 </div>
 <div class="lh-clear"></div>
 </div>
 
-<div class="lh-section">
-<div class="lh-text">
-**Do's & Don'ts for Families**
-*   **Do** pre-book the Maligne Lake cruise and SkyTram to avoid disappointment.
-*   **Do** use the evening for a quiet, low-energy activity like a wildlife drive.
-*   **Don't** skip the rest window; overtired children (and adults) will struggle.
-*   **Don't** get out of your vehicle for wildlife photos. It is dangerous and illegal.
-</div>
-<div class="lh-clear"></div>
-</div>
+
 
 </div>
