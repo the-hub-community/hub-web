@@ -306,14 +306,21 @@ export function addSectionToDrawer(
           body: JSON.stringify({ text: rawText }),
         });
         const data = await res.json();
-        if (data.success && data.text) {
-          editorArea.innerHTML = data.text
-            .split("\n\n")
-            .map((p) => `<p>${p.replace(/\n/g, "<br>")}</p>`)
-            .join("");
-        }
+        if (!res.ok || !data.success || !data.text)
+          throw new Error(data.error || "Could not format content.");
+        const formatter = window.ResiHubContentFormatter;
+        if (!formatter) throw new Error("Content formatter is unavailable.");
+        const formattedHtml = formatter.markdownToHtml(data.text);
+        if (!formatter.preservesText(formattedHtml, rawText))
+          throw new Error("Formatting changed your text. Original content was kept.");
+        editorArea.innerHTML = formattedHtml;
+        editorArea.dispatchEvent(new Event("input", { bubbles: true }));
       } catch (err) {
         console.error("Format failed:", err);
+        window.ResiHubSubmissionProgress?.error(
+          "Formatting failed",
+          err.message || "Could not format content.",
+        );
       } finally {
         aiBtn.innerHTML = originalIcon;
         aiBtn.disabled = false;

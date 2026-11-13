@@ -350,10 +350,24 @@ document.addEventListener('DOMContentLoaded', function () {
         const endpoint = window.ResiHubApi?.ENDPOINTS?.autoFormat || "https://api.hubcollective.ca/api/ai/auto-format";
         const res = await fetch(endpoint, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ text: rawText }) });
         const data = await res.json();
-        if (data.success && data.text) {
-          editor.innerHTML = data.text.split('\n\n').map(p => `<p>${p.replace(/\n/g, '<br>')}</p>`).join('');
+        if (!res.ok || !data.success || !data.text) {
+          throw new Error(data.error || "Could not format content.");
         }
-      } catch (err) { console.error("Format failed:", err); } finally { aiFormatBtn.innerHTML = originalHtml; aiFormatBtn.disabled = false; }
+        const formatter = window.ResiHubContentFormatter;
+        if (!formatter) throw new Error("Content formatter is unavailable.");
+        const formattedHtml = formatter.markdownToHtml(data.text);
+        if (!formatter.preservesText(formattedHtml, rawText)) {
+          throw new Error("Formatting changed your text. Original content was kept.");
+        }
+        editor.innerHTML = formattedHtml;
+        editor.dispatchEvent(new Event('input', { bubbles: true }));
+      } catch (err) {
+        console.error("Format failed:", err);
+        alert(err.message || "Could not format content.");
+      } finally {
+        aiFormatBtn.innerHTML = originalHtml;
+        aiFormatBtn.disabled = false;
+      }
     });
   }
 

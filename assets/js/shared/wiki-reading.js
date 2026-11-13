@@ -10,6 +10,7 @@
 
   const article = document.querySelector(".wiki-render");
   if (!article) return;
+  window.ResiHubContentFormatter?.formatLegacyContent(article);
 
   const openWikiPageBrowser = new Map();
   document
