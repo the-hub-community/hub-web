@@ -4,7 +4,7 @@ title: "Canadian Rockies Family Travel Guide (Calgary – Banff – Jasper)"
 condo: "Canadian Rockies Family Adventure"
 community_key: "comm-canadian-rockies-family-adventure"
 page_key: "page-index-rockies-guide"
-date: 2026-11-02T01:47:54.421Z
+date: 2026-11-13T02:59:30.064Z
 ---
 
 # Canadian Rockies Family Travel Guide (Calgary – Banff – Jasper)
@@ -27,27 +27,33 @@ Whether you are navigating the shuttle system to Moraine Lake or preparing for a
 
 <div class="lh-text">
 Wiki Pages in This Guide
-- **[Pre-Trip Checklist: Bookings, Passes &amp; Family Prep]**
+
+**[Pre-Trip Checklist: Bookings, Passes &amp; Family Prep]**
 
 - Secure shuttle reservations, buy your park pass, book must-do activities, and prepare your vehicle and family for the journey.
 
-- **[Day 1: Calgary to Jasper via the Icefields Parkway]**
+-
+**[Day 1: Calgary to Jasper via the Icefields Parkway]**
 
 - A full-day scenic drive featuring Peyto Lake, Bow Lake, and the powerful Athabasca and Sunwapta Falls.
 
-- **[Day 2: Jasper Highlights – Maligne Lake, SkyTram &amp; Wildlife]**
+-
+**[Day 2: Jasper Highlights – Maligne Lake, SkyTram &amp; Wildlife]**
 
 - A family-friendly day including a boat cruise to Spirit Island, a scenic tram ride, and an evening wildlife drive.
 
-- **[Day 3: Jasper to Calgary via the Columbia Icefield]**
+-
+**[Day 3: Jasper to Calgary via the Columbia Icefield]**
 
 - Experience the Athabasca Glacier on the Ice Explorer and walk the glass-floored Skywalk before heading back to Calgary.
 
-- **[Day 4: Lake Louise, Moraine Lake &amp; Banff Gondola]**
+-
+**[Day 4: Lake Louise, Moraine Lake &amp; Banff Gondola]**
 
 - Use the Parks Canada shuttle to visit the iconic lakes, then soar up Sulphur Mountain for panoramic views.
 
-- **[Day 5 &amp; 6: Yoho National Park &amp; Calgary City Highlights]**
+-
+**[Day 5 &amp; 6: Yoho National Park &amp; Calgary City Highlights]**
 
 - Explore Takakkaw Falls and Emerald Lake before wrapping up your trip with family fun in Calgary at Johnston Canyon and Prince’s Island Park.
 </div>
