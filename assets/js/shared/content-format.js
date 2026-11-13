@@ -496,9 +496,9 @@
 
   function formatLegacyContent(root) {
     if (!root) return;
+    linkify(root);
     repairLegacyWebsiteMapLinks(root);
     normalizePresentation(root, { splitCamelCase: true });
-    linkify(root);
   }
 
   function formatEditorContent(root) {
