@@ -10,6 +10,8 @@
   const urlPattern = /https?:\/\/[^\s<>"']+/gi;
   const labelPattern =
     /(^|[\s.])((?:Price|Address|Website|Map|Date|Time|Location|What to try)):\s*/gi;
+  const detailLabelPattern =
+    /^(?:Price|Address|Website|Map|Date|Time|Location|What to try):?$/i;
 
   function safeUrl(value) {
     try {
@@ -126,7 +128,10 @@
     const collect = (node) => {
       if (node.nodeType === Node.TEXT_NODE) return node.textContent || "";
       if (node.nodeType !== Node.ELEMENT_NODE) return "";
-      const separator = blockTags.has(node.tagName) ? " " : "";
+      const separator =
+        blockTags.has(node.tagName) || node.classList?.contains("lh-detail-row")
+          ? " "
+          : "";
       return separator + Array.from(node.childNodes, collect).join("") + separator;
     };
     const normalize = (value) =>
@@ -194,6 +199,7 @@
       });
       nestStandaloneUrlItems(container);
       container.querySelectorAll("p").forEach(formatParagraph);
+      highlightEntryNames(container);
       if (addDirections) addDirectionsLinks(container);
     });
   }
@@ -211,6 +217,23 @@
   }
 
   function formatParagraph(paragraph) {
+    while (
+      paragraph.firstChild &&
+      ((paragraph.firstChild.nodeType === Node.TEXT_NODE &&
+        !paragraph.firstChild.textContent.trim()) ||
+        paragraph.firstElementChild?.tagName === "BR")
+    ) {
+      paragraph.firstChild.remove();
+    }
+    while (
+      paragraph.lastChild &&
+      ((paragraph.lastChild.nodeType === Node.TEXT_NODE &&
+        !paragraph.lastChild.textContent.trim()) ||
+        paragraph.lastElementChild?.tagName === "BR")
+    ) {
+      paragraph.lastChild.remove();
+    }
+
     while (paragraph.firstElementChild?.tagName === "BR") {
       paragraph.firstElementChild.remove();
     }
@@ -269,15 +292,120 @@
         paragraph.insertBefore(document.createElement("br"), label);
       }
     });
+    wrapDetailRows(paragraph);
+  }
+
+  function isDetailLabel(element) {
+    return element?.tagName === "STRONG" &&
+      detailLabelPattern.test(element.textContent.trim());
+  }
+
+  function startsDetailRow(node) {
+    while (
+      node &&
+      node.nodeType === Node.TEXT_NODE &&
+      !node.textContent.trim()
+    ) {
+      node = node.nextSibling;
+    }
+    if (node?.classList?.contains("lh-detail-row")) {
+      return Array.from(node.children).some(isDetailLabel);
+    }
+    return isDetailLabel(node);
+  }
+
+  function wrapDetailRows(paragraph) {
+    const labels = Array.from(paragraph.querySelectorAll("strong"))
+      .filter(isDetailLabel)
+      .reverse();
+
+    labels.forEach((label) => {
+      if (label.parentElement?.classList.contains("lh-detail-row")) return;
+
+      let previous = label.previousSibling;
+      while (
+        previous &&
+        previous.nodeType === Node.TEXT_NODE &&
+        !previous.textContent.trim()
+      ) {
+        const before = previous.previousSibling;
+        previous.remove();
+        previous = before;
+      }
+      if (previous?.nodeName === "BR") previous.remove();
+
+      const row = document.createElement("span");
+      row.className = "lh-detail-row";
+      paragraph.insertBefore(row, label);
+
+      let node = label;
+      while (node) {
+        if (
+          node !== label &&
+          node.classList?.contains("lh-detail-row") &&
+          Array.from(node.children).some(isDetailLabel)
+        ) {
+          break;
+        }
+        if (node.nodeName === "BR" && startsDetailRow(node.nextSibling)) {
+          node.remove();
+          break;
+        }
+        const next = node.nextSibling;
+        row.append(node);
+        node = next;
+      }
+    });
+  }
+
+  function highlightEntryNames(container) {
+    container.querySelectorAll("p").forEach((paragraph) => {
+      if (paragraph.closest("li")) return;
+
+      const first = Array.from(paragraph.childNodes).find(
+        (node) =>
+          node.nodeType !== Node.TEXT_NODE || node.textContent.trim(),
+      );
+      if (isDetailLabel(first)) return;
+      if (
+        first?.nodeType === Node.ELEMENT_NODE &&
+        first.tagName === "STRONG" &&
+        first.textContent.trim()
+      ) {
+        first.classList.add("lh-entry-name");
+        return;
+      }
+
+      const name = paragraph.textContent.trim();
+      const next = paragraph.nextElementSibling;
+      if (
+        paragraph.children.length ||
+        !next ||
+        next.tagName !== "P" ||
+        name.length > 64 ||
+        name.split(/\s+/).length > 8 ||
+        /[.!?:]$/.test(name) ||
+        /^https?:\/\//i.test(name) ||
+        /^information only\b/i.test(name)
+      ) {
+        return;
+      }
+
+      const heading = document.createElement("h3");
+      heading.className = "lh-entry-title";
+      heading.textContent = name;
+      paragraph.replaceWith(heading);
+    });
   }
 
   function addDirectionsLinks(root) {
     root.querySelectorAll(".lh-text p, .review-preview-card p").forEach((paragraph) => {
-      if (paragraph.querySelector(".lh-directions-link")) return;
       const label = Array.from(paragraph.querySelectorAll("strong")).find(
         (element) => /^Address:?$/i.test(element.textContent.trim()),
       );
       if (!label) return;
+      const row = label.closest(".lh-detail-row") || paragraph;
+      if (row.querySelector(".lh-directions-link")) return;
 
       const addressParts = [];
       let end = label.nextSibling;
@@ -311,50 +439,64 @@
         '<i class="fa-solid fa-diamond-turn-right" aria-hidden="true"></i> Directions';
 
       if (end) {
-        paragraph.insertBefore(document.createTextNode(" "), end);
-        paragraph.insertBefore(directions, end);
+        row.insertBefore(document.createTextNode(" "), end);
+        row.insertBefore(directions, end);
       } else {
-        paragraph.append(document.createTextNode(" "), directions);
+        row.append(document.createTextNode(" "), directions);
       }
+    });
+  }
+
+  function repairLegacyWebsiteMapLinks(root) {
+    const paragraphs = root.matches?.(".lh-text")
+      ? root.querySelectorAll("p")
+      : root.querySelectorAll(".lh-text p");
+    paragraphs.forEach((paragraph) => {
+      const links = Array.from(paragraph.querySelectorAll("a[href]"));
+      links.forEach((website, index) => {
+        const websiteUrl = new URL(website.href);
+        if (!/\/Map$/i.test(websiteUrl.pathname)) return;
+
+        const mapLink = links
+          .slice(index + 1)
+          .find((link) => /^https?:\/\/(?:www\.)?google\.[^/]+\/maps\//i.test(link.href));
+        if (!mapLink) return;
+
+        const between = [];
+        let node = website.nextSibling;
+        while (node && node !== mapLink) {
+          between.push(node);
+          node = node.nextSibling;
+        }
+        if (!between.some((part) => part.textContent?.includes(":"))) return;
+
+        websiteUrl.pathname = websiteUrl.pathname.replace(/\/Map$/i, "/");
+        website.href = websiteUrl.href;
+        website.textContent = websiteUrl.href;
+        between.forEach((part) => {
+          if (part.nodeType === Node.TEXT_NODE) {
+            part.textContent = part.textContent.replace(/^\s*:\s*/, " ");
+          }
+        });
+
+        const existingMapLabel = between.some(
+          (part) => isDetailLabel(part) && /^Map:?$/i.test(part.textContent.trim()),
+        );
+        if (mapLink.previousSibling?.nodeName !== "BR") {
+          mapLink.before(document.createElement("br"));
+        }
+        if (!existingMapLabel) {
+          const label = document.createElement("strong");
+          label.textContent = "Map:";
+          mapLink.before(label, document.createTextNode(" "));
+        }
+      });
     });
   }
 
   function formatLegacyContent(root) {
     if (!root) return;
-    root.querySelectorAll(".lh-text a[href]").forEach((anchor) => {
-      let sibling = anchor.nextSibling;
-      while (sibling && sibling.nodeType === Node.TEXT_NODE && !sibling.textContent.trim()) {
-        sibling = sibling.nextSibling;
-      }
-      if (
-        !sibling ||
-        sibling.nodeType !== Node.TEXT_NODE ||
-        !/^\s*:\s*/.test(sibling.textContent || "")
-      ) {
-        return;
-      }
-      let mapLink = sibling.nextSibling;
-      while (mapLink && mapLink.nodeType === Node.TEXT_NODE && !mapLink.textContent.trim()) {
-        mapLink = mapLink.nextSibling;
-      }
-      if (
-        !(mapLink instanceof HTMLAnchorElement) ||
-        !/^https?:\/\/(?:www\.)?google\.[^/]+\/maps\//i.test(mapLink.href)
-      ) {
-        return;
-      }
-
-      const websiteUrl = new URL(anchor.href);
-      if (!/\/Map$/i.test(websiteUrl.pathname)) return;
-      websiteUrl.pathname = websiteUrl.pathname.replace(/\/Map$/i, "/");
-      anchor.href = websiteUrl.href;
-      anchor.textContent = websiteUrl.href;
-      sibling.textContent = sibling.textContent.replace(/^\s*:\s*/, "");
-      const label = document.createElement("strong");
-      label.textContent = "Map:";
-      anchor.after(document.createElement("br"), label, document.createTextNode(" "));
-    });
-
+    repairLegacyWebsiteMapLinks(root);
     normalizePresentation(root, { splitCamelCase: true });
     linkify(root);
   }

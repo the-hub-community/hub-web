@@ -550,9 +550,40 @@
 }
 
 .lh-text p,
+.wiki-render .lh-text p,
 .drawer-preview-canvas .lh-text p,
 .thc-preview-card .lh-text p {
+  margin-bottom: 0.55rem;
   overflow-wrap: anywhere;
+}
+
+.lh-detail-row {
+  display: block;
+  margin-top: 0.55rem;
+  line-height: 1.55;
+}
+
+.lh-text p > .lh-detail-row:first-child {
+  margin-top: 0;
+}
+
+.lh-text .lh-entry-title {
+  margin: 0 0 0.45rem;
+  color: var(--on-surface, #041748);
+  font-size: 1.12rem;
+  font-weight: 750;
+  letter-spacing: -0.015em;
+  line-height: 1.35;
+}
+
+.lh-text .lh-entry-name {
+  display: block;
+  margin-bottom: 0.25rem;
+  color: var(--on-surface, #041748);
+  font-size: 1.08rem;
+  font-weight: 750;
+  letter-spacing: -0.015em;
+  line-height: 1.35;
 }
 
 .lh-text a:not(.lh-directions-link) {
