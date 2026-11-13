@@ -356,6 +356,12 @@
         row.append(node);
         node = next;
       }
+
+      const lastChild = row.lastChild;
+      if (lastChild?.nodeType === Node.TEXT_NODE) {
+        lastChild.textContent = lastChild.textContent.replace(/[ \t]+$/, "");
+        if (!lastChild.textContent) lastChild.remove();
+      }
     });
   }
 
@@ -437,7 +443,9 @@
     if (!normalizedAddress) return;
 
     const mapLink = Array.from(container.querySelectorAll('a[href]')).find(
-      (link) => /^https?:\/\/(?:www\.)?google\.[^/]+\/maps\//i.test(link.href),
+      (link) =>
+        !link.classList.contains("lh-directions-link") &&
+        /^https?:\/\/(?:www\.)?google\.[^/]+\/maps\//i.test(link.href),
     );
     if (!mapLink) return;
 
