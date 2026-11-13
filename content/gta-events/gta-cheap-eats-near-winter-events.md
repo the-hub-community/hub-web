@@ -17,7 +17,7 @@ date: 2026-11-12T23:20:41.648Z
 <img src="https://pub-b0e952c65fd94549b83646f95f2b354b.r2.dev/update-1794524474863-sec0-img0-media_generation_a_steaming_bowl_of_japanese_ra_0_6a149c31_048a_4e50_8f78_f0193758525f.webp" alt="GTA Cheap Eats Near Winter Events" title="GTA Cheap Eats Near Winter Events" class="lh-fluid-img">
 </figure></div>
 <div class="lh-text">
-Information only. This page shares where to eat near winter events in the GTA, added by users, for users.
+This page shares options to eat near winter events in the GTA.
 
 Machida Shoten
 
@@ -30,6 +30,7 @@ Address: 326 College St, Toronto.
 Website: https://www.machidashoten.ca/
 
 Map: https://www.google.com/maps/search/?api=1&amp;query=Machida+Shoten+326+College+St+Toronto
+
 </div>
 <div class="lh-clear"></div>
 </div>
@@ -68,10 +69,9 @@ Habibz CornerHalal food on Queen Street West, open late. What to try: halal stre
 **MOBA** Indian food in Trinity-Bellwoods. **Address**: 869 Dundas St W, **Toronto**.Website: https://www.mobarestaurant.com/
 
 **Map**: https://www.google.com/maps/search/?api=1&amp;query=MOBA+869+Dundas+St+W+Toronto
+
 </div>
 <div class="lh-clear"></div>
 </div>
-
-
 
 </div>

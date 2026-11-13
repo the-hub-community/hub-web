@@ -8,6 +8,8 @@
   ]);
   const droppedTags = new Set(["IFRAME", "OBJECT", "SCRIPT", "STYLE", "SVG"]);
   const urlPattern = /https?:\/\/[^\s<>"']+/gi;
+  const labelPattern =
+    /(^|[\s.])((?:Price|Address|Website|Map|Date|Time|Location|What to try)):\s*/gi;
 
   function safeUrl(value) {
     try {
@@ -109,7 +111,9 @@
           .map((paragraph) => `<p>${paragraph.replace(/\n/g, "<br>")}</p>`)
           .join("");
     const container = document.createElement("div");
+    container.className = "lh-text";
     container.innerHTML = sanitize(html);
+    normalizePresentation(container, { addDirections: false });
     linkify(container);
     return container.innerHTML;
   }
@@ -125,8 +129,194 @@
       const separator = blockTags.has(node.tagName) ? " " : "";
       return separator + Array.from(node.childNodes, collect).join("") + separator;
     };
-    const normalize = (value) => String(value || "").replace(/\s+/g, " ").trim();
+    const normalize = (value) =>
+      String(value || "")
+        .replace(/\s+/g, " ")
+        .replace(/([.!?])\s+(?=[A-Z])/g, "$1")
+        .trim();
     return normalize(collect(parsed.body)) === normalize(originalText);
+  }
+
+  function isStandaloneUrl(value) {
+    const candidate = String(value || "").trim().replace(/[.,!?;:)\]}]+$/, "");
+    return /^https?:\/\/\S+$/i.test(candidate);
+  }
+
+  function nestStandaloneUrlItems(root) {
+    root.querySelectorAll("ul").forEach((list) => {
+      let parentItem = null;
+      Array.from(list.children).forEach((item) => {
+        if (item.tagName !== "LI") return;
+        if (isStandaloneUrl(item.textContent) && parentItem) {
+          let nestedList = Array.from(parentItem.children).find(
+            (child) => child.tagName === "UL",
+          );
+          if (!nestedList) {
+            nestedList = document.createElement("ul");
+            parentItem.append(nestedList);
+          }
+          nestedList.append(item);
+        } else {
+          parentItem = item;
+        }
+      });
+    });
+  }
+
+  function normalizePresentation(
+    root,
+    { splitCamelCase = false, addDirections = true } = {},
+  ) {
+    const containers = [];
+    if (root.matches?.(".lh-text, .review-preview-card, .editor-area")) {
+      containers.push(root);
+    }
+    containers.push(
+      ...root.querySelectorAll(".lh-text, .review-preview-card, .editor-area"),
+    );
+    containers.forEach((container) => {
+      const walker = document.createTreeWalker(container, NodeFilter.SHOW_TEXT);
+      const textNodes = [];
+      while (walker.nextNode()) {
+        const node = walker.currentNode;
+        if (node.parentElement?.closest("a, code, pre")) continue;
+        textNodes.push(node);
+      }
+      textNodes.forEach((node) => {
+        let text = (node.textContent || "")
+          .replace(/[ \t]{2,}/g, " ")
+          .replace(/\s+([,.;!?])/g, "$1")
+          .replace(/([.!?])(?=[A-Z])/g, "$1 ");
+        if (splitCamelCase) {
+          text = text.replace(/([a-z]{3,})([A-Z][a-z]+)\b/g, "$1 $2");
+        }
+        node.textContent = text;
+      });
+      nestStandaloneUrlItems(container);
+      container.querySelectorAll("p").forEach(formatParagraph);
+      if (addDirections) addDirectionsLinks(container);
+    });
+  }
+
+  function needsLabelBreak(node, fragment) {
+    let previous = fragment.lastChild || node.previousSibling;
+    while (
+      previous &&
+      previous.nodeType === Node.TEXT_NODE &&
+      !previous.textContent.trim()
+    ) {
+      previous = previous.previousSibling;
+    }
+    return Boolean(previous && previous.nodeName !== "BR");
+  }
+
+  function formatParagraph(paragraph) {
+    while (paragraph.firstElementChild?.tagName === "BR") {
+      paragraph.firstElementChild.remove();
+    }
+
+    const walker = document.createTreeWalker(paragraph, NodeFilter.SHOW_TEXT);
+    const textNodes = [];
+    while (walker.nextNode()) {
+      const node = walker.currentNode;
+      if (node.parentElement?.closest("a, code, pre, strong")) continue;
+      textNodes.push(node);
+    }
+
+    textNodes.forEach((node) => {
+      const text = node.textContent || "";
+      labelPattern.lastIndex = 0;
+      if (!labelPattern.test(text)) return;
+      labelPattern.lastIndex = 0;
+
+      const fragment = document.createDocumentFragment();
+      let lastIndex = 0;
+      let match;
+      while ((match = labelPattern.exec(text))) {
+        fragment.append(
+          document.createTextNode(
+            text.slice(lastIndex, match.index) + match[1].trim(),
+          ),
+        );
+        const label = document.createElement("strong");
+        label.textContent = `${match[2]}:`;
+        if (needsLabelBreak(node, fragment)) {
+          fragment.append(document.createElement("br"));
+        }
+        fragment.append(label, document.createTextNode(" "));
+        lastIndex = match.index + match[0].length;
+      }
+      fragment.append(document.createTextNode(text.slice(lastIndex)));
+      node.replaceWith(fragment);
+    });
+
+    paragraph.querySelectorAll("strong").forEach((label) => {
+      if (!/^(?:Price|Address|Website|Map|Date|Time|Location|What to try):?$/i.test(
+        label.textContent.trim(),
+      )) {
+        return;
+      }
+      let previous = label.previousSibling;
+      while (
+        previous &&
+        previous.nodeType === Node.TEXT_NODE &&
+        !previous.textContent.trim()
+      ) {
+        previous = previous.previousSibling;
+      }
+      if (previous?.nodeName === "BR") return;
+      if (previous && !(previous.nodeType === Node.TEXT_NODE && !previous.textContent.trim())) {
+        paragraph.insertBefore(document.createElement("br"), label);
+      }
+    });
+  }
+
+  function addDirectionsLinks(root) {
+    root.querySelectorAll(".lh-text p, .review-preview-card p").forEach((paragraph) => {
+      if (paragraph.querySelector(".lh-directions-link")) return;
+      const label = Array.from(paragraph.querySelectorAll("strong")).find(
+        (element) => /^Address:?$/i.test(element.textContent.trim()),
+      );
+      if (!label) return;
+
+      const addressParts = [];
+      let end = label.nextSibling;
+      while (end && end.nodeName !== "BR") {
+        if (
+          end.nodeType === Node.ELEMENT_NODE &&
+          end.matches("strong") &&
+          /^(?:Price|Address|Website|Map|Date|Time|Location|What to try):?$/i.test(
+            end.textContent.trim(),
+          )
+        ) {
+          break;
+        }
+        addressParts.push(end.textContent || "");
+        end = end.nextSibling;
+      }
+      const address = addressParts
+        .join("")
+        .replace(/^\s*:\s*/, "")
+        .replace(/[.,!?;]+$/, "")
+        .trim();
+      if (!address) return;
+
+      const directions = document.createElement("a");
+      directions.className = "lh-directions-link";
+      directions.href = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(address)}`;
+      directions.target = "_blank";
+      directions.rel = "noopener noreferrer";
+      directions.setAttribute("aria-label", `Get directions to ${address}`);
+      directions.innerHTML =
+        '<i class="fa-solid fa-diamond-turn-right" aria-hidden="true"></i> Directions';
+
+      if (end) {
+        paragraph.insertBefore(document.createTextNode(" "), end);
+        paragraph.insertBefore(directions, end);
+      } else {
+        paragraph.append(document.createTextNode(" "), directions);
+      }
+    });
   }
 
   function formatLegacyContent(root) {
@@ -165,47 +355,21 @@
       anchor.after(document.createElement("br"), label, document.createTextNode(" "));
     });
 
-    const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
-    const textNodes = [];
-    while (walker.nextNode()) {
-      const node = walker.currentNode;
-      if (node.parentElement?.closest("a, code, pre")) continue;
-      textNodes.push(node);
-    }
-    textNodes.forEach((node) => {
-      node.textContent = (node.textContent || "").replace(
-        /(https?:\/\/[^\s<>"']+?)(Website|Map|Address|Price|Date|Time|Location):(?=\s*https?:\/\/)/gi,
-        "$1 $2: ",
-      );
-    });
-
-    root.querySelectorAll(".lh-text p").forEach((paragraph) => {
-      if (paragraph.children.length) return;
-      const text = paragraph.textContent || "";
-      const labelPattern = /(^|[\s.])((?:Price|Address|Website|Map|Date|Time|Location|What to try)):\s*/gi;
-      const fragment = document.createDocumentFragment();
-      let lastIndex = 0;
-      let match;
-      let changed = false;
-      while ((match = labelPattern.exec(text))) {
-        fragment.append(document.createTextNode(text.slice(lastIndex, match.index) + match[1]));
-        fragment.append(document.createElement("br"));
-        const strong = document.createElement("strong");
-        strong.textContent = `${match[2]}:`;
-        fragment.append(strong, document.createTextNode(" "));
-        lastIndex = match.index + match[0].length;
-        changed = true;
-      }
-      if (changed) {
-        fragment.append(document.createTextNode(text.slice(lastIndex)));
-        paragraph.replaceChildren(fragment);
-      }
-    });
+    normalizePresentation(root, { splitCamelCase: true });
     linkify(root);
+  }
+
+  function formatEditorContent(root) {
+    if (!root) return;
+    normalizePresentation(root, {
+      splitCamelCase: true,
+      addDirections: false,
+    });
   }
 
   window.ResiHubContentFormatter = Object.freeze({
     formatLegacyContent,
+    formatEditorContent,
     linkify,
     markdownToHtml,
     preservesText,

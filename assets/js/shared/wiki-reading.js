@@ -182,6 +182,7 @@
   function initializeImageGalleryControls(contentBody) {
     contentBody.querySelectorAll(".lh-image-gallery").forEach((gallery) => {
       const images = gallery.querySelectorAll("figure.lh-image-container img");
+      gallery.dataset.imageCount = String(images.length);
       images.forEach((image) => {
         if (image.alt.trim() && !image.title) image.title = image.alt.trim();
       });

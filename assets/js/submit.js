@@ -173,7 +173,7 @@ const SUBMIT_TIMEOUT_MS = 30000;
             const url = URL.createObjectURL(imgInput.files[0]);
             imgHtml = `<div class="review-preview-card__media ${alignClass}"><img src="${url}" alt="Section image" style="border-radius:8px;box-shadow:0 2px 8px #0001"></div>`;
           }
-          html += `<div style="margin:18px 0 0 0"><strong>Section ${idx + 1}:</strong><div>${imgHtml}${cleanedHtml}</div></div>`;
+          html += `<div style="margin:18px 0 0 0"><strong>Section ${idx + 1}:</strong><div>${imgHtml}<div class="lh-text">${cleanedHtml}</div></div></div>`;
         });
         html += `</div>`;
       } else {
@@ -184,7 +184,11 @@ const SUBMIT_TIMEOUT_MS = 30000;
         html += `<div><strong>What could be better:</strong> ${(document.getElementById("thcReviewCons")?.value || "").replace(/\n/g, "<br>")}</div>`;
         html += `<div><strong>Summary:</strong> ${document.getElementById("thcReviewSummary")?.value || ""}</div>`;
       }
-      document.querySelector(".thc-preview-card").innerHTML = html;
+      const preview = document.querySelector(".thc-preview-card");
+      if (preview) {
+        preview.innerHTML = html;
+        window.ResiHubContentFormatter?.formatLegacyContent(preview);
+      }
     }
 
     // Submission handler with progress bar

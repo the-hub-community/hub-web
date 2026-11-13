@@ -314,6 +314,7 @@ export function addSectionToDrawer(
         if (!formatter.preservesText(formattedHtml, rawText))
           throw new Error("Formatting changed your text. Original content was kept.");
         editorArea.innerHTML = formattedHtml;
+        formatter.formatEditorContent(editorArea);
         editorArea.dispatchEvent(new Event("input", { bubbles: true }));
       } catch (err) {
         console.error("Format failed:", err);
@@ -476,9 +477,11 @@ export function prepareEdit() {
     : Array.from(wikiContainer.querySelectorAll(".lh-section"));
   if (sections.length > 0) {
     sections.forEach((sec) => {
-      const textHTML = normalizeEditorHtml(
-        sec.querySelector(".lh-text")?.innerHTML.trim() || "",
-      );
+      const editableText = sec.querySelector(".lh-text")?.cloneNode(true);
+      editableText
+        ?.querySelectorAll(".lh-directions-link")
+        .forEach((link) => link.remove());
+      const textHTML = normalizeEditorHtml(editableText?.innerHTML.trim() || "");
       const videoURL = normalizeYoutubeUrl(
         Array.from(sec.querySelectorAll("iframe"))
           .find((iframe) => !iframe.closest(".lh-text"))?.src || "",

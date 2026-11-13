@@ -360,6 +360,7 @@ document.addEventListener('DOMContentLoaded', function () {
           throw new Error("Formatting changed your text. Original content was kept.");
         }
         editor.innerHTML = formattedHtml;
+        formatter.formatEditorContent(editor);
         editor.dispatchEvent(new Event('input', { bubbles: true }));
       } catch (err) {
         console.error("Format failed:", err);

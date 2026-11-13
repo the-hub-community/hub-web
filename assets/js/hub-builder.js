@@ -1047,7 +1047,10 @@ function generatePreview() {
     `;
 
     const previewEl = document.getElementById("live-preview-content");
-    if (previewEl) previewEl.innerHTML = html;
+    if (previewEl) {
+      previewEl.innerHTML = html;
+      window.ResiHubContentFormatter?.formatLegacyContent(previewEl);
+    }
     return;
   }
 
@@ -1089,5 +1092,8 @@ function generatePreview() {
   });
 
   const previewEl = document.getElementById("live-preview-content");
-  if (previewEl) previewEl.innerHTML = html;
+  if (previewEl) {
+    previewEl.innerHTML = html;
+    window.ResiHubContentFormatter?.formatLegacyContent(previewEl);
+  }
 }
