@@ -199,6 +199,12 @@
       });
       nestStandaloneUrlItems(container);
       container.querySelectorAll("p").forEach(formatParagraph);
+      container.querySelectorAll(".lh-detail-row").forEach((row) => {
+        const lastChild = row.lastChild;
+        if (lastChild?.nodeType !== Node.TEXT_NODE) return;
+        lastChild.textContent = lastChild.textContent.replace(/[ \t]+$/, "");
+        if (!lastChild.textContent) lastChild.remove();
+      });
       highlightEntryNames(container);
       if (addDirections) addDirectionsLinks(container);
       highlightMapEntityNames(container);
@@ -357,11 +363,6 @@
         node = next;
       }
 
-      const lastChild = row.lastChild;
-      if (lastChild?.nodeType === Node.TEXT_NODE) {
-        lastChild.textContent = lastChild.textContent.replace(/[ \t]+$/, "");
-        if (!lastChild.textContent) lastChild.remove();
-      }
     });
   }
 
