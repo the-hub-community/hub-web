@@ -201,6 +201,7 @@
       container.querySelectorAll("p").forEach(formatParagraph);
       highlightEntryNames(container);
       if (addDirections) addDirectionsLinks(container);
+      highlightMapEntityNames(container);
     });
   }
 
@@ -396,6 +397,114 @@
       heading.textContent = name;
       paragraph.replaceWith(heading);
     });
+  }
+
+  function normalizePhrase(value) {
+    return String(value || "")
+      .replace(/([a-z0-9])([A-Z])/g, "$1 $2")
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, " ")
+      .trim();
+  }
+
+  function highlightMapEntityNames(container) {
+    const addressRow = Array.from(
+      container.querySelectorAll(".lh-detail-row"),
+    ).find((row) => {
+      const label = Array.from(row.querySelectorAll("strong")).find(
+        (element) => /^Address:?$/i.test(element.textContent.trim()),
+      );
+      return Boolean(label);
+    });
+    if (!addressRow) return;
+
+    const addressLabel = Array.from(addressRow.querySelectorAll("strong")).find(
+      (element) => /^Address:?$/i.test(element.textContent.trim()),
+    );
+    const address = Array.from(addressRow.childNodes)
+      .filter(
+        (node) =>
+          node !== addressLabel &&
+          !node.parentElement?.closest(".lh-directions-link") &&
+          !node.classList?.contains("lh-directions-link"),
+      )
+      .map((node) => node.textContent || "")
+      .join("")
+      .replace(/^\s*:\s*/, "")
+      .replace(/[.,!?;]+$/, "")
+      .trim();
+    const normalizedAddress = normalizePhrase(address);
+    if (!normalizedAddress) return;
+
+    const mapLink = Array.from(container.querySelectorAll('a[href]')).find(
+      (link) => /^https?:\/\/(?:www\.)?google\.[^/]+\/maps\//i.test(link.href),
+    );
+    if (!mapLink) return;
+
+    let query = "";
+    try {
+      const mapUrl = new URL(mapLink.href);
+      query =
+        mapUrl.searchParams.get("query") ||
+        mapUrl.searchParams.get("destination") ||
+        "";
+    } catch {
+      return;
+    }
+
+    const normalizedQuery = normalizePhrase(query);
+    if (!normalizedQuery.endsWith(normalizedAddress)) return;
+    const entityName = normalizedQuery
+      .slice(0, -normalizedAddress.length)
+      .trim();
+    if (!entityName) return;
+
+    const escapedName = entityName
+      .split(/\s+/)
+      .map((word) => word.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"))
+      .join("\\s+");
+    const namePattern = new RegExp(
+      `^(\\s*)(${escapedName})`,
+      "i",
+    );
+    const paragraph = Array.from(container.querySelectorAll("p")).find(
+      (candidate) =>
+        normalizePhrase(candidate.textContent).startsWith(entityName),
+    );
+    if (!paragraph) return;
+
+    const firstText = Array.from(paragraph.childNodes).find(
+      (node) => node.nodeType === Node.TEXT_NODE && node.textContent.trim(),
+    );
+    if (
+      !firstText ||
+      firstText.previousElementSibling?.classList.contains("lh-entry-name")
+    ) {
+      return;
+    }
+    const match = (firstText.textContent || "").match(namePattern);
+    if (!match) return;
+    const nextCharacter = (firstText.textContent || "").charAt(match[0].length);
+    if (
+      nextCharacter &&
+      !/[\s,.;:!?()[\]{}'"\/-]/.test(nextCharacter) &&
+      !/[A-Z]/.test(nextCharacter)
+    ) {
+      return;
+    }
+
+    const fragment = document.createDocumentFragment();
+    if (match[1]) fragment.append(document.createTextNode(match[1]));
+    const name = document.createElement("strong");
+    name.className = "lh-entry-name";
+    name.textContent = match[2];
+    fragment.append(
+      name,
+      document.createTextNode(
+        (firstText.textContent || "").slice(match[0].length),
+      ),
+    );
+    firstText.replaceWith(fragment);
   }
 
   function addDirectionsLinks(root) {
