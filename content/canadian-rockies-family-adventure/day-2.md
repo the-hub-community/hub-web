@@ -4,7 +4,7 @@ title: "Day 2: Jasper Highlights – Maligne Lake, SkyTram & Wildlife"
 condo: "canadian-rockies-family-adventure"
 community_key: "comm-canadian-rockies-family-adventure"
 page_key: "page-day-2-jasper-highlights"
-date: 2026-11-13T02:50:32.242Z
+date: 2026-11-13T02:53:01.243Z
 ---
 
 # Day 2: Jasper Highlights – Maligne Lake, SkyTram & Wildlife
@@ -13,9 +13,7 @@ date: 2026-11-13T02:50:32.242Z
 
 <div class="lh-section">
 <div class="lh-align-center"><div class="lh-video-container"><iframe src="https://www.youtube.com/embed/CLUw6LevPiY" allowfullscreen></iframe></div></div>
-<div class="lh-align-center"><figure class="lh-image-container">
-<img src="https://pub-b0e952c65fd94549b83646f95f2b354b.r2.dev/update-1794538230834-sec0-img0-jasper.jpg" alt="Maligne Lake in Jasper National Park, with forested shoreline and mountains reflected in the water" title="Maligne Lake in Jasper National Park, with forested shoreline and mountains reflected in the water" class="lh-fluid-img">
-</figure></div>
+
 <div class="lh-text">
 **Jasper at a glance**
 
@@ -29,7 +27,7 @@ date: 2026-11-13T02:50:32.242Z
 </div>
 
 <div class="lh-section">
-
+<div class="lh-align-center"><div class="lh-video-container"><iframe src="https://www.youtube.com/embed/bayBEe1IkIg" allowfullscreen></iframe></div></div>
 
 <div class="lh-text">
 **How to get there**
@@ -45,7 +43,7 @@ date: 2026-11-13T02:50:32.242Z
 </div>
 
 <div class="lh-section">
-
+<div class="lh-align-center"><div class="lh-video-container"><iframe src="https://www.youtube.com/embed/VpOLxpINuAY" allowfullscreen></iframe></div></div>
 
 <div class="lh-text">
 **3-day itinerary**
@@ -56,11 +54,13 @@ date: 2026-11-13T02:50:32.242Z
 - Visit the Columbia Icefield.
 
 **Day 2**
+
 - Take the Maligne Lake cruise to Spirit Island.
 - Walk Maligne Canyon.
 - Visit Pyramid Lake.
 
 **Day 3**
+
 - Ride the Jasper SkyTram.
 - Visit Miette Hot Springs.
 - Walk the Valley of the Five Lakes.
@@ -81,9 +81,10 @@ date: 2026-11-13T02:50:32.242Z
 - The Jasper SkyTram runs from March to October.
 - A national park pass is required.
 - The pass is $10 CAD per person per day.
-- First-time international visitors should check entry, driving, and weather information before **arrival.**
+- First-time international visitors should check entry, driving, and weather information before **arrival**.
 
 Reference links
+
 - Parks Canada Jasper page:
 - https://parks.canada.ca/pn-np/ab/jasper
 - Jasper travel information:
