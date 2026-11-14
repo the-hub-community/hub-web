@@ -11,7 +11,6 @@
 
   const isMac = /Mac|iPhone|iPad/.test(navigator.platform || "");
   const OPEN_SHORTCUT_LABEL = isMac ? "⌘K" : "Ctrl+K";
-  const API_BASE = (window.API_BASE || "").replace(/\/+$/, "");
 
   const state = {
     isOpen: false,
@@ -83,6 +82,7 @@
 
   // ── DOM lookups ──────────────────────────────────────────────
   let root, input, resultsEl, emptyEl, loadingEl;
+  let searchIndexPromise = null;
 
   function cacheDom() {
     root = document.getElementById("cmd-palette");
@@ -174,6 +174,39 @@
     return candidates;
   }
 
+  function loadSearchIndex() {
+    if (!searchIndexPromise) {
+      const baseUrl = document.body?.dataset.baseurl || "";
+      searchIndexPromise = fetch(`${baseUrl}/search-index.json`, {
+        headers: { Accept: "application/json" },
+      }).then((res) => {
+        if (!res.ok) {
+          throw new Error(`Search index request failed: ${res.status}`);
+        }
+        return res.json();
+      }).then((data) => {
+        if (!Array.isArray(data)) {
+          throw new Error("Search index response must be an array.");
+        }
+        return data.map((page) => ({
+          id: `indexed-${page.url}`,
+          group: page.type === "listings" ? "listings" : "pages",
+          icon: page.type === "listings"
+            ? "fa-solid fa-tag"
+            : "fa-solid fa-file-lines",
+          label: page.title,
+          subtitle: page.type === "listings" ? "Listing" : "Page",
+          href: page.url,
+          searchText: `${page.title || ""} ${page.text || ""} ${page.url || ""}`,
+        }));
+      }).catch((error) => {
+        searchIndexPromise = null;
+        throw error;
+      });
+    }
+    return searchIndexPromise;
+  }
+
   function resolveCandidateLabel(candidate) {
     if (!candidate) return "";
     if (typeof candidate.label === "string" && candidate.label.trim()) {
@@ -196,43 +229,33 @@
     const q = normalize(query);
     if (!q) return 1;
     const label = normalize(resolveCandidateLabel(candidate));
-    if (!label) return 0;
+    const text = normalize(candidate.searchText);
+    if (!label && !text) return 0;
     if (label === q) return 100;
     if (label.startsWith(q)) return 60;
     if (label.includes(q)) return 30;
+    if (text.includes(q)) return 15;
     return 0;
   }
 
-  function searchLocal(query) {
-    const candidates = getLocalCandidates();
-    return candidates
+  function searchLocal(query, indexedPages = []) {
+    const candidates = [...getLocalCandidates(), ...indexedPages];
+    const uniqueCandidates = new Map();
+    candidates.forEach((candidate) => {
+      const key =
+        candidate.group === "actions"
+          ? candidate.id
+          : candidate.href || candidate.id;
+      const existing = uniqueCandidates.get(key);
+      if (!existing || (candidate.searchText && !existing.searchText)) {
+        uniqueCandidates.set(key, candidate);
+      }
+    });
+    return [...uniqueCandidates.values()]
       .map((c) => ({ ...c, score: scoreCandidate(c, query) }))
       .filter((c) => c.score > 0)
       .sort((a, b) => b.score - a.score)
       .slice(0, 12);
-  }
-
-  async function searchRemote(query) {
-    if (!API_BASE || !query || query.length < 2) return [];
-    try {
-      const res = await fetch(
-        `${API_BASE}/api/search?q=${encodeURIComponent(query)}&limit=6`,
-        { headers: { Accept: "application/json" } },
-      );
-      if (!res.ok) return [];
-      const data = await res.json();
-      if (!data?.success || !Array.isArray(data.results)) return [];
-      return data.results.map((r) => ({
-        id: `remote-${r.id || r.href}`,
-        group: r.type || "pages",
-        icon: r.icon || "fa-solid fa-file-lines",
-        label: r.title,
-        subtitle: r.subtitle || "",
-        href: r.href,
-      }));
-    } catch {
-      return [];
-    }
   }
 
   // ── Render ───────────────────────────────────────────────────
@@ -370,33 +393,31 @@
 
   function scheduleSearch(query) {
     state.query = query;
+    requestId += 1;
     clearTimeout(searchTimer);
     searchTimer = setTimeout(runSearch, 180);
   }
 
   async function runSearch() {
     const query = state.query;
-    const local = searchLocal(query);
+    const myRequest = requestId;
+    renderResults(searchLocal(query));
 
     if (!query) {
-      renderResults(local);
+      loadingEl.hidden = true;
       return;
     }
 
-    // Show local immediately, then enrich with remote
-    renderResults(local);
-    if (query.length < 2 || !API_BASE) return;
-
-    const myRequest = ++requestId;
     loadingEl.hidden = false;
-
-    const remote = await searchRemote(query);
+    let indexedPages = [];
+    try {
+      indexedPages = await loadSearchIndex();
+    } catch (error) {
+      console.error("[cmd-palette] search index unavailable", error);
+    }
     if (myRequest !== requestId) return;
     loadingEl.hidden = true;
-
-    const seen = new Set(local.map((x) => x.id));
-    const merged = [...local, ...remote.filter((r) => !seen.has(r.id))];
-    renderResults(merged);
+    renderResults(searchLocal(query, indexedPages));
   }
 
   // ── Keyboard handling ────────────────────────────────────────

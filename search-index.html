@@ -1,0 +1,23 @@
+---
+layout: null
+permalink: /search-index.json
+---
+[
+{% assign first_entry = true %}
+{% for item in site.pages %}
+{% if item.url != "/search-index.json" %}
+{% assign item_title = item.title | default: item.name | default: item.url %}
+{% assign item_text = item.content | strip_html | normalize_whitespace %}
+{% unless first_entry %},{% endunless %}
+{"title": {{ item_title | jsonify }}, "url": {{ item.url | relative_url | jsonify }}, "text": {{ item_text | jsonify }}, "type": "pages"}
+{% assign first_entry = false %}
+{% endif %}
+{% endfor %}
+{% for item in site.pros %}
+{% assign item_title = item.title | default: item.name | default: item.url %}
+{% assign item_text = item.content | strip_html | normalize_whitespace %}
+{% unless first_entry %},{% endunless %}
+{"title": {{ item_title | jsonify }}, "url": {{ item.url | relative_url | jsonify }}, "text": {{ item_text | jsonify }}, "type": "listings"}
+{% assign first_entry = false %}
+{% endfor %}
+]
