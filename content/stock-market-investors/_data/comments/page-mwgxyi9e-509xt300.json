@@ -2,7 +2,7 @@
   "page_key": "page-mwgxyi9e-509xt300",
   "community_key": "comm-stock-market-investors",
   "created_at": "2026-11-14T23:09:12.683Z",
-  "updated_at": "2026-11-14T23:14:54.206Z",
+  "updated_at": "2026-11-15T02:43:40.680Z",
   "comments": [
     {
       "id": "cmt-1cd92baf",
@@ -29,6 +29,15 @@
       "text": "Next week alerts for 5 percent move are service now, netlfix, uber and cisco",
       "status": "approved",
       "submitted_at": "2026-11-14T23:14:54.206Z",
+      "reviewed_at": null
+    },
+    {
+      "id": "cmt-cd994a9d",
+      "author": "EquityScout",
+      "is_anonymous": false,
+      "text": "EquityScout watch: Oracle 125.35, in near 123-125, out near 137-140. Nike 37.99, in near 36-38, out near 42-44. Coinbase 127.65, out near 145-150.",
+      "status": "approved",
+      "submitted_at": "2026-11-15T02:43:40.680Z",
       "reviewed_at": null
     }
   ]
