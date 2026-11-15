@@ -14,7 +14,7 @@ sitemap: false
     const submissionType = params.get("type") || "wiki";
     const subtitles = {
       listing: "Your marketplace listing is queued for review.",
-      broadcast: "Your broadcast is queued for review.",
+      broadcast: "Your broadcast is published and will appear after the site deploy completes.",
       notification: "Your notice is queued for review.",
       wiki: "Your wiki contribution is queued for review.",
       update: "Your wiki update is queued for review.",
@@ -23,6 +23,23 @@ sitemap: false
     if (subtitle) {
       subtitle.textContent =
         subtitles[submissionType] || "Your contribution is queued for review.";
+    }
+    if (submissionType === "broadcast") {
+      const description = document.getElementById("success-description");
+      if (description) {
+        description.textContent =
+          "Broadcasts publish directly when submitted. The app updates after the site deploy completes.";
+      }
+      const nextSteps = document.querySelectorAll(".ed-error__list-items li");
+      const broadcastSteps = [
+        "Your broadcast was committed to the live content branch",
+        "The site is building the updated app",
+        "Your broadcast will appear when deployment finishes",
+        "Track status with your submission reference",
+      ];
+      broadcastSteps.forEach((step, index) => {
+        if (nextSteps[index]) nextSteps[index].textContent = step;
+      });
     }
     
     if (submissionId) {
