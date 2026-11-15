@@ -2,7 +2,7 @@
   "page_key": "page-mwgxyi9e-509xt300",
   "community_key": "comm-stock-market-investors",
   "created_at": "2026-11-14T23:09:12.683Z",
-  "updated_at": "2026-11-15T03:39:08.707Z",
+  "updated_at": "2026-11-15T03:41:52.238Z",
   "comments": [
     {
       "id": "cmt-1cd92baf",
@@ -42,7 +42,18 @@
       "status": "approved",
       "submitted_at": "2026-11-15T03:39:08.707Z",
       "reviewed_at": null,
-      "reply_to_comment_id": "cmt-cd994a9d"
+      "reply_to_comment_id": "cmt-cd994a9d",
+      "likes": 0
+    },
+    {
+      "id": "cmt-1f5ee7bd",
+      "author": "Anonymous",
+      "is_anonymous": true,
+      "text": "testing reply comment",
+      "status": "approved",
+      "submitted_at": "2026-11-15T03:41:52.238Z",
+      "reviewed_at": null,
+      "reply_to_comment_id": "cmt-0710be79"
     }
   ]
 }
