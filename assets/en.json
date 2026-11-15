@@ -78,6 +78,11 @@
     "error": "Unable to load comments. Please try again later.",
     "anonymous": "Anonymous",
     "anon_badge": "Anon",
+    "reply": "Reply",
+    "reply_placeholder": "Write a reply...",
+    "post_reply": "Post Reply",
+    "cancel_reply": "Cancel",
+    "reply_failed": "Failed to post reply. Please try again.",
     "load_failed": "Failed to load comments",
     "page_info": "Page {current} of {total}"
   },

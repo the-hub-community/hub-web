@@ -113,7 +113,8 @@
     const isModerator = comment.role === "moderator";
     const displayName = isAnon ? tr_("comments.anonymous", "Anonymous") : escapeHtml(comment.author);
     const initial = isAnon ? "?" : escapeHtml((comment.author || "?").charAt(0).toUpperCase());
-    const commentId = escapeHtml(comment.id || `${pageKey_}-${Date.parse(comment.submitted_at || Date.now())}`);
+    const rawCommentId = String(comment.id || `${pageKey_}-${Date.parse(comment.submitted_at || Date.now())}`);
+    const commentId = escapeHtml(rawCommentId);
     const textPreview = escapeHtml((comment.text || "").slice(0, 180));
     const dateStr = comment.submitted_at ? new Date(comment.submitted_at).toLocaleDateString(locale, { year: "numeric", month: "short", day: "numeric" }) : "";
     let cardClass = "comment-card";
@@ -121,6 +122,7 @@
     if (isAdmin) cardClass += " comment-card--admin";
     if (isModerator) cardClass += " comment-card--moderator";
     return `
+      <article class="comment-thread" data-comment-id="${commentId}">
       <div class="${cardClass}" data-ugc-type="comment" data-ugc-id="${commentId}" data-community-key="${escapeHtml(communityKey_)}" data-page-key="${escapeHtml(pageKey_)}" data-ugc-text="${textPreview}">
         <div class="comment-card__avatar${isAnon ? " comment-card__avatar--anon" : ""}" aria-hidden="true">${initial}</div>
         <div class="comment-card__body">
@@ -130,30 +132,51 @@
           </div>
           <p class="comment-card__text comment-card__text--collapsed" role="button" tabindex="0" aria-expanded="false">${escapeHtml(comment.text)}</p>
           <div class="comment-card__actions">
+            <button type="button" class="comment-card__reply-toggle" aria-expanded="false">${escapeHtml(tr_("comments.reply", "Reply"))}</button>
             <button type="button" class="comment-card__report-bottom report-content-btn" aria-label="${escapeHtml(tr_("trust_safety.report_comment_aria", "Report this comment"))}" title="${escapeHtml(tr_("trust_safety.report_comment_title", "Report comment"))}">
               <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>
               ${tr_("trust_safety.report_action", "Report")}
             </button>
           </div>
         </div>
-      </div>`;
+      </div>
+      <div class="comment-card__reply-slot"></div>
+      ${(comment.replies || []).map((reply) => renderCommentCard(reply, opts)).join("")}
+      </article>`;
   }
 
   window.renderCommentCard = renderCommentCard;
 
+  function buildCommentTree(comments) {
+    const nodes = comments.map((comment) => ({ ...comment, replies: [] }));
+    const nodesById = new Map(
+      nodes.filter((comment) => comment.id).map((comment) => [comment.id, comment]),
+    );
+    const roots = [];
+
+    nodes.forEach((comment) => {
+      const parent = nodesById.get(comment.reply_to_comment_id);
+      if (parent && parent !== comment) parent.replies.push(comment);
+      else roots.push(comment);
+    });
+
+    return roots;
+  }
+
   function renderVisibleComments() {
     const language = typeof window.getCurrentLanguage === "function" ? window.getCurrentLanguage() : "en";
     const locale = language === "fr" ? "fr-CA" : "en-CA";
-    const pageComments = allComments.slice(0, visibleCommentsCount);
+    const pageComments = buildCommentTree(allComments).slice(0, visibleCommentsCount);
     commentsList.innerHTML = pageComments.map(comment => renderCommentCard(comment, { locale, pageKey, communityKey, tr })).join("");
     attachCommentExpandBehavior(commentsList);
     renderShowMore();
   }
 
   function renderShowMore() {
+    const rootCount = buildCommentTree(allComments).length;
     let showMoreBtn = document.getElementById("comments-show-more");
     if (showMoreBtn) showMoreBtn.remove();
-    if (visibleCommentsCount < allComments.length) {
+    if (visibleCommentsCount < rootCount) {
       showMoreBtn = document.createElement("button");
       showMoreBtn.id = "comments-show-more";
       showMoreBtn.className = "comments-page-btn";
@@ -173,6 +196,130 @@
       commentsList.parentNode.appendChild(showMoreBtn);
     }
   }
+
+  function createReplyForm(parentId) {
+    const form = document.createElement("form");
+    form.className = "comment-reply-form";
+    form.noValidate = true;
+    form.dataset.parentId = parentId;
+
+    const textarea = document.createElement("textarea");
+    textarea.className = "form-textarea comment-reply-form__textarea";
+    textarea.name = "comment";
+    textarea.rows = 3;
+    textarea.maxLength = 1000;
+    textarea.required = true;
+    textarea.placeholder = tr("comments.reply_placeholder", "Write a reply...");
+    textarea.setAttribute("aria-label", textarea.placeholder);
+
+    const identity = document.createElement("div");
+    identity.className = "comment-reply-form__identity";
+    const authorInput = document.createElement("input");
+    authorInput.className = "form-input";
+    authorInput.name = "author_name";
+    authorInput.maxLength = 60;
+    authorInput.placeholder = tr("comment_form.name_placeholder", "Enter your name (or leave blank for anonymous)");
+    authorInput.setAttribute("aria-label", tr("comment_form.your_name", "Your Name"));
+    const anonymousLabel = document.createElement("label");
+    anonymousLabel.className = "form-checkbox-label";
+    const anonymousInput = document.createElement("input");
+    anonymousInput.type = "checkbox";
+    anonymousInput.name = "is_anonymous";
+    anonymousInput.className = "form-checkbox";
+    const anonymousText = document.createElement("span");
+    anonymousText.textContent = tr("comment_form.post_anonymous", "Post as anonymous");
+    anonymousLabel.append(anonymousInput, anonymousText);
+    identity.append(authorInput, anonymousLabel);
+
+    const status = document.createElement("p");
+    status.className = "comment-reply-form__status";
+    status.setAttribute("aria-live", "polite");
+
+    const actions = document.createElement("div");
+    actions.className = "comment-reply-form__actions";
+    const cancelButton = document.createElement("button");
+    cancelButton.type = "button";
+    cancelButton.className = "comment-reply-form__cancel";
+    cancelButton.textContent = tr("comments.cancel_reply", "Cancel");
+    const submitButton = document.createElement("button");
+    submitButton.type = "submit";
+    submitButton.className = "form-button";
+    submitButton.textContent = tr("comments.post_reply", "Post Reply");
+    actions.append(cancelButton, submitButton);
+    form.append(textarea, identity, status, actions);
+    return form;
+  }
+
+  commentsList.addEventListener("click", (event) => {
+    const cancelButton = event.target.closest(".comment-reply-form__cancel");
+    if (cancelButton) {
+      const thread = cancelButton.closest(".comment-thread");
+      cancelButton.closest(".comment-reply-form").remove();
+      thread.querySelector(".comment-card__reply-toggle").setAttribute("aria-expanded", "false");
+      return;
+    }
+
+    const replyButton = event.target.closest(".comment-card__reply-toggle");
+    if (!replyButton) return;
+
+    const thread = replyButton.closest(".comment-thread");
+    const slot = thread.querySelector(".comment-card__reply-slot");
+    const wasOpen = Boolean(slot.querySelector(".comment-reply-form"));
+    commentsList.querySelectorAll(".comment-reply-form").forEach((form) => form.remove());
+    commentsList.querySelectorAll(".comment-card__reply-toggle").forEach((button) => {
+      button.setAttribute("aria-expanded", "false");
+    });
+    if (wasOpen) return;
+
+    slot.appendChild(createReplyForm(thread.dataset.commentId));
+    replyButton.setAttribute("aria-expanded", "true");
+    slot.querySelector("textarea").focus();
+  });
+
+  commentsList.addEventListener("submit", async (event) => {
+    const form = event.target.closest(".comment-reply-form");
+    if (!form) return;
+    event.preventDefault();
+
+    const textarea = form.querySelector("textarea");
+    const commentText = textarea.value.trim();
+    const status = form.querySelector(".comment-reply-form__status");
+    const submitButton = form.querySelector('[type="submit"]');
+    if (!commentText) {
+      status.textContent = tr("comment_form.error_empty", "Comment cannot be empty");
+      status.classList.add("is-error");
+      return;
+    }
+    if (commentText.length < 3) {
+      status.textContent = tr("comment_form.error_min_length", "Comment must be at least 3 characters");
+      status.classList.add("is-error");
+      return;
+    }
+    if (commentText.length > 1000) {
+      status.textContent = tr("comment_form.error_max_length", "Comment cannot exceed 1000 characters");
+      status.classList.add("is-error");
+      return;
+    }
+
+    submitButton.disabled = true;
+    status.textContent = "";
+    status.classList.remove("is-error");
+    try {
+      await window.ResiHubCommentSubmission.submit({
+        page_key: pageKey,
+        community_key: communityKey,
+        author_name: form.querySelector('[name="author_name"]').value.trim(),
+        is_anonymous: form.querySelector('[name="is_anonymous"]').checked,
+        comment: commentText,
+        reply_to_comment_id: form.dataset.parentId,
+      });
+      window.dispatchEvent(new Event("commentPosted"));
+    } catch (error) {
+      status.textContent = error.message || tr("comments.reply_failed", "Failed to post reply. Please try again.");
+      status.classList.add("is-error");
+      submitButton.disabled = false;
+    }
+  });
 
   // Listen for commentPosted event to reload comments without full page reload
   window.addEventListener("commentPosted", () => {

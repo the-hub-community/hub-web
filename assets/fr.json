@@ -78,6 +78,11 @@
     "error": "Impossible de charger les commentaires. Veuillez reessayer plus tard.",
     "anonymous": "Anonyme",
     "anon_badge": "Anon",
+    "reply": "Répondre",
+    "reply_placeholder": "Écrire une réponse...",
+    "post_reply": "Publier la réponse",
+    "cancel_reply": "Annuler",
+    "reply_failed": "Échec de la réponse. Veuillez réessayer.",
     "load_failed": "Echec du chargement des commentaires",
     "page_info": "Page {current} sur {total}"
   },  "comment_form": {

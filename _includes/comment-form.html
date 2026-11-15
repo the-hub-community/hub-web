@@ -95,6 +95,21 @@
     window.ResiHubApi?.ENDPOINTS?.comments ||
     `${window.API_BASE || "https://api.hubcollective.ca"}/api/comments`;
 
+  async function submitComment(payload) {
+    const response = await fetch(commentsEndpoint, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+    const data = await response.json();
+    if (!response.ok || !data.success) {
+      throw new Error(data.error || getI18n("comment_form.error_failed", "Failed to post comment"));
+    }
+    return data;
+  }
+
+  window.ResiHubCommentSubmission = { submit: submitComment };
+
   function setMobileFormExpanded(expanded) {
     formToggle.setAttribute("aria-expanded", expanded ? "true" : "false");
     formToggleIcon.textContent = expanded ? "-" : "+";
@@ -171,25 +186,13 @@
     submitBtn.querySelector(".button-loader").style.display = "inline";
     
     try {
-      const response = await fetch(commentsEndpoint, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          page_key: pageKey,
-          community_key: communityKey,
-          author_name: authorName,
-          comment: commentText,
-          is_anonymous: isAnonymous,
-        }),
+      const data = await submitComment({
+        page_key: pageKey,
+        community_key: communityKey,
+        author_name: authorName,
+        comment: commentText,
+        is_anonymous: isAnonymous,
       });
-
-      const data = await response.json();
-
-      if (!response.ok || !data.success) {
-        throw new Error(data.error || getI18n("comment_form.error_failed", "Failed to post comment"));
-      }
 
       showMessage(getI18n("comment_form.success", "Comment posted successfully! Thank you for your feedback."), "success");
       form.reset();

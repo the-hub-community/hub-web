@@ -13865,6 +13865,16 @@ html.theme-transitioning * {
   transition: padding-left 0.15s ease;
 }
 
+.comment-thread {
+  min-width: 0;
+}
+
+.comment-thread > .comment-thread {
+  margin-left: clamp(12px, 3vw, 24px);
+  padding-left: clamp(10px, 2vw, 16px);
+  border-left: 1px solid var(--border-subtle, rgba(4, 23, 72, 0.08));
+}
+
 .comment-card:hover {
   box-shadow: none;
   padding-left: 6px;
@@ -13956,6 +13966,8 @@ html.theme-transitioning * {
   color: var(--on-surface-variant, #434750);
   margin: 0;
   cursor: pointer;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
 }
 
 .comment-card__text--collapsed {
@@ -13975,10 +13987,12 @@ html.theme-transitioning * {
 /* Actions row */
 .comment-card__actions {
   display: flex;
-  justify-content: flex-end;
+  justify-content: space-between;
+  align-items: center;
   margin-top: 10px;
 }
 
+.comment-card__reply-toggle,
 .comment-card__report-bottom {
   display: inline-flex;
   align-items: center;
@@ -13995,6 +14009,15 @@ html.theme-transitioning * {
   cursor: pointer;
   opacity: 0.55;
   transition: opacity 0.15s ease, color 0.15s ease;
+}
+
+.comment-card__reply-toggle {
+  color: var(--primary, #35568e);
+  opacity: 0.8;
+}
+
+.comment-card__reply-toggle:hover {
+  opacity: 1;
 }
 
 .comment-card:hover .comment-card__report-bottom { opacity: 1; }
@@ -14014,6 +14037,60 @@ html.theme-transitioning * {
 .comment-card__report-bottom:disabled {
   opacity: 0.35;
   cursor: not-allowed;
+}
+
+.comment-reply-form {
+  display: grid;
+  gap: 10px;
+  margin: 0 0 16px 50px;
+}
+
+.comment-reply-form__textarea {
+  min-height: 72px;
+  resize: vertical;
+  white-space: pre-wrap;
+}
+
+.comment-reply-form__identity {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.comment-reply-form__identity .form-input {
+  flex: 1;
+  min-width: 0;
+}
+
+.comment-reply-form__identity .form-checkbox-label {
+  white-space: nowrap;
+}
+
+.comment-reply-form__status {
+  display: none;
+  margin: 0;
+  font-size: 0.8rem;
+  color: var(--error, #ba1a1a);
+}
+
+.comment-reply-form__status.is-error {
+  display: block;
+}
+
+.comment-reply-form__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.comment-reply-form__cancel {
+  padding: 0 14px;
+  border: 1px solid var(--border-default, rgba(4, 23, 72, 0.1));
+  border-radius: 10px;
+  background: transparent;
+  color: var(--on-surface-variant, #434750);
+  font: inherit;
+  cursor: pointer;
 }
 
 /* ── Form ────────────────────────────────────────────────── */
@@ -14310,6 +14387,12 @@ html.theme-transitioning * {
 /* ── Mobile ──────────────────────────────────────────────── */
 @media (max-width: 768px) {
   .comment-card { padding: 16px 0; gap: 12px; }
+  .comment-thread > .comment-thread {
+    margin-left: 10px;
+    padding-left: 10px;
+  }
+  .comment-reply-form { margin-left: 42px; }
+  .comment-reply-form__identity { align-items: flex-start; flex-direction: column; }
   .comment-card__avatar { width: 32px; height: 32px; font-size: 0.72rem; }
   .comment-card__author { font-size: 0.86rem; }
   .comment-card__text { font-size: 0.9rem; }
