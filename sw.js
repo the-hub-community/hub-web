@@ -1,4 +1,4 @@
-const CACHE_NAME = "hub-static-v3";
+const CACHE_NAME = "hub-static-v4";
 const MAX_CACHE_ENTRIES = 150;
 const STATIC_PATH =
   /^\/(?:assets\/(?:css|js|images|vendor|fonts)\/|manifest\.webmanifest$)/;
@@ -66,6 +66,17 @@ self.addEventListener("fetch", (event) => {
     }
     return response;
   });
+
+  if (request.mode === "navigate") {
+    event.respondWith(
+      networkPromise.catch(async (error) => {
+        const cached = await cachedPromise;
+        if (cached) return cached;
+        throw error;
+      }),
+    );
+    return;
+  }
 
   event.respondWith(cachedPromise.then((cached) => cached || networkPromise));
   event.waitUntil(
