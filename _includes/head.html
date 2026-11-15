@@ -20,7 +20,7 @@
 
 <!-- ALL CSS FILES (Loaded exactly once) -->
 {% assign css_version = site.github.build_revision | default: site.time | date: '%s' %}
-<link rel="stylesheet" href="{{ '/assets/css/bundle.css' | relative_url }}">
+<link rel="stylesheet" href="{{ '/assets/css/bundle.css?v=' | append: css_version | relative_url }}">
 
 {% include custom-styles.html %}
 
