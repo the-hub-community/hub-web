@@ -80,6 +80,17 @@ sitemap: false
       <section class="submit-panel" data-panel="2" hidden>
         <h2 class="submit-panel__title">Add your content</h2>
         <div class="form-group">
+          <label for="pageTemplateSelect">Start from a template <span class="form-optional">(optional)</span></label>
+          <div class="submit-media-options__fields">
+            <select id="pageTemplateSelect" class="modern-input">
+              <option value="">Choose a page template</option>
+            </select>
+            <button type="button" id="applyPageTemplate" class="btn btn--secondary" disabled>Use template</button>
+          </div>
+          <p class="form-hint" id="pageTemplateStatus" role="status" aria-live="polite">Choose a template to load formatted content; do not paste HTML code into the editor. Replace every bracketed prompt. Add real images above sections using Add image; use bold ALL-CAPS headings, one idea per bullet, put each link on the next line, and never include private people’s names.</p>
+          <p class="form-hint">Template 7 example: <a href="https://hubcollective.ca/content/stock-market-investors/" target="_blank" rel="noopener noreferrer">Stock Market Investors community page</a>.</p>
+        </div>
+        <div class="form-group">
           <label>Content</label>
           <div class="editor-shell">
             <div class="editor-toolbar" role="toolbar">
@@ -149,6 +160,7 @@ sitemap: false
       <section class="submit-panel" data-panel="3" hidden>
         <h2 class="submit-panel__title">Review your page</h2>
         <div class="submit-preview"></div>
+        <p id="templateValidationError" class="submission-error-inline" role="alert" hidden>Replace all bracketed template prompts before submitting.</p>
         <div class="submit-notice">
           <i class="fa-solid fa-circle-check"></i>
           <div>
@@ -165,6 +177,7 @@ sitemap: false
   </div>
 </main>
 
+<script src="{{ '/assets/js/page-templates.js' | relative_url }}"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function () {
   const select = document.getElementById('thcCommunitySelect');
@@ -197,6 +210,54 @@ document.addEventListener('DOMContentLoaded', function () {
 
   const editor = document.querySelector('.editor-area');
   const editorLimitError = document.getElementById('editorLimitError');
+  const templateSelect = document.getElementById('pageTemplateSelect');
+  const applyTemplateButton = document.getElementById('applyPageTemplate');
+  const templateStatus = document.getElementById('pageTemplateStatus');
+  const templateValidationError = document.getElementById('templateValidationError');
+  let appliedTemplateId = '';
+  const pageTemplates = Array.isArray(window.HubPageTemplates) ? window.HubPageTemplates : [];
+
+  if (templateSelect) {
+    pageTemplates.forEach((template) => {
+      const option = document.createElement('option');
+      option.value = template.id;
+      option.textContent = template.label;
+      templateSelect.appendChild(option);
+    });
+    if (!pageTemplates.length && templateStatus) {
+      templateStatus.textContent = 'Templates could not load. Reload page or continue without a template.';
+    }
+    templateSelect.addEventListener('change', () => {
+      if (applyTemplateButton) applyTemplateButton.disabled = !templateSelect.value;
+    });
+  }
+
+  if (applyTemplateButton) {
+    applyTemplateButton.addEventListener('click', () => {
+      const template = pageTemplates.find((item) => item.id === templateSelect?.value);
+      if (!template || !editor) return;
+
+      const titleInput = document.getElementById('thcPageTitle');
+      const hasExistingContent = Boolean((editor.innerText || '').trim() || titleInput?.value.trim());
+      if (hasExistingContent && !window.confirm('Using this template will replace the current title and content. Continue?')) return;
+
+      if (titleInput) titleInput.value = template.title;
+      editor.innerHTML = template.content;
+      editor.dispatchEvent(new Event('input', { bubbles: true }));
+      appliedTemplateId = template.id;
+      if (templateStatus) templateStatus.textContent = 'Template added. Replace every bracketed prompt before submitting.';
+      if (templateValidationError) templateValidationError.hidden = true;
+    });
+  }
+
+  function hasUnfilledTemplatePrompts() {
+    const title = document.getElementById('thcPageTitle')?.value || '';
+    return Boolean(
+      appliedTemplateId &&
+      /\[[^\]\r\n]+\]/.test(`${title}\n${editor?.innerText || ''}`)
+    );
+  }
+
   if (editor) {
     editor.addEventListener('input', () => {
       const overLimit = (editor.innerText || '').length > 8000;
@@ -282,6 +343,9 @@ document.addEventListener('DOMContentLoaded', function () {
     const content = previewEditor?.innerHTML || '<p class="text-muted">No content provided.</p>';
     const previewContainer = document.querySelector('.submit-preview');
     if (!previewContainer) return;
+    if (templateValidationError) {
+      templateValidationError.hidden = !hasUnfilledTemplatePrompts();
+    }
 
     let html = `<div class="preview-chip"><i class="fa-solid fa-location-dot"></i> ${escapeHtml(communityName)}</div><h1>${escapeHtml(title)}</h1>`;
     if (tags) {
@@ -381,6 +445,11 @@ document.addEventListener('DOMContentLoaded', function () {
       const editorArea = document.querySelector('.editor-area');
       const editorHtml = editorArea?.innerHTML || '';
       if (!editorHtml.trim() || editorHtml === '<br>') { alert('Please write some content before submitting.'); return; }
+      if (hasUnfilledTemplatePrompts()) {
+        showStep('3');
+        if (templateValidationError) templateValidationError.hidden = false;
+        return;
+      }
       if ((editorArea?.innerText || '').length > 8000) {
         if (editorLimitError) editorLimitError.hidden = false;
         showStep('2');
