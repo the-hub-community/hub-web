@@ -4,7 +4,7 @@ title: "GTA Events - Winter 2026-27"
 condo: "GTA Events"
 community_key: "comm-gta-events"
 page_key: "page-mwdzydth-vu7xtahc"
-date: 2026-11-12T22:36:48.342Z
+date: 2026-11-16T03:54:21.478Z
 ---
 
 # GTA Events - Winter 2026-27
@@ -20,7 +20,9 @@ date: 2026-11-12T22:36:48.342Z
 <img src="https://pub-b0e952c65fd94549b83646f95f2b354b.r2.dev/wiki-1794515115199-sec0-img1-media_generation_a_festive_toronto_distillery_w_0_e391c929_b165_48a3_b7c3_96a9d20208fe.webp" alt="GTA Events - Winter 2026-27" title="GTA Events - Winter 2026-27" class="lh-fluid-img">
 </figure></div>
 <div class="lh-text">
-Information only. This community shares upcoming events information in the GTA, added by users, for users.
+Last checked: Nov 15, 2026. Upcoming events in the GTA, winter 2026-27. Check each official link before you go.
+
+**UPCOMING EVENTS**
 
 - Santa Claus Parade — Sun Nov 22, 12:30pm, Christie Pits to St Lawrence Market — FREE
 - https://www.torontotourism.org/christmas-in-toronto/
