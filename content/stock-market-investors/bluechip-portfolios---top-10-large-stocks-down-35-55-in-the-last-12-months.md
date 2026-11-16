@@ -4,7 +4,7 @@ title: "Bluechip Portfolios - Top 10 Large Stocks Down 35-55% in the Last 12 Mon
 condo: "stock-market-investors"
 community_key: "comm-stock-market-investors"
 page_key: "page-mwgxyi9e-509xt300"
-date: 2026-11-15T03:47:44.568Z
+date: 2026-11-16T13:12:27.549Z
 ---
 
 # Bluechip Portfolios - Top 10 Large Stocks Down 35-55% in the Last 12 Months
@@ -20,6 +20,8 @@ date: 2026-11-15T03:47:44.568Z
 <img src="https://pub-b0e952c65fd94549b83646f95f2b354b.r2.dev/update-1794714463191-sec0-img1-bluechips_chart_39494584_1600w.jpg" alt="Market chart - illustration" title="Market chart - illustration" class="lh-fluid-img">
 </figure></div>
 <div class="lh-text">
+Last checked: Nov 16, 2026. Figures are Finnhub 1-year price return as of Nov 13, 2026 close. Prices change daily. Check the live price before you act.
+
 These 10 large stocks are down 35% to 55% in the last 12 months, based on Finnhub 1-year price return as of November 13, 2026 close. Only 4 of the 10 clear 40%: Netflix, Oracle, Nike and Coinbase.
 
 Prices change daily. Check the live price before you act.
@@ -34,7 +36,7 @@ https://www.google.com/finance/quote/NFLX:NASDAQ
 
 https://www.google.com/finance/quote/ORCL:NYSE
 
-• ServiceNow (NOW) **-39.88% 🔴 ▼ — 5-day -0.11%, 1-month -31.18%**
+• Service Now (NOW) **-39.88% 🔴 ▼ — 5-day -0.11%, 1-month -31.18%**
 
 https://www.google.com/finance/quote/NOW:NYSE
 
@@ -87,11 +89,9 @@ https://www.google.com/finance/quote/NKE:NYSE
 
 https://www.google.com/finance/quote/COIN:NASDAQ
 
-Market chart - illustration
+Market chart - illustration**HOW TO USE THIS PAGE**
 
-**HOW TO USE THIS PAGE**
-
-• Open a stock's Google Finance link to see its live price and chart.
+• Open a stock’s Google Finance link to see its live price and chart.
 
 • Compare the 1-year fall with the short-term trend arrow.
 
