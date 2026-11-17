@@ -702,6 +702,11 @@ body {
   z-index: -1;
 }
 
+.ed-hero > * {
+  position: relative;
+  z-index: 1;
+}
+
 [data-theme="dark"] .ed-hero::after {
   background: radial-gradient(circle,
     rgba(147, 197, 253, 0.06) 0%,

@@ -103,7 +103,12 @@
     });
     const data = await response.json();
     if (!response.ok || !data.success) {
-      throw new Error(data.error || getI18n("comment_form.error_failed", "Failed to post comment"));
+      const requestReference = data.requestId
+        ? ` (Reference ID: ${data.requestId})`
+        : "";
+      throw new Error(
+        `${data.error || getI18n("comment_form.error_failed", "Failed to post comment")}${requestReference}`,
+      );
     }
     return data;
   }
@@ -194,7 +199,13 @@
         is_anonymous: isAnonymous,
       });
 
-      showMessage(getI18n("comment_form.success", "Comment posted successfully! Thank you for your feedback."), "success");
+      const awaitingReview = data.comment?.status === "pending";
+      showMessage(
+        awaitingReview
+          ? getI18n("comment_form.pending", "Comment received. It will appear after moderation.")
+          : getI18n("comment_form.success", "Comment posted successfully! Thank you for your feedback."),
+        "success",
+      );
       form.reset();
 
       // Render and prepend the new comment to the list using the shared function
@@ -228,7 +239,7 @@
         }
       };
 
-      if (data.comment) {
+      if (data.comment && data.comment.status !== "pending") {
         appendAndEnhance(data.comment);
       } else {
         // Fallback: fetch the latest comment and append it

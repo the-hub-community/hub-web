@@ -653,7 +653,10 @@ function initAddToHomeScreen() {
     if (deferredPrompt) {
       deferredPrompt.prompt();
       const { outcome } = await deferredPrompt.userChoice;
-      if (outcome === "accepted" && banner) banner.style.display = "none";
+      if (outcome === "accepted" && banner) {
+        banner.style.display = "none";
+        document.body.classList.remove("has-a2hs-banner");
+      }
       deferredPrompt = null;
     } else if (/iPad|iPhone|iPod/.test(navigator.userAgent)) {
       alert(
@@ -676,6 +679,7 @@ function initAddToHomeScreen() {
   if (!sessionStorage.getItem("a2hs-dismissed")) {
     setTimeout(() => {
       banner.style.display = "flex";
+      document.body.classList.add("has-a2hs-banner");
     }, 1500); // 1.5 second delay so it doesn't flash on load
   }
 
@@ -683,6 +687,7 @@ function initAddToHomeScreen() {
   if (closeBtn) {
     closeBtn.addEventListener("click", () => {
       banner.style.display = "none";
+      document.body.classList.remove("has-a2hs-banner");
       sessionStorage.setItem("a2hs-dismissed", "true");
     });
   }

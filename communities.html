@@ -12,11 +12,12 @@ title: Communities
 {% assign communities_with_pages = 0 %}
 {% for community in communities %}
   {% assign community_key = community.community_key %}
+  {% assign community_folder = community.path | split: '/' | slice: 1 | first %}
   {% if community_key == nil or community_key == '' %}
     {% assign community_name = community.condo | default: community.title %}
     {% assign community_key = community_name | slugify | prepend: 'comm-' %}
   {% endif %}
-  {% capture community_page_count_output %}{% include community-page-count.html community_key=community_key %}{% endcapture %}
+  {% capture community_page_count_output %}{% include community-page-count.html community_folder=community_folder %}{% endcapture %}
   {% assign community_page_count = community_page_count_output | strip | plus: 0 %}
   {% assign total_wiki_page_count = total_wiki_page_count | plus: community_page_count %}
   {% if community_page_count > 0 %}
@@ -76,17 +77,18 @@ title: Communities
         {% assign community_name = community.condo | default: community.title %}
         {% assign community_slug = community_name | slugify %}
         {% assign community_key = community.community_key %}
+        {% assign community_folder = community.path | split: '/' | slice: 1 | first %}
         {% if community_key == nil or community_key == '' %}
           {% assign community_key = community_slug | prepend: 'comm-' %}
         {% endif %}
-        {% capture community_page_count_output %}{% include community-page-count.html community_key=community_key %}{% endcapture %}
+        {% capture community_page_count_output %}{% include community-page-count.html community_folder=community_folder %}{% endcapture %}
         {% assign community_page_count = community_page_count_output | strip | plus: 0 %}
         {% assign community_share = 0 %}
         {% if total_wiki_page_count > 0 %}
           {% assign community_share = community_page_count | times: 100.0 | divided_by: total_wiki_page_count %}
         {% endif %}
 
-        <a href="{{ site.baseurl }}/content/{{ community_slug }}/"
+        <a href="{{ site.baseurl }}/content/{{ community_folder }}/"
            class="community-dashboard__row"
            data-community-name="{{ community_name | downcase | escape }}"
            data-community-page-count="{{ community_page_count }}"

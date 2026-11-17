@@ -51,9 +51,14 @@ description: Browse local community listings, services, rentals, and goods publi
         <button type="button" class="mp-search__submit" id="mpSearchSubmit">Search</button>
       </label>
       <label class="mp-select-field">
-        <span>Community</span>
+        <span>Community / city</span>
         <select id="mpCommunitySelect" aria-label="Filter by community">
           <option value="all">All communities</option>
+          {% assign community_indices = site.pages | where_exp: "p", "p.path contains 'content/'" | where_exp: "p", "p.name == 'index.md' or p.name == 'index.html'" | sort: "condo" %}
+          {% for community in community_indices %}
+            {% assign community_name = community.condo | default: community.title %}
+            <option value="{{ community_name | downcase | escape }}" data-directory-community>{{ community_name | escape }}</option>
+          {% endfor %}
         </select>
       </label>
     </div>
@@ -110,6 +115,9 @@ description: Browse local community listings, services, rentals, and goods publi
       <button type="button" class="mp-category-link" data-category="Books & Media" aria-pressed="false">Books &amp; Media</button>
       <button type="button" class="mp-category-link" data-category="Services" aria-pressed="false">Services</button>
       <button type="button" class="mp-category-link" data-category="Food" aria-pressed="false">Food</button>
+      <button type="button" class="mp-category-link" data-category="Groceries" aria-pressed="false">Groceries</button>
+      <button type="button" class="mp-category-link" data-category="Electronics" aria-pressed="false">Electronics</button>
+      <button type="button" class="mp-category-link" data-category="Fashion" aria-pressed="false">Fashion</button>
     </div>
   </nav>
 
@@ -141,4 +149,4 @@ description: Browse local community listings, services, rentals, and goods publi
 </div>
 
 
-<script src="{{ site.baseurl }}/assets/js/pages/marketplace-page.js"></script>
+<script src="{{ site.baseurl }}/assets/js/pages/marketplace-page.js?v={{ css_version }}"></script>

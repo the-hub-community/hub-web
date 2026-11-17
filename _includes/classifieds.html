@@ -9,7 +9,8 @@
      data-community="{{ ad.target_community | default: ad.condo | default: 'General' }}"
      data-community-slug="{{ ad.target_community | default: ad.condo | default: 'General' | slugify }}"
      data-status="{{ ad.listing_status | default: 'available' | downcase }}"
-     data-date="{{ ad.date | date: '%s' }}">
+     data-date="{{ ad.date | date: '%s' }}"
+     data-valid-until="{{ ad.valid_until | escape }}">
 
   <a href="{{ ad.url | relative_url }}" class="mp-card-v2">
 

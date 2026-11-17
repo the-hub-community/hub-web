@@ -41,6 +41,18 @@
                             <label class="floating-label" data-i18n="common.page_title">Page Title</label>
                         </div>
                     </div>
+                    <div class="field-row">
+                        <div class="floating-group">
+                            <input type="date" class="floating-input" id="last_checked" name="last_checked"
+                                value="{{ page.last_checked | escape }}">
+                            <label class="floating-label" for="last_checked">Last checked</label>
+                        </div>
+                        <div class="floating-group">
+                            <input type="date" class="floating-input" id="valid_until" name="valid_until"
+                                value="{{ page.valid_until | escape }}">
+                            <label class="floating-label" for="valid_until">Hide after</label>
+                        </div>
+                    </div>
                 </div>
             </details>
 

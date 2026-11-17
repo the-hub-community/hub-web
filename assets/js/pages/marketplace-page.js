@@ -254,6 +254,10 @@ function buildListingIndex() {
     const listingType =
       card.dataset.listingType === "borrow_lend" ? "borrow_lend" : "sale";
     const date = Number.parseInt(card.dataset.date || "0", 10);
+    const validUntil = String(card.dataset.validUntil || "").trim();
+    const validUntilTimestamp = /^\d{4}-\d{2}-\d{2}$/.test(validUntil)
+      ? Date.parse(`${validUntil}T23:59:59Z`) / 1000
+      : 0;
     const typeTerms =
       listingType === "borrow_lend" ? "borrow lend loan share" : "sale sell buy";
     const searchBlob = `${titleNorm} ${tags.join(" ")} ${categoryNorm} ${communityNorm} ${communitySlug} ${typeTerms}`;
@@ -270,6 +274,9 @@ function buildListingIndex() {
       communityLabel,
       price,
       date: Number.isFinite(date) ? date : 0,
+      validUntil: Number.isFinite(validUntilTimestamp)
+        ? validUntilTimestamp
+        : 0,
       searchBlob,
     };
   });
@@ -280,7 +287,6 @@ function populateCommunityOptions() {
   if (!select) return;
 
   const communityMap = new Map();
-
   const addCommunity = (rawValue, rawLabel) => {
     const key = normalizeCommunity(rawValue);
     if (!key || key === "all") return;
@@ -290,6 +296,10 @@ function populateCommunityOptions() {
       String(rawLabel || "").trim() || toTitleCase(key.replace(/-/g, " "));
     communityMap.set(key, label);
   };
+
+  select.querySelectorAll("option[data-directory-community]").forEach((option) => {
+    addCommunity(option.value, option.textContent);
+  });
 
   listingIndex.forEach((item) => {
     addCommunity(
@@ -786,6 +796,7 @@ function applyLogic() {
             item.card.querySelector(".mp-card-v2")?.getAttribute("href") ||
             "",
         );
+      const notExpired = !item.validUntil || item.validUntil >= nowSec;
 
       return (
         categoryMatch &&
@@ -797,7 +808,8 @@ function applyLogic() {
         dateMatch &&
         photosMatch &&
         verifiedMatch &&
-        savedMatch
+        savedMatch &&
+        notExpired
       );
     })
     .map((item) => ({

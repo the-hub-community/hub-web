@@ -13,6 +13,75 @@
 
   if (window.EditorCore) return;
 
+  function openLinkDialog() {
+    return new Promise((resolve) => {
+      const dialog = document.createElement("dialog");
+      dialog.className = "editor-link-dialog";
+
+      const form = document.createElement("form");
+      form.className = "editor-link-dialog__form";
+      const heading = document.createElement("h2");
+      heading.textContent = "Add link";
+      const label = document.createElement("label");
+      label.textContent = "Web address";
+      const input = document.createElement("input");
+      input.type = "url";
+      input.name = "url";
+      input.placeholder = "https://example.com";
+      input.required = true;
+      input.autocomplete = "url";
+      input.addEventListener("input", () => input.setCustomValidity(""));
+      label.appendChild(input);
+
+      const actions = document.createElement("div");
+      actions.className = "editor-link-dialog__actions";
+      const cancel = document.createElement("button");
+      cancel.type = "button";
+      cancel.textContent = "Cancel";
+      const insert = document.createElement("button");
+      insert.type = "submit";
+      insert.textContent = "Insert link";
+      actions.append(cancel, insert);
+      form.append(heading, label, actions);
+      dialog.appendChild(form);
+      document.body.appendChild(dialog);
+
+      dialog.addEventListener(
+        "close",
+        () => {
+          const result = dialog.returnValue || null;
+          dialog.remove();
+          resolve(result);
+        },
+        { once: true },
+      );
+      cancel.addEventListener("click", () => dialog.close());
+      form.addEventListener("submit", (event) => {
+        event.preventDefault();
+        let url;
+        try {
+          url = new URL(input.value.trim());
+        } catch (_) {
+          input.setCustomValidity("Enter a valid http or https URL.");
+          input.reportValidity();
+          return;
+        }
+        if (!["http:", "https:"].includes(url.protocol)) {
+          input.setCustomValidity("Only http and https links are supported.");
+          input.reportValidity();
+          return;
+        }
+        input.setCustomValidity("");
+        dialog.close(url.href);
+      });
+
+      dialog.showModal();
+      input.focus();
+    });
+  }
+
+  window.ResiHubLinkDialog = Object.freeze({ open: openLinkDialog });
+
   const uid = () =>
     `ed-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`;
 
@@ -122,17 +191,40 @@
     _bindToolbar(section) {
       const editorArea = section.querySelector("[data-editor-area]");
       if (!editorArea) return;
+      let savedRange = null;
 
       section.querySelectorAll("[data-editor-cmd]").forEach((btn) => {
-        btn.addEventListener("mousedown", (e) => e.preventDefault()); // keep focus
-        btn.addEventListener("click", () => {
+        btn.addEventListener("mousedown", (e) => {
+          e.preventDefault();
+          const selection = window.getSelection();
+          if (selection?.rangeCount && editorArea.contains(selection.anchorNode)) {
+            savedRange = selection.getRangeAt(0).cloneRange();
+          }
+        });
+        btn.addEventListener("click", async () => {
           const cmd = btn.dataset.editorCmd;
           editorArea.focus();
+          if (cmd === "createLink") {
+            const href = await window.ResiHubLinkDialog.open();
+            if (!href) {
+              savedRange = null;
+              return;
+            }
+            if (savedRange) {
+              const selection = window.getSelection();
+              selection.removeAllRanges();
+              selection.addRange(savedRange);
+            }
+            document.execCommand(cmd, false, href);
+            savedRange = null;
+            return;
+          }
           try {
             document.execCommand(cmd, false, null);
           } catch (_) {
             /* deprecated but still works in all current browsers */
           }
+          savedRange = null;
         });
       });
     }

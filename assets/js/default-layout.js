@@ -1,4 +1,4 @@
-import { initThemeNav, toggleAlertFeed } from "./layout/theme-nav.js";
+import { initThemeNav, toggleAlertFeed } from "./layout/theme-nav.js?v=2";
 import {
   addNewSection,
   addSectionToDrawer,
@@ -16,7 +16,7 @@ import {
   normalizeYoutubeUrl,
   unwrapEncodedCodeBlocks,
 } from "./editor/transformers.js";
-import { initDrawerSubmit } from "./editor/submit.js";
+import { initDrawerSubmit } from "./editor/submit.js?v=2";
 import {
   initGlobalErrorHandling,
   showErrorMessage,
@@ -95,12 +95,12 @@ function bindLegacyGlobals() {
   window.prepareEdit = prepareEdit;
   window.togglePanel = togglePanel;
   window.addNewSection = addNewSection;
+  window.deepCleanHTML = deepCleanHTML;
+  window.htmlToMarkdown = htmlToMarkdown;
 
   if (shouldExposeDebugBindings()) {
     window.addSectionToDrawer = addSectionToDrawer;
     window.normalizeEditorHtml = normalizeEditorHtml;
-    window.deepCleanHTML = deepCleanHTML;
-    window.htmlToMarkdown = htmlToMarkdown;
     window.extractYoutubeId = extractYoutubeId;
     window.normalizeYoutubeUrl = normalizeYoutubeUrl;
     window.normalizeImageUrl = normalizeImageUrl;

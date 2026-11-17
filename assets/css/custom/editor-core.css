@@ -2,6 +2,75 @@
    Editor Core — unified styles for drawer + submit wizard
    ================================================================ */
 
+.editor-link-dialog {
+  width: min(440px, calc(100vw - 32px));
+  max-width: none;
+  padding: 0;
+  color: var(--on-surface, #0f172a);
+  background: var(--surface-container-lowest, #fff);
+  border: 1px solid var(--border-subtle, rgba(4, 23, 72, 0.12));
+  border-radius: 16px;
+  box-shadow: 0 24px 80px rgba(4, 23, 72, 0.24);
+}
+
+.editor-link-dialog::backdrop {
+  background: rgba(4, 23, 72, 0.48);
+  backdrop-filter: blur(3px);
+}
+
+.editor-link-dialog__form {
+  display: grid;
+  gap: 18px;
+  padding: 24px;
+}
+
+.editor-link-dialog__form h2 {
+  margin: 0;
+  font-size: 1.1rem;
+}
+
+.editor-link-dialog__form label {
+  display: grid;
+  gap: 8px;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.editor-link-dialog__form input {
+  width: 100%;
+  min-height: 44px;
+  padding: 10px 12px;
+  color: inherit;
+  background: var(--surface-container, #f8fafc);
+  border: 1px solid var(--border-subtle, rgba(4, 23, 72, 0.16));
+  border-radius: 8px;
+  font: inherit;
+}
+
+.editor-link-dialog__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.editor-link-dialog__actions button {
+  min-height: 40px;
+  padding: 8px 14px;
+  border: 1px solid var(--border-subtle, rgba(4, 23, 72, 0.16));
+  border-radius: 8px;
+  color: inherit;
+  background: transparent;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.editor-link-dialog__actions button[type="submit"] {
+  color: #fff;
+  background: var(--primary, #35568e);
+  border-color: var(--primary, #35568e);
+}
+
 .editor-section {
   display: flex;
   flex-direction: column;

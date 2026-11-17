@@ -44,7 +44,11 @@
       let match;
       urlPattern.lastIndex = 0;
       while ((match = urlPattern.exec(value))) {
-        const trailing = match[0].match(/[.,!?;:)\]}]+$/)?.[0] || "";
+        const punctuation = match[0].match(/[.,!?;:)\]}]+$/)?.[0] || "";
+        const followingText = value.slice(match.index + match[0].length);
+        const trailing =
+          punctuation ||
+          (match[0].endsWith("-") && /^\s+\S/.test(followingText) ? "-" : "");
         const candidate = trailing ? match[0].slice(0, -trailing.length) : match[0];
         const href = safeUrl(candidate);
         if (!href) continue;
@@ -625,6 +629,33 @@
 
   function formatLegacyContent(root) {
     if (!root) return;
+    root.querySelectorAll(".lh-text").forEach((container) => {
+      const walker = document.createTreeWalker(container, NodeFilter.SHOW_TEXT);
+      const textNodes = [];
+      while (walker.nextNode()) {
+        const node = walker.currentNode;
+        if (node.parentElement?.closest("code, pre")) continue;
+        if (/<\/?(?:div|ul|ol|li|p|section|span)\b/i.test(node.textContent || "")) {
+          textNodes.push(node);
+        }
+      }
+
+      textNodes.forEach((node) => {
+        const safeMarkup = sanitize(node.textContent || "");
+        const fragment = document.createRange().createContextualFragment(safeMarkup);
+        node.replaceWith(fragment);
+      });
+
+      const markerWalker = document.createTreeWalker(
+        container,
+        NodeFilter.SHOW_TEXT,
+      );
+      while (markerWalker.nextNode()) {
+        const node = markerWalker.currentNode;
+        if (node.parentElement?.closest("code, pre")) continue;
+        node.textContent = (node.textContent || "").replace(/\*\*/g, "");
+      }
+    });
     linkify(root);
     repairLegacyWebsiteMapLinks(root);
     normalizePresentation(root, { splitCamelCase: true });

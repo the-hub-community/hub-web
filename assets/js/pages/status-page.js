@@ -27,6 +27,7 @@
     var knownStatuses = {
       pending: true,
       approved: true,
+      publishing: true,
       published: true,
       closed: true,
       not_found: true,
@@ -39,6 +40,7 @@
     var badgeLabels = {
       pending: text("status.badge_pending", "Pending"),
       approved: text("status.badge_approved", "Approved"),
+      publishing: text("status.badge_publishing", "Publishing…"),
       published: text("status.badge_published", "Live"),
       closed: text("status.badge_closed", "Unavailable"),
       not_found: text("status.badge_not_found", "Not Found"),
@@ -56,6 +58,10 @@
       approved: text(
         "status.description_approved",
         "Your submission was approved and is waiting for the site to publish it.",
+      ),
+      publishing: text(
+        "status.description_publishing",
+        "Your approved update is being deployed. Check again shortly.",
       ),
       published: text(
         "status.description_published",
@@ -87,9 +93,11 @@
         pageLinkEl.hidden = true;
       }
     }
+    return status;
   }
 
-  async function lookupStatus(submissionId) {
+  async function lookupStatus(submissionId, attempt) {
+    attempt = attempt || 0;
     setError("");
     resultEl.hidden = true;
 
@@ -145,7 +153,7 @@
         );
       }
 
-      renderStatus(payload, submissionId);
+      var status = renderStatus(payload, submissionId);
       window.ResiHubSubmissionProgress?.complete(
         text("status.lookup_complete", "Status loaded"),
         text(
@@ -153,6 +161,14 @@
           "The latest submission state is now shown below.",
         ),
       );
+      if (status === "publishing" && attempt < 10) {
+        window.setTimeout(
+          function () {
+            lookupStatus(submissionId, attempt + 1);
+          },
+          15000,
+        );
+      }
     } catch (err) {
       setError(
         err && err.message

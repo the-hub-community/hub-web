@@ -90,6 +90,9 @@
   body {
     padding-bottom: calc(72px + env(safe-area-inset-bottom, 0px));
   }
+  body.has-a2hs-banner {
+    padding-bottom: calc(180px + env(safe-area-inset-bottom, 0px)) !important;
+  }
   .app-shell { padding-left: 0 !important; }
   .site-footer { padding-bottom: calc(72px + env(safe-area-inset-bottom, 0px)) !important; }
 
@@ -247,7 +250,7 @@ body.mobile-sheet-open { overflow: hidden; }
 /* ── Add to Home Screen Banner ───────────────────────────── */
 .a2hs-banner {
   position: fixed;
-  bottom: calc(72px + env(safe-area-inset-bottom)); /* Above mobile tabbar */
+  bottom: calc(96px + env(safe-area-inset-bottom)); /* Above mobile tabbar */
   left: 16px;
   right: 16px;
   z-index: 999;

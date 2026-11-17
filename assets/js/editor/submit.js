@@ -83,15 +83,16 @@ async function fetchWithTimeout(
       throw new Error(
         i18nText(
           "messages.request_timed_out_safe_retry",
-          "Request timed out. No changes were saved. Please retry.",
+          "Request timed out. Check submission status before retrying.",
         ),
       );
     }
+    const cause = err?.message ? ` (${err.message})` : "";
     throw new Error(
-      i18nText(
+      `${i18nText(
         "messages.network_error_safe_retry",
-        "Network issue occurred. Please retry. Your existing page is unchanged.",
-      ),
+        "Network issue occurred. Check submission status before retrying.",
+      )}${cause}`,
     );
   } finally {
     clearTimeout(timeoutId);
@@ -152,11 +153,18 @@ async function handleDrawerSubmit(e) {
     if (currentCommunityKey) {
       fd.append("community_key", currentCommunityKey);
     }
-    const submissionId =
+    const pageKey =
       currentPageKey || window.ResiHubApi?.createSubmissionId("page");
-    if (submissionId) {
-      fd.append("page_key", submissionId);
+    const submissionId = window.ResiHubApi?.createSubmissionId(
+      type === "update" ? "update" : "page",
+    );
+    if (!pageKey || !submissionId) {
+      throw new Error("Could not create a submission reference. Reload and retry.");
     }
+    fd.append("page_key", pageKey);
+    fd.append("submission_id", submissionId);
+    fd.append("last_checked", document.getElementById("last_checked")?.value || "");
+    fd.append("valid_until", document.getElementById("valid_until")?.value || "");
 
     if (
       type === "update" &&
@@ -391,6 +399,9 @@ async function handleDrawerSubmit(e) {
         const parsed = parseJsonSafe(rawResponse);
         if (parsed && typeof parsed.error === "string" && parsed.error.trim()) {
           message = parsed.error;
+          if (parsed.requestId) {
+            message += ` (Reference ID: ${parsed.requestId})`;
+          }
         }
       } else {
         message = i18nText(

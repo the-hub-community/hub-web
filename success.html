@@ -47,6 +47,7 @@ sitemap: false
       const valueEl = document.getElementById("success-submission-id-value");
       const copyBtn = document.getElementById("success-copy-id-btn");
       const statusLink = document.getElementById("success-track-status-link");
+      const livePageLink = document.getElementById("success-live-page-link");
       const historyNote = document.createElement("p");
       historyNote.className = "submission-id-note";
 
@@ -61,6 +62,40 @@ sitemap: false
           `/status.html?submission_id=${encodeURIComponent(submissionId)}`;
         statusLink.hidden = false;
       }
+
+      const showLivePage = (rawUrl) => {
+        if (!livePageLink) return false;
+        try {
+          const pageUrl = new URL(rawUrl, window.location.origin);
+          if (pageUrl.protocol !== "https:" || pageUrl.hostname !== "hubcollective.ca") {
+            return false;
+          }
+          livePageLink.href = pageUrl.href;
+          livePageLink.hidden = false;
+          return true;
+        } catch (_) {
+          return false;
+        }
+      };
+
+      const checkPublishedPage = async (attempt) => {
+        const endpoint = window.ResiHubApi?.ENDPOINTS?.submissionStatus;
+        if (!endpoint || attempt > 10 || !livePageLink?.hidden) return;
+        try {
+          const response = await fetch(
+            `${endpoint}?submission_id=${encodeURIComponent(submissionId)}`,
+            { cache: "no-store" },
+          );
+          if (response.ok) {
+            const data = await response.json();
+            if (data.status === "published" && showLivePage(data.pageUrl)) return;
+          }
+        } catch (error) {
+          console.warn("Could not check publication status.", error);
+        }
+        window.setTimeout(() => checkPublishedPage(attempt + 1), 15000);
+      };
+      checkPublishedPage(1);
 
       try {
         if (!window.ResiHubSubmissionHistory) {

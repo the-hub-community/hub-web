@@ -10,6 +10,19 @@
 
   const article = document.querySelector(".wiki-render");
   if (!article) return;
+  const validUntil = article.dataset.validUntil;
+  if (validUntil && /^\d{4}-\d{2}-\d{2}$/.test(validUntil)) {
+    const expiresAt = new Date(`${validUntil}T23:59:59Z`);
+    if (!Number.isNaN(expiresAt.getTime()) && expiresAt.getTime() < Date.now()) {
+      article.replaceChildren();
+      const notice = document.createElement("p");
+      notice.className = "wiki-expired-notice";
+      notice.setAttribute("role", "status");
+      notice.textContent = "This page has expired and is no longer available.";
+      article.appendChild(notice);
+      return;
+    }
+  }
   window.ResiHubContentFormatter?.formatLegacyContent(article);
 
   const openWikiPageBrowser = new Map();

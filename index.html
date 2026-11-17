@@ -10,11 +10,12 @@ custom_stylesheets:
 {% assign page_count = 0 %}
 {% for community in communities %}
   {% assign community_key = community.community_key %}
+  {% assign community_folder = community.path | split: '/' | slice: 1 | first %}
   {% if community_key == nil or community_key == '' %}
     {% assign community_name = community.condo | default: community.title %}
     {% assign community_key = community_name | slugify | prepend: 'comm-' %}
   {% endif %}
-  {% capture community_page_count_output %}{% include community-page-count.html community_key=community_key %}{% endcapture %}
+  {% capture community_page_count_output %}{% include community-page-count.html community_folder=community_folder %}{% endcapture %}
   {% assign community_page_count = community_page_count_output | strip | plus: 0 %}
   {% assign page_count = page_count | plus: community_page_count %}
 {% endfor %}
@@ -45,12 +46,13 @@ custom_stylesheets:
             {% assign c_name = c.condo | default: c.title %}
             {% assign c_slug = c_name | slugify %}
             {% assign c_key = c.community_key %}
+            {% assign c_folder = c.path | split: '/' | slice: 1 | first %}
             {% if c_key == nil or c_key == '' %}
               {% assign c_key = c_slug | prepend: 'comm-' %}
             {% endif %}
-            {% capture c_count_output %}{% include community-page-count.html community_key=c_key %}{% endcapture %}
+            {% capture c_count_output %}{% include community-page-count.html community_folder=c_folder %}{% endcapture %}
             {% assign c_count = c_count_output | strip | plus: 0 %}
-            <a href="{{ site.baseurl }}/content/{{ c_slug }}/" class="ed-list__row community-page-row" data-community-slug="{{ c_slug }}">
+            <a href="{{ site.baseurl }}/content/{{ c_folder }}/" class="ed-list__row community-page-row" data-community-slug="{{ c_slug }}">
               <span class="ed-list__monogram" data-community-slug="{{ c_slug }}" aria-hidden="true">
                 {{ c_name | slice: 0 | upcase }}
               </span>
