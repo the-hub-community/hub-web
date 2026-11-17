@@ -4,7 +4,7 @@ title: "Bluechip Portfolios - Top 10 Large Stocks Down 35-55% in the Last 12 Mon
 condo: "stock-market-investors"
 community_key: "comm-stock-market-investors"
 page_key: "page-mwgxyi9e-509xt300"
-date: 2026-11-16T13:12:27.549Z
+date: 2026-11-17T02:24:00.422Z
 ---
 
 # Bluechip Portfolios - Top 10 Large Stocks Down 35-55% in the Last 12 Months
@@ -19,6 +19,9 @@ date: 2026-11-16T13:12:27.549Z
 <div class="lh-align-center"><figure class="lh-image-container">
 <img src="https://pub-b0e952c65fd94549b83646f95f2b354b.r2.dev/update-1794714463191-sec0-img1-bluechips_chart_39494584_1600w.jpg" alt="Market chart - illustration" title="Market chart - illustration" class="lh-fluid-img">
 </figure></div>
+<div class="lh-align-center"><figure class="lh-image-container">
+<img src="https://pub-b0e952c65fd94549b83646f95f2b354b.r2.dev/update-1794882239143-sec0-img0-bluechips_chart_39463634_1600w.jpg" alt="Market chart — illustration" title="Market chart — illustration" class="lh-fluid-img">
+</figure></div>
 <div class="lh-text">
 Last checked: Nov 16, 2026. Figures are Finnhub 1-year price return as of Nov 13, 2026 close. Prices change daily. Check the live price before you act.
 
@@ -28,6 +31,10 @@ Prices change daily. Check the live price before you act.
 
 **TOP 10 LARGE STOCKS**
 
+**• Coinbase (COIN**) -55.05% 🔴 ▼ — 5-day -6.71%, 1-month -30.56%
+
+https://www.google.com/finance/quote/COIN:NASDAQ
+
 • Netflix (NFLX) **-44.12% 🔴 ▼ — 5-day -5.2%**
 
 https://www.google.com/finance/quote/NFLX:NASDAQ
@@ -35,6 +42,10 @@ https://www.google.com/finance/quote/NFLX:NASDAQ
 • Oracle (ORCL) **-43.75% 🟢 ▲ — 5-day +8.85%**
 
 https://www.google.com/finance/quote/ORCL:NYSE
+
+**• Nike (NKE)** -40.80% 🟢 ▲ — 1-month +2.29%
+
+https://www.google.com/finance/quote/NKE:NYSE
 
 • Service Now (NOW) **-39.88% 🔴 ▼ — 5-day -0.11%, 1-month -31.18%**
 
@@ -44,9 +55,9 @@ https://www.google.com/finance/quote/NOW:NYSE
 
 https://www.google.com/finance/quote/PDD:NASDAQ
 
-• Zscaler (ZS) **-35.73% 🔴 ▼ — 5-day -5.6%**
+**• Trip.com (TCOM)** -39.50% 🟢 ▲ — 1-month +9.14%
 
-https://www.google.com/finance/quote/ZS:NASDAQ
+https://www.google.com/finance/quote/TCOM:NASDAQ
 
 • Alibaba (BABA) **-38.63% 🔴 ▼ — 5-day -12.67%**
 
@@ -56,38 +67,11 @@ https://www.google.com/finance/quote/BABA:NYSE
 
 https://www.google.com/finance/quote/HOOD:NASDAQ
 
-• Trip.com (TCOM) **-39.50% 🟢 ▲ — 1-month +9.14%**
-
-https://www.google.com/finance/quote/TCOM:NASDAQ
-
-• Nike (NKE) **-40.80% 🟢 ▲ — 1-month +2.29%**
-
-https://www.google.com/finance/quote/NKE:NYSE
-
-• Coinbase (COIN) **-55.05% 🔴 ▼ — 5-day -6.71%, 1-month -30.56%**
-
-https://www.google.com/finance/quote/COIN:NASDAQ
-
-CHARTS
-https://www.google.com/finance/quote/NFLX:NASDAQ
-
-https://www.google.com/finance/quote/ORCL:NYSE
-
-https://www.google.com/finance/quote/NOW:NYSE
-
-https://www.google.com/finance/quote/PDD:NASDAQ
+**• Zscaler (ZS)** -35.73% 🔴 ▼ — 5-day -5.6%
 
 https://www.google.com/finance/quote/ZS:NASDAQ
 
-https://www.google.com/finance/quote/BABA:NYSE
-
-https://www.google.com/finance/quote/HOOD:NASDAQ
-
-https://www.google.com/finance/quote/TCOM:NASDAQ
-
-https://www.google.com/finance/quote/NKE:NYSE
-
-https://www.google.com/finance/quote/COIN:NASDAQ
+CHARTS&nbsp;
 
 Market chart - illustration**HOW TO USE THIS PAGE**
 
