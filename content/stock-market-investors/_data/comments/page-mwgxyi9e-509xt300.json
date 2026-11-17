@@ -2,7 +2,7 @@
   "page_key": "page-mwgxyi9e-509xt300",
   "community_key": "comm-stock-market-investors",
   "created_at": "2026-11-14T23:09:12.683Z",
-  "updated_at": "2026-11-16T14:16:26.003Z",
+  "updated_at": "2026-11-17T14:16:09.859Z",
   "comments": [
     {
       "id": "cmt-1cd92baf",
@@ -41,6 +41,15 @@
       "text": "EquityScout watch - Mon Nov 16\nOracle 125.35\nIn near 120-122\nOut near 128-130\nNike 37.99\nIn near 37.5-38\nOut near 40-42\nPrices change daily. Check live price before you act.",
       "status": "approved",
       "submitted_at": "2026-11-16T14:16:26.003Z",
+      "reviewed_at": null
+    },
+    {
+      "id": "cmt-0fb34468",
+      "author": "EquityScout",
+      "is_anonymous": false,
+      "text": "EquityScout watch - Tue Nov 17\nOracle 119.09\nIn near 117-118\nOut near 123-125\nNike 38.26\nIn near 37.5-38\nOut near 40-42\nPrices change daily. Check live price before you act.",
+      "status": "approved",
+      "submitted_at": "2026-11-17T14:16:09.859Z",
       "reviewed_at": null
     }
   ]
