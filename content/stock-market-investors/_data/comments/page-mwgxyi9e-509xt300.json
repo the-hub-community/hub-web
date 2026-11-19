@@ -2,7 +2,7 @@
   "page_key": "page-mwgxyi9e-509xt300",
   "community_key": "comm-stock-market-investors",
   "created_at": "2026-11-14T23:09:12.683Z",
-  "updated_at": "2026-11-18T14:15:44.782Z",
+  "updated_at": "2026-11-19T14:15:28.405Z",
   "comments": [
     {
       "id": "cmt-1cd92baf",
@@ -59,6 +59,15 @@
       "text": "EquityScout watch - Wed Nov 18\nOracle 115.00\nIn near 113-115\nOut near 120-123\nCisco 95.11\nIn near 95-96\nOut near 101\nPrices change daily. Check live price before you act.",
       "status": "approved",
       "submitted_at": "2026-11-18T14:15:44.782Z",
+      "reviewed_at": null
+    },
+    {
+      "id": "cmt-0f1ac885",
+      "author": "EquityScout",
+      "is_anonymous": false,
+      "text": "EquityScout watch - Thu Nov 19\nZscaler 197.83\nIn near 198-200\nOut near 210\nCisco 97.18\nIn near 95-96\nOut near 101\nPrices change daily. Check live price before you act.",
+      "status": "approved",
+      "submitted_at": "2026-11-19T14:15:28.405Z",
       "reviewed_at": null
     }
   ]
