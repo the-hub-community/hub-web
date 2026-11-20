@@ -4,7 +4,10 @@ title: "Best Deals in Noida This Week - Save More, Shop Smart"
 condo: "Noida Living"
 community_key: "comm-noida-living"
 page_key: "page-mwefs55i-27sv99f6"
-date: 2026-11-13T20:22:57.357Z
+submission_id: "update-mwp4oh42-jihqxdda"
+last_checked: "2026-11-20"
+
+date: 2026-11-20T15:22:40.812Z
 ---
 
 # Best Deals in Noida This Week - Save More, Shop Smart
@@ -17,7 +20,11 @@ date: 2026-11-13T20:22:57.357Z
 <img src="https://pub-b0e952c65fd94549b83646f95f2b354b.r2.dev/update-1794542853996-sec0-img0-noida_sale.gif" alt="Flashy sale GIF for Noida deals - up to 90% off this week" title="Flashy sale GIF for Noida deals - up to 90% off this week" class="lh-fluid-img">
 </figure></div>
 <div class="lh-text">
-Information only. Updated Fri Nov 13, 2026. Check the store link before you shop.
+Last checked: Nov 20, 2026
+
+TOP PICKS: Myntra up to 90% off (jeans Rs 189) — Croma smartwatch Save Rs 5,800 (73% off) — BigBasket up to 55% off groceries
+
+**Information only. Updated Fri Nov 20, 2026. Check the store link before you shop.**
 </div>
 <div class="lh-clear"></div>
 </div>
@@ -28,8 +35,15 @@ Information only. Updated Fri Nov 13, 2026. Check the store link before you shop
 <img src="https://pub-b0e952c65fd94549b83646f95f2b354b.r2.dev/update-1794601374093-sec1-img0-groceries.jpg" alt="Groceries on sale this week" title="Groceries on sale this week" class="lh-fluid-img">
 </figure></div>
 <div class="lh-text">
-**GROCERIES — Save up to 50%**- DMart — **Up to 50% OFF** groceries &amp; essentials, valid till Nov 30, 2026
-- https://zoutons.com/dmart-coupons
+**GROCERIES**
+
+- BigBasket — Up to **55%** off groceries, **40%** off fruit and vegetables, till Nov 30, 2026
+
+https://cashkaro.com/stores/bigbasket
+
+- DMart — Up to** 50**% off groceries and essentials, till Nov 30, 2026
+
+https://zoutons.com/dmart-coupons
 </div>
 <div class="lh-clear"></div>
 </div>
@@ -40,14 +54,16 @@ Information only. Updated Fri Nov 13, 2026. Check the store link before you shop
 <img src="https://pub-b0e952c65fd94549b83646f95f2b354b.r2.dev/update-1794601374093-sec2-img0-electronics.jpg" alt="Electronics on sale this week" title="Electronics on sale this week" class="lh-fluid-img">
 </figure></div>
 <div class="lh-text">
-**ELECTRONICS — Save up to 90%**- Croma — **Up to 90% OFF** electronics, valid till Nov 30, 2026
-- https://zoutons.com/croma-coupons?cnid=51054
+**ELECTRONICS**
+- Croma Black Friday — NoiseFit Mettle smartwatch Rs 2,199, was Rs 7,999**,** Save 73%, save Rs 5,800; Bajaj kettle Rs 799, was Rs 2,150, 63% off; sale Nov 25–30, 2026
 
-- Vijay Sales — **Up to 90% OFF** electronics &amp; appliances, valid till Nov 30, 2026
-- https://zoutons.com/vijay-sales-coupons
+https://www.croma.com/campaign/black-friday-deals/c/6305
+- Vijay Sales Black Friday — Up to** 65**% off TVs, laptops, ACs and washing machines, from Nov 20, 2026
 
-- Flipkart — **Up to 90% OFF** electronics &amp; fashion, valid till Nov 30, 2026
-- https://www.grabon.in/delhi-deals/
+https://www.desidime.com/news/black-friday-sale-offers-deals-2026
+- Amazon India — Up to** 80**% off bestselling audio, till Dec 31, 2026
+
+https://www.gadgets360.com/deals/amazon-offers-coupons
 </div>
 <div class="lh-clear"></div>
 </div>
@@ -58,11 +74,16 @@ Information only. Updated Fri Nov 13, 2026. Check the store link before you shop
 <img src="https://pub-b0e952c65fd94549b83646f95f2b354b.r2.dev/update-1794601374093-sec3-img0-fashion.jpg" alt="Fashion on sale this week" title="Fashion on sale this week" class="lh-fluid-img">
 </figure></div>
 <div class="lh-text">
-**FASHION — Save up to 90%**- Amazon India — **Up to 80% OFF** fashion, u**p to 40% OFF **mobiles
-- https://www.coupondunia.in/amazon-offers
+**FASHION**
+- AJIO Winterwear Fest — Up to** 60**% off winterwear, ends Nov 21, 2026
 
-- Myntra — **Up to 90% OFF** + extra Rs 300 OFF, valid till Nov 30, 2026
-- https://www.grabon.in/delhi-deals/
+https://www.grabon.in/indulge/shopping-tips/ajio-upcoming-sales/
+- Myntra — Up to** 90**% off selected styles, e.g. jeans Rs 189, was Rs 1,899
+
+https://lootbazaar.in/store/myntra/
+- H&amp;M India Black Friday — Flat** 40**–70% off women, men and kids, started Nov 19, 2026
+
+https://www.desidime.com/news/black-friday-sale-offers-deals-2026
 </div>
 <div class="lh-clear"></div>
 </div>
@@ -73,7 +94,15 @@ Information only. Updated Fri Nov 13, 2026. Check the store link before you shop
 <img src="https://pub-b0e952c65fd94549b83646f95f2b354b.r2.dev/update-1794601374093-sec4-img0-food.jpg" alt="Food on sale this week" title="Food on sale this week" class="lh-fluid-img">
 </figure></div>
 <div class="lh-text">
-**FOOD**- No new verified deal in this category this week.
+FOOD
+
+- Swiggy — Up to** 60**% off food orders, up to Rs 120 off, min order Rs 159, code TRYNEW
+
+https://www.coupondunia.in/category/food-and-dining
+
+- Domino's — 2 pizzas from Rs 109 each; Pizza Mania regular pizzas from Rs 99
+
+https://www.coupondunia.in/category/food-and-dining
 </div>
 <div class="lh-clear"></div>
 </div>
