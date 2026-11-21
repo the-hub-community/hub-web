@@ -32,6 +32,10 @@ layout: default
     {{ content }}
   </div>
 
+  {% assign reaction_content_id = page.page_key | default: page.submission_id | default: page.url | slugify %}
+  {% assign reaction_community_key = page.community_key | default: page.condo | default: "general" | slugify %}
+  {% include page-reactions.html reaction_type="broadcast" community_key=reaction_community_key content_id=reaction_content_id %}
+
   <footer class="broadcast-page__footer">
     <a href="{{ site.baseurl }}/content/{{ page.condo | slugify }}/" class="broadcast-page__back">
       <i class="fa-solid fa-arrow-left" aria-hidden="true"></i>

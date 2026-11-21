@@ -265,6 +265,10 @@ layout: default
     </div>
   </div>
 
+  {% assign reaction_content_id = page.page_key | default: page.url | slugify %}
+  {% assign reaction_community_key = page.community_key | default: page.target_community | default: page.condo | default: "general" | slugify %}
+  {% include page-reactions.html reaction_type="marketplace" community_key=reaction_community_key content_id=reaction_content_id %}
+
   {% if page.community_key and page.page_key %}
   <div class="comments-shell">
     <div class="comments-shell__col comments-shell__col--list">

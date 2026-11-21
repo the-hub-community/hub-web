@@ -201,6 +201,12 @@
                             {{ content }}
                         </div>
 
+                        {% if page.path contains 'content/' and page.layout != 'broadcast' and page.layout != 'notification' and page.layout != 'marketplace-item' %}
+                        {% assign reaction_content_id = page.page_key | default: page.url | slugify %}
+                        {% assign reaction_community_key = page_community_key | default: 'general' | slugify %}
+                        {% include page-reactions.html reaction_type="wiki" community_key=reaction_community_key content_id=reaction_content_id %}
+                        {% endif %}
+
                         {% if page.community_key and page.page_key and page.url != "/submit.html" and page.url != "/broadcast.html" and page.url != "/list-service.html" and page.url != "/marketplace.html" %}
                         <div class="ugc-report-wrap ugc-report-wrap--detail" data-ugc-type="wiki"
                             data-ugc-id="{{ page.page_key }}" data-community-key="{{ page.community_key }}"

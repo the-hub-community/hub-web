@@ -1,0 +1,21 @@
+<section class="page-reactions"
+    data-reaction-widget
+    data-reaction-type="{{ include.reaction_type | escape }}"
+    data-community-key="{{ include.community_key | escape }}"
+    data-content-id="{{ include.content_id | escape }}"
+    aria-label="Page feedback">
+    <span class="page-reactions__prompt">Was this helpful?</span>
+    <div class="page-reactions__buttons" role="group" aria-label="Rate this content">
+        <button type="button" class="page-reactions__button" data-reaction="like" aria-pressed="false" disabled>
+            <i class="fa-regular fa-thumbs-up" aria-hidden="true"></i>
+            <span>Like</span>
+            <span class="page-reactions__count" data-count="like">0</span>
+        </button>
+        <button type="button" class="page-reactions__button" data-reaction="dislike" aria-pressed="false" disabled>
+            <i class="fa-regular fa-thumbs-down" aria-hidden="true"></i>
+            <span>Dislike</span>
+            <span class="page-reactions__count" data-count="dislike">0</span>
+        </button>
+    </div>
+    <p class="page-reactions__status" data-reaction-status role="status" aria-live="polite"></p>
+</section>

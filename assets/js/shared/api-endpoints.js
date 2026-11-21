@@ -23,6 +23,7 @@
     submissionStatus: statusBaseUrl + "/api/submission-status",
     // Public routes - handled by the API Gateway (hub-community-apis)
     comments: baseUrl + "/api/comments",
+    reactions: baseUrl + "/api/reactions",
     newsLatest: baseUrl + "/api/news/latest",
     aiTitleSuggestions: baseUrl + "/api/ai/suggestions/title",
     aiContentQuality: baseUrl + "/api/ai/suggestions/content-quality",

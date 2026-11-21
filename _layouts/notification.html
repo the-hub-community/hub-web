@@ -36,6 +36,10 @@
             </div>
             {% endif %}
 
+            {% assign reaction_content_id = page.page_key | default: page.submission_id | default: page.url | slugify %}
+            {% assign reaction_community_key = page.community_key | default: page.condo | default: "general" | slugify %}
+            {% include page-reactions.html reaction_type="notification" community_key=reaction_community_key content_id=reaction_content_id %}
+
             <div class="notification-footer">
                 <p class="notification-disclaimer">
                     <i class="fa-solid fa-circle-check"></i>
