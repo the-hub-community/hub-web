@@ -36,7 +36,7 @@
 {% endif %}
 {% endif %}
 
-<body class="{% if page.url == '/submit.html' %}layout-submit{% endif %}"
+<body class="{% if page.url == '/submit.html' %}layout-submit{% endif %}{% if page.page_theme %} {{ page.page_theme }}{% endif %}"
     data-baseurl="{{ site.baseurl | default: '' }}" data-page-condo="{{ page.condo | default: '' | escape }}"
     data-page-path="{{ page.path | default: '' | escape }}"
     data-page-key="{{ page.page_key | default: fallback_page_id | escape }}"

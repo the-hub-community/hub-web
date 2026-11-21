@@ -5,6 +5,7 @@ condo: "north-york-living"
 community_key: "comm-north-york-living"
 page_key: "page-mwjyklqa-xio82y8c"
 submission_id: "update-mwpkh0pt-xekzgpec"
+page_theme: "page-black-friday-red"
 last_checked: "2026-11-20"
 
 date: 2026-11-20T22:44:46.592Z

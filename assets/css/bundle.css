@@ -3297,6 +3297,29 @@ form select {
   border-radius: var(--radius-xl);
 }
 
+body.page-black-friday-red,
+body.page-black-friday-red::before,
+body.page-black-friday-red .app-shell,
+body.page-black-friday-red .main-content {
+  background: inherit;
+  background-image: inherit;
+}
+
+body.page-black-friday-red .lh-text,
+body.page-black-friday-red .wiki-render {
+  background: transparent;
+  color: var(--on-surface);
+}
+
+body.page-black-friday-red .lh-text strong,
+body.page-black-friday-red .lh-sale-banner strong {
+  color: #b91c1c;
+}
+
+body.page-black-friday-red .lh-text a {
+  color: var(--primary);
+}
+
 .lh-sale-banner {
   min-height: 112px;
   margin: 1rem auto 1.5rem;
@@ -3307,8 +3330,9 @@ form select {
   justify-content: center;
   gap: 6px;
   border-radius: var(--radius-xl);
-  background: linear-gradient(135deg, #be123c, #7f1d1d);
-  color: #fff;
+  border: 1px solid var(--border-default);
+  background: var(--surface-container-low);
+  color: var(--on-surface);
   text-align: center;
   line-height: 1.15;
 }
