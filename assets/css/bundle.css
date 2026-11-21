@@ -3326,14 +3326,14 @@ body.page-black-friday-red .lh-text a {
   padding: 22px 16px;
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
   gap: 6px;
   border-radius: var(--radius-xl);
   border: 1px solid var(--border-default);
   background: var(--surface-container-low);
   color: var(--on-surface);
-  text-align: center;
+  text-align: left;
   line-height: 1.15;
 }
 
@@ -3347,6 +3347,466 @@ body.page-black-friday-red .lh-text a {
   font-weight: 700;
   display: block;
   margin: 0 auto;
+}
+
+.lh-content-body .lh-text,
+.lh-content-body .lh-text p,
+.lh-content-body .lh-text ul,
+.lh-content-body .lh-text ol,
+.lh-content-body .lh-text li,
+.lh-content-body .lh-text h2,
+.lh-content-body .lh-text h3 {
+  text-align: left;
+}
+
+body.page-black-friday-red .north-york-deals {
+  display: grid;
+  gap: 1.1rem;
+}
+
+body.page-black-friday-red .north-york-deals__intro,
+body.page-black-friday-red .north-york-deals__section {
+  width: 100%;
+  margin: 0;
+  border: 1px solid var(--border-subtle, #e5e7eb);
+  border-radius: 18px;
+  background: var(--surface-container-low, #fff);
+  box-shadow: 0 10px 30px rgba(127, 29, 29, 0.07);
+  overflow: hidden;
+}
+
+body.page-black-friday-red .north-york-deals__intro {
+  padding: 0.85rem;
+}
+
+body.page-black-friday-red .north-york-deals__section {
+  padding: 1.15rem;
+}
+
+body.page-black-friday-red .north-york-deals__checked {
+  text-align: center;
+  color: var(--outline, #64748b);
+  font-weight: 700;
+  margin: 0;
+}
+
+body.page-black-friday-red .north-york-deals__section h2 {
+  margin: 0 0 0.9rem;
+  padding-bottom: 0.65rem;
+  border-bottom: 2px solid #fee2e2;
+  color: #991b1b;
+  font-size: clamp(1.05rem, 3vw, 1.28rem);
+  letter-spacing: 0.04em;
+}
+
+body.page-black-friday-red .north-york-deals .lh-align-center {
+  max-width: 780px;
+  margin: 1.15rem auto 0;
+}
+
+body.page-black-friday-red .north-york-deals .lh-fluid-img {
+  width: 100% !important;
+  max-height: 320px;
+  object-fit: cover;
+  border: 1px solid var(--border-subtle, #e5e7eb);
+  box-shadow: 0 12px 28px rgba(127, 29, 29, 0.12);
+}
+
+body.page-black-friday-red .deal-card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 0.75rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+body.page-black-friday-red .deal-card {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 0.28rem;
+  padding: 0.85rem;
+  border: 1px solid #fecaca;
+  border-radius: 14px;
+  background: linear-gradient(145deg, #fff 30%, #fff7f7);
+}
+
+body.page-black-friday-red .deal-card__retailer {
+  width: fit-content;
+  margin-bottom: 0.15rem;
+  padding: 0.18rem 0.48rem;
+  border-radius: 999px;
+  background: #fee2e2;
+  color: #991b1b;
+  font-size: 0.72rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+body.page-black-friday-red .deal-card strong {
+  color: var(--on-surface);
+  line-height: 1.35;
+}
+
+body.page-black-friday-red .deal-card b {
+  color: #b91c1c;
+  font-size: 1.28rem;
+  line-height: 1.2;
+}
+
+body.page-black-friday-red .deal-card s {
+  color: var(--outline, #64748b);
+  font-size: 0.82rem;
+}
+
+body.page-black-friday-red .deal-card span {
+  color: var(--outline, #64748b);
+  font-size: 0.84rem;
+  line-height: 1.35;
+}
+
+body.page-black-friday-red .deal-card a {
+  width: fit-content;
+  margin-top: 0.35rem;
+  padding: 0.42rem 0.72rem;
+  border-radius: 8px;
+  background: #b91c1c;
+  color: #fff !important;
+  font-size: 0.82rem;
+  font-weight: 800;
+  text-decoration: none;
+}
+
+body.page-black-friday-red .mall-hours-grid {
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+}
+
+body.page-black-friday-red .mall-hours-grid .deal-card b {
+  margin-top: 0.2rem;
+  font-size: 1rem;
+}
+
+body.page-black-friday-red .north-york-deals__section > .lh-text > ul:not(.deal-card-grid):not(.deal-link-grid),
+body.page-black-friday-red .deal-link-grid {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+body.page-black-friday-red .north-york-deals__section > .lh-text > ul:not(.deal-card-grid):not(.deal-link-grid) li,
+body.page-black-friday-red .deal-link-grid li {
+  margin: 0;
+  padding: 0.72rem 0.82rem;
+  border-bottom: 1px solid var(--border-subtle, #e5e7eb);
+  line-height: 1.55;
+}
+
+body.page-black-friday-red .north-york-deals__section > .lh-text > ul:not(.deal-card-grid):not(.deal-link-grid) li:last-child,
+body.page-black-friday-red .deal-link-grid li:last-child {
+  border-bottom: 0;
+}
+
+body.page-black-friday-red .deal-link-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.65rem;
+}
+
+body.page-black-friday-red .deal-link-grid li {
+  border: 1px solid var(--border-subtle, #e5e7eb);
+  border-radius: 12px;
+  background: #fff;
+}
+
+@media (max-width: 640px) {
+  body.page-black-friday-red .north-york-deals {
+    gap: 0.75rem;
+  }
+
+  body.page-black-friday-red .north-york-deals__section {
+    padding: 0.75rem;
+  }
+
+  body.page-black-friday-red .deal-card-grid,
+  body.page-black-friday-red .deal-link-grid {
+    grid-template-columns: 1fr;
+  }
+
+  body.page-black-friday-red .north-york-deals .lh-fluid-img {
+    max-height: 220px;
+  }
+}
+
+body.page-school-guide .school-guide {
+  display: grid;
+  gap: 1.1rem;
+}
+
+body.page-school-guide .school-guide__hero,
+body.page-school-guide .school-guide__section {
+  width: 100%;
+  margin: 0;
+  border: 1px solid var(--border-subtle, #e5e7eb);
+  border-radius: 18px;
+  background: var(--surface-container-low, #fff);
+  box-shadow: 0 10px 30px rgba(30, 64, 175, 0.07);
+  overflow: hidden;
+}
+
+body.page-school-guide .school-guide__hero {
+  display: grid;
+  grid-template-columns: minmax(0, 0.72fr) minmax(280px, 1.28fr);
+  align-items: center;
+  padding: 1rem;
+  background: linear-gradient(135deg, #eff6ff 0%, #fff 58%, #eef2ff 100%);
+}
+
+body.page-school-guide .school-guide__hero .lh-text {
+  padding: 0.9rem;
+}
+
+body.page-school-guide .school-guide__hero .lh-align-center {
+  width: 100%;
+  margin: 0;
+}
+
+body.page-school-guide .school-guide__hero .lh-fluid-img {
+  width: 100% !important;
+  max-height: 280px;
+  object-fit: cover;
+  border-radius: 14px;
+  box-shadow: 0 12px 28px rgba(30, 64, 175, 0.14);
+}
+
+body.page-school-guide .school-guide__eyebrow {
+  display: inline-block;
+  margin: 0 0 0.65rem;
+  padding: 0.28rem 0.55rem;
+  border-radius: 999px;
+  background: #dbeafe;
+  color: #1d4ed8;
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+}
+
+body.page-school-guide .school-guide__section {
+  padding: 1.15rem;
+}
+
+body.page-school-guide .school-guide__section h2 {
+  margin: 0 0 0.75rem;
+  padding-bottom: 0.65rem;
+  border-bottom: 2px solid #dbeafe;
+  color: #1e40af;
+  font-size: clamp(1.05rem, 3vw, 1.28rem);
+  letter-spacing: 0.04em;
+}
+
+body.page-school-guide .school-card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 0.75rem;
+  margin-top: 0.8rem;
+}
+
+body.page-school-guide .school-card {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 0.35rem;
+  padding: 0.9rem;
+  border: 1px solid #bfdbfe;
+  border-radius: 14px;
+  background: linear-gradient(145deg, #fff 25%, #eff6ff);
+}
+
+body.page-school-guide .school-card__tag {
+  width: fit-content;
+  padding: 0.18rem 0.48rem;
+  border-radius: 999px;
+  background: #dbeafe;
+  color: #1d4ed8;
+  font-size: 0.72rem;
+  font-weight: 850;
+  letter-spacing: 0.05em;
+}
+
+body.page-school-guide .school-card strong {
+  color: var(--on-surface);
+  line-height: 1.35;
+}
+
+body.page-school-guide .school-card span {
+  color: var(--outline, #64748b);
+  font-size: 0.84rem;
+  line-height: 1.45;
+}
+
+body.page-school-guide .school-card a {
+  width: fit-content;
+  margin-top: 0.35rem;
+  padding: 0.42rem 0.72rem;
+  border-radius: 8px;
+  background: #1d4ed8;
+  color: #fff !important;
+  font-size: 0.82rem;
+  font-weight: 800;
+  text-decoration: none;
+}
+
+body.page-school-guide .school-timeline,
+body.page-school-guide .school-steps,
+body.page-school-guide .school-notes {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+body.page-school-guide .school-timeline {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+
+body.page-school-guide .school-timeline li {
+  display: flex;
+  min-height: 105px;
+  flex-direction: column;
+  gap: 0.35rem;
+  padding: 0.85rem;
+  border: 1px solid #bfdbfe;
+  border-radius: 14px;
+  background: #eff6ff;
+}
+
+body.page-school-guide .school-timeline__date {
+  color: #1d4ed8;
+  font-size: 0.78rem;
+  font-weight: 850;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+body.page-school-guide .school-timeline small {
+  color: var(--outline, #64748b);
+  line-height: 1.4;
+}
+
+body.page-school-guide .school-steps {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.65rem;
+  counter-reset: school-step;
+}
+
+body.page-school-guide .school-steps li {
+  display: grid;
+  grid-template-columns: 34px minmax(0, 1fr);
+  column-gap: 0.55rem;
+  margin: 0;
+  padding: 0.75rem;
+  border: 1px solid var(--border-subtle, #e5e7eb);
+  border-radius: 12px;
+  counter-increment: school-step;
+}
+
+body.page-school-guide .school-steps li::before {
+  content: counter(school-step);
+  grid-row: 1 / span 2;
+  display: grid;
+  width: 34px;
+  height: 34px;
+  place-items: center;
+  border-radius: 50%;
+  background: #1d4ed8;
+  color: #fff;
+  font-weight: 850;
+}
+
+body.page-school-guide .school-steps li span {
+  grid-column: 2;
+  color: var(--outline, #64748b);
+  font-size: 0.84rem;
+  line-height: 1.45;
+}
+
+body.page-school-guide .school-notes li {
+  margin: 0;
+  padding: 0.7rem 0.75rem 0.7rem 2.1rem;
+  border-bottom: 1px solid var(--border-subtle, #e5e7eb);
+  position: relative;
+  line-height: 1.5;
+}
+
+body.page-school-guide .school-notes li::before {
+  content: "•";
+  position: absolute;
+  left: 0.8rem;
+  color: #1d4ed8;
+  font-weight: 900;
+}
+
+body.page-school-guide .school-link-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.65rem;
+}
+
+body.page-school-guide .school-link-grid a {
+  padding: 0.72rem 0.82rem;
+  border: 1px solid #bfdbfe;
+  border-radius: 12px;
+  background: #fff;
+  font-weight: 750;
+  text-decoration: none;
+}
+
+@media (max-width: 640px) {
+  body.page-school-guide .school-guide {
+    gap: 0.75rem;
+  }
+
+  body.page-school-guide .school-guide__hero {
+    grid-template-columns: 1fr;
+  }
+
+  body.page-school-guide .school-guide__section {
+    padding: 0.75rem;
+  }
+
+  body.page-school-guide .school-card-grid,
+  body.page-school-guide .school-timeline,
+  body.page-school-guide .school-steps,
+  body.page-school-guide .school-link-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+body.page-black-friday-red .north-york-deals__section .lh-text ul,
+body.page-school-guide .school-guide__section .lh-text ul {
+  margin: 0;
+  padding-left: 1.25rem;
+}
+
+body.page-black-friday-red .north-york-deals__section .lh-text li,
+body.page-school-guide .school-guide__section .lh-text li {
+  margin: 0;
+  padding: 0.58rem 0;
+  border-bottom: 1px solid var(--border-subtle, #e5e7eb);
+  line-height: 1.55;
+}
+
+body.page-black-friday-red .north-york-deals__section .lh-text li:last-child,
+body.page-school-guide .school-guide__section .lh-text li:last-child {
+  border-bottom: 0;
+}
+
+body.page-school-guide .school-guide__section .lh-text ol {
+  margin: 0.5rem 0 0;
+  padding-left: 1.75rem;
 }
 
 .lh-align-left {
