@@ -13,15 +13,6 @@ date: 2026-11-17T02:24:00.422Z
 
 <div class="lh-section">
 
-<div class="lh-align-center"><figure class="lh-image-container">
-<img src="https://pub-b0e952c65fd94549b83646f95f2b354b.r2.dev/update-1794714463191-sec0-img0-bluechips_chart_39463634_1600w.jpg" alt="Market chart - illustration" title="Market chart - illustration" class="lh-fluid-img">
-</figure></div>
-<div class="lh-align-center"><figure class="lh-image-container">
-<img src="https://pub-b0e952c65fd94549b83646f95f2b354b.r2.dev/update-1794714463191-sec0-img1-bluechips_chart_39494584_1600w.jpg" alt="Market chart - illustration" title="Market chart - illustration" class="lh-fluid-img">
-</figure></div>
-<div class="lh-align-center"><figure class="lh-image-container">
-<img src="https://pub-b0e952c65fd94549b83646f95f2b354b.r2.dev/update-1794882239143-sec0-img0-bluechips_chart_39463634_1600w.jpg" alt="Market chart — illustration" title="Market chart — illustration" class="lh-fluid-img">
-</figure></div>
 <div class="lh-text">
 Last checked: Nov 16, 2026. Figures are Finnhub 1-year price return as of Nov 13, 2026 close. Prices change daily. Check the live price before you act.
 
@@ -71,9 +62,21 @@ https://www.google.com/finance/quote/HOOD:NASDAQ
 
 https://www.google.com/finance/quote/ZS:NASDAQ
 
-CHARTS&nbsp;
-
-Market chart - illustration**HOW TO USE THIS PAGE**
+</div>
+<div class="lh-text">
+**CHARTS**
+</div>
+<div class="lh-align-center"><figure class="lh-image-container">
+<img src="https://pub-b0e952c65fd94549b83646f95f2b354b.r2.dev/update-1794714463191-sec0-img0-bluechips_chart_39463634_1600w.jpg" alt="Illustrative blue-chip stock market chart" title="Illustrative blue-chip stock market chart" class="lh-fluid-img">
+</figure></div>
+<div class="lh-align-center"><figure class="lh-image-container">
+<img src="https://pub-b0e952c65fd94549b83646f95f2b354b.r2.dev/update-1794714463191-sec0-img1-bluechips_chart_39494584_1600w.jpg" alt="Illustrative blue-chip stock market chart" title="Illustrative blue-chip stock market chart" class="lh-fluid-img">
+</figure></div>
+<div class="lh-align-center"><figure class="lh-image-container">
+<img src="https://pub-b0e952c65fd94549b83646f95f2b354b.r2.dev/update-1794882239143-sec0-img0-bluechips_chart_39463634_1600w.jpg" alt="Illustrative blue-chip stock market chart" title="Illustrative blue-chip stock market chart" class="lh-fluid-img">
+</figure></div>
+<div class="lh-text">
+**HOW TO USE THIS PAGE**
 
 • Open a stock’s Google Finance link to see its live price and chart.
 

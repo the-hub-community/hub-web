@@ -16,12 +16,12 @@ date: 2026-11-20T22:05:37.444Z
 
 <div class="lh-section">
 
-<div class="lh-align-center"><figure class="lh-image-container">
-<img src="https://pub-b0e952c65fd94549b83646f95f2b354b.r2.dev/update-1794544045767-sec0-img0-mississauga_sale.gif" alt="Flashy Black Friday sale GIF for Mississauga deals - 50-90% off" title="Flashy Black Friday sale GIF for Mississauga deals - 50-90% off" class="lh-fluid-img">
-</figure></div>
 <div class="lh-text">
 Last checked: Nov 20, 2026. Black Friday is Fri Nov 27, 2026.
 </div>
+<div class="lh-align-center"><figure class="lh-image-container">
+<img src="https://pub-b0e952c65fd94549b83646f95f2b354b.r2.dev/update-1794544045767-sec0-img0-mississauga_sale.gif" alt="Flashy Black Friday sale GIF for Mississauga deals - 50-90% off" title="Flashy Black Friday sale GIF for Mississauga deals - 50-90% off" class="lh-fluid-img">
+</figure></div>
 <div class="lh-clear"></div>
 </div>
 
@@ -42,9 +42,6 @@ Last checked: Nov 20, 2026. Black Friday is Fri Nov 27, 2026.
 
 <div class="lh-section">
 
-<div class="lh-align-center"><figure class="lh-image-container">
-<img src="https://pub-b0e952c65fd94549b83646f95f2b354b.r2.dev/update-1794606253347-sec2-img0-electronics.jpg" alt="Electronics on sale this week" title="Electronics on sale this week" class="lh-fluid-img">
-</figure></div>
 <div class="lh-text">
 **BLACK FRIDAY - NOV 27, 2026**
 
@@ -90,6 +87,9 @@ Dyson V11 cordless vacuum — $499.99, was $799.99, 38% off, Canadian Tire, Nov 
 -
 https://smartcanucks.ca/canadian-tire-weekly-black-friday-flyers-deals-2026-save-up-to-60-off-35-triangle-rewards-bonus-ct-money-november-19/
 </div>
+<div class="lh-align-center"><figure class="lh-image-container">
+<img src="https://pub-b0e952c65fd94549b83646f95f2b354b.r2.dev/update-1794606253347-sec2-img0-electronics.jpg" alt="Electronics on sale this week" title="Electronics on sale this week" class="lh-fluid-img">
+</figure></div>
 <div class="lh-clear"></div>
 </div>
 
@@ -119,9 +119,6 @@ DEWALT 20V MAX ATOMIC drill/driver kit — $**118, was $219, 46% off-** https://
 
 <div class="lh-section">
 
-<div class="lh-align-center"><figure class="lh-image-container">
-<img src="https://pub-b0e952c65fd94549b83646f95f2b354b.r2.dev/update-1794606253347-sec3-img0-fashion.jpg" alt="Fashion on sale this week" title="Fashion on sale this week" class="lh-fluid-img">
-</figure></div>
 <div class="lh-text">
 **FASHION**
 
@@ -137,14 +134,14 @@ Canadiana x RCGS women’s puff parka — **$104.98, was $149.97, 30% off, Walma
 -
 https://www.walmart.ca/en/shop/black-friday/1539158293147
 </div>
+<div class="lh-align-center"><figure class="lh-image-container">
+<img src="https://pub-b0e952c65fd94549b83646f95f2b354b.r2.dev/update-1794606253347-sec3-img0-fashion.jpg" alt="Fashion on sale this week" title="Fashion on sale this week" class="lh-fluid-img">
+</figure></div>
 <div class="lh-clear"></div>
 </div>
 
 <div class="lh-section">
 
-<div class="lh-align-center"><figure class="lh-image-container">
-<img src="https://pub-b0e952c65fd94549b83646f95f2b354b.r2.dev/update-1794606253347-sec1-img0-groceries.jpg" alt="Groceries on sale this week" title="Groceries on sale this week" class="lh-fluid-img">
-</figure></div>
 <div class="lh-text">
 **GROCERIES**
 
@@ -172,14 +169,14 @@ https://flyerseek.com/loblaws-flyer/
 -
 https://flyerseek.com/real-canadian-superstore-weekly-flyer-on/
 </div>
+<div class="lh-align-center"><figure class="lh-image-container">
+<img src="https://pub-b0e952c65fd94549b83646f95f2b354b.r2.dev/update-1794606253347-sec1-img0-groceries.jpg" alt="Groceries on sale this week" title="Groceries on sale this week" class="lh-fluid-img">
+</figure></div>
 <div class="lh-clear"></div>
 </div>
 
 <div class="lh-section">
 
-<div class="lh-align-center"><figure class="lh-image-container">
-<img src="https://pub-b0e952c65fd94549b83646f95f2b354b.r2.dev/update-1794606253347-sec4-img0-food.jpg" alt="Food on sale this week" title="Food on sale this week" class="lh-fluid-img">
-</figure></div>
 <div class="lh-text">
 **FOOD**
 
@@ -195,6 +192,9 @@ https://www.mcdonalds.com/ca/en-ca/deals-and-promotions.html
 -
 https://www.mcdonalds.com/ca/en-ca/deals-and-promotions.html
 </div>
+<div class="lh-align-center"><figure class="lh-image-container">
+<img src="https://pub-b0e952c65fd94549b83646f95f2b354b.r2.dev/update-1794606253347-sec4-img0-food.jpg" alt="Food on sale this week" title="Food on sale this week" class="lh-fluid-img">
+</figure></div>
 <div class="lh-clear"></div>
 </div>
 

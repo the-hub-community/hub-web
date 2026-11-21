@@ -36,9 +36,6 @@ Last checked: Nov 20, 2026. Black Friday is Fri Nov 27, 2026. Festive deals in D
 
 <div class="lh-section">
 
-<div class="lh-align-center"><figure class="lh-image-container">
-<img src="https://pub-b0e952c65fd94549b83646f95f2b354b.r2.dev/update-1795186347144-sec1-img0-dlf_promenade_black_friday_banner.jpg" alt="DLF Promenade Black Friday sale banner" title="DLF Promenade Black Friday sale banner" class="lh-fluid-img">
-</figure></div>
 <div class="lh-text">
 **DELHI MALLS (BLACK FRIDAY TO NEW YEAR)**
 
@@ -49,6 +46,9 @@ Last checked: Nov 20, 2026. Black Friday is Fri Nov 27, 2026. Festive deals in D
 - https://www.youtube.com/watch?v=Cq8AjVdV2L8
 - https://www.dlfpromenade.com/Assets/img/black-friday-sale.jpg
 </div>
+<div class="lh-align-center"><figure class="lh-image-container">
+<img src="https://pub-b0e952c65fd94549b83646f95f2b354b.r2.dev/update-1795186347144-sec1-img0-dlf_promenade_black_friday_banner.jpg" alt="DLF Promenade Black Friday sale banner" title="DLF Promenade Black Friday sale banner" class="lh-fluid-img">
+</figure></div>
 <div class="lh-clear"></div>
 </div>
 

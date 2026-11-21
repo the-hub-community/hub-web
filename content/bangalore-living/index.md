@@ -16,22 +16,19 @@ date: 2026-11-20T21:49:35.930Z
 
 <div class="lh-section">
 
-<div class="lh-align-center"><figure class="lh-image-container">
-<img src="https://pub-b0e952c65fd94549b83646f95f2b354b.r2.dev/update-1794543680932-sec0-img0-bangalore_sale.gif" alt="Flashy sale GIF for Bangalore deals - price tags with % off this week" title="Flashy sale GIF for Bangalore deals - price tags with % off this week" class="lh-fluid-img">
-</figure></div>
 <div class="lh-text">
 Last checked: Nov 20, 2026TOP PICKS: Zepto **up** to** 75% off** groceries — Croma smartwatch **Save Rs 5,800 (73% of**f) — LuLu Super Friday** up to 50% off**, till Nov 26
 
 **Information only. Updated Fri Nov 20, 2026. Check the store link before you shop.**
 </div>
+<div class="lh-align-center"><figure class="lh-image-container">
+<img src="https://pub-b0e952c65fd94549b83646f95f2b354b.r2.dev/update-1794543680932-sec0-img0-bangalore_sale.gif" alt="Flashy sale GIF for Bangalore deals - price tags with % off this week" title="Flashy sale GIF for Bangalore deals - price tags with % off this week" class="lh-fluid-img">
+</figure></div>
 <div class="lh-clear"></div>
 </div>
 
 <div class="lh-section">
 
-<div class="lh-align-center"><figure class="lh-image-container">
-<img src="https://pub-b0e952c65fd94549b83646f95f2b354b.r2.dev/update-1794603584228-sec1-img0-groceries.jpg" alt="Groceries on sale this week" title="Groceries on sale this week" class="lh-fluid-img">
-</figure></div>
 <div class="lh-text">
 **GROCERIES**
 
@@ -47,14 +44,14 @@ https://cashkaro.com/stores/bigbasket
 
 https://**www**.desidime.com/deals/zepto-up-to-75-2192433
 </div>
+<div class="lh-align-center"><figure class="lh-image-container">
+<img src="https://pub-b0e952c65fd94549b83646f95f2b354b.r2.dev/update-1794603584228-sec1-img0-groceries.jpg" alt="Groceries on sale this week" title="Groceries on sale this week" class="lh-fluid-img">
+</figure></div>
 <div class="lh-clear"></div>
 </div>
 
 <div class="lh-section">
 
-<div class="lh-align-center"><figure class="lh-image-container">
-<img src="https://pub-b0e952c65fd94549b83646f95f2b354b.r2.dev/update-1794603584228-sec2-img0-electronics.jpg" alt="Electronics on sale this week" title="Electronics on sale this week" class="lh-fluid-img">
-</figure></div>
 <div class="lh-text">
 **ELECTRONICS**
 
@@ -70,14 +67,14 @@ https://www.grabon.in/indulge/shopping-tips/flipkart-upcoming-sales/
 
 https://www.grabon.in/indulge/featured/amazon-india-upcoming-sales/
 </div>
+<div class="lh-align-center"><figure class="lh-image-container">
+<img src="https://pub-b0e952c65fd94549b83646f95f2b354b.r2.dev/update-1794603584228-sec2-img0-electronics.jpg" alt="Electronics on sale this week" title="Electronics on sale this week" class="lh-fluid-img">
+</figure></div>
 <div class="lh-clear"></div>
 </div>
 
 <div class="lh-section">
 
-<div class="lh-align-center"><figure class="lh-image-container">
-<img src="https://pub-b0e952c65fd94549b83646f95f2b354b.r2.dev/update-1794603584228-sec3-img0-fashion.jpg" alt="Fashion on sale this week" title="Fashion on sale this week" class="lh-fluid-img">
-</figure></div>
 <div class="lh-text">
 **FASHION**
 
@@ -89,14 +86,14 @@ https://savemoneyindia.com/winterwear-fest-ajio/
 
 https://www.grabon.in/indulge/shopping-tips/myntra-upcoming-sales/
 </div>
+<div class="lh-align-center"><figure class="lh-image-container">
+<img src="https://pub-b0e952c65fd94549b83646f95f2b354b.r2.dev/update-1794603584228-sec3-img0-fashion.jpg" alt="Fashion on sale this week" title="Fashion on sale this week" class="lh-fluid-img">
+</figure></div>
 <div class="lh-clear"></div>
 </div>
 
 <div class="lh-section">
 
-<div class="lh-align-center"><figure class="lh-image-container">
-<img src="https://pub-b0e952c65fd94549b83646f95f2b354b.r2.dev/update-1794603584228-sec4-img0-food.jpg" alt="Food on sale this week" title="Food on sale this week" class="lh-fluid-img">
-</figure></div>
 <div class="lh-text">
 FOOD
 
@@ -108,6 +105,9 @@ https://www.coupondunia.in/category/food-and-dining
 
 https://www.coupondunia.in/dominos?subcategories%5B0%5D=food-ordering
 </div>
+<div class="lh-align-center"><figure class="lh-image-container">
+<img src="https://pub-b0e952c65fd94549b83646f95f2b354b.r2.dev/update-1794603584228-sec4-img0-food.jpg" alt="Food on sale this week" title="Food on sale this week" class="lh-fluid-img">
+</figure></div>
 <div class="lh-clear"></div>
 </div>
 

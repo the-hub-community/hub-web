@@ -24,9 +24,6 @@ Whether you are looking for the best local coffee shop, need to borrow a tool, o
 
 <div class="lh-section">
 
-<div class="lh-align-center"><figure class="lh-image-container">
-<img src="https://pub-b0e952c65fd94549b83646f95f2b354b.r2.dev/update-1792703536690-sec1-img0-photo_1511497584788_876760111969.avif" alt="Welcome to Elm Drive" class="lh-fluid-img">
-</figure></div>
 <div class="lh-text">
 #Getting Around
 
@@ -34,6 +31,9 @@ We are just a short walk from the central transit station and a 15-minute drive 
 
 The neighborhood features wide sidewalks and dedicated bike lanes, making it perfect for families and commuters alike.
 </div>
+<div class="lh-align-center"><figure class="lh-image-container">
+<img src="https://pub-b0e952c65fd94549b83646f95f2b354b.r2.dev/update-1792703536690-sec1-img0-photo_1511497584788_876760111969.avif" alt="Welcome to Elm Drive" class="lh-fluid-img">
+</figure></div>
 <div class="lh-clear"></div>
 </div>
 

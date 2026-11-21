@@ -16,22 +16,19 @@ date: 2026-11-20T21:28:00.053Z
 
 <div class="lh-section">
 
-<div class="lh-align-center"><figure class="lh-image-container">
-<img src="https://pub-b0e952c65fd94549b83646f95f2b354b.r2.dev/update-1794542853996-sec0-img0-noida_sale.gif" alt="Flashy sale GIF for Noida deals - up to 90% off this week" title="Flashy sale GIF for Noida deals - up to 90% off this week" class="lh-fluid-img">
-</figure></div>
 <div class="lh-text">
 Last checked: Nov 20, 2026TOP PICKS: Myntra** up to 90% off (jeans Rs 189)** — Croma smartwatch** Save Rs 5,800 (73**% off) — BigBasket** up to 55% off** groceries
 
 **Information only. Updated Fri Nov 20, 2026. Check the store link before you shop.**
 </div>
+<div class="lh-align-center"><figure class="lh-image-container">
+<img src="https://pub-b0e952c65fd94549b83646f95f2b354b.r2.dev/update-1794542853996-sec0-img0-noida_sale.gif" alt="Flashy sale GIF for Noida deals - up to 90% off this week" title="Flashy sale GIF for Noida deals - up to 90% off this week" class="lh-fluid-img">
+</figure></div>
 <div class="lh-clear"></div>
 </div>
 
 <div class="lh-section">
 
-<div class="lh-align-center"><figure class="lh-image-container">
-<img src="https://pub-b0e952c65fd94549b83646f95f2b354b.r2.dev/update-1794601374093-sec1-img0-groceries.jpg" alt="Groceries on sale this week" title="Groceries on sale this week" class="lh-fluid-img">
-</figure></div>
 <div class="lh-text">
 **GROCERIES**
 
@@ -43,14 +40,14 @@ https://cashkaro.com/stores/bigbasket
 
 https://zoutons.com/dmart-coupons
 </div>
+<div class="lh-align-center"><figure class="lh-image-container">
+<img src="https://pub-b0e952c65fd94549b83646f95f2b354b.r2.dev/update-1794601374093-sec1-img0-groceries.jpg" alt="Groceries on sale this week" title="Groceries on sale this week" class="lh-fluid-img">
+</figure></div>
 <div class="lh-clear"></div>
 </div>
 
 <div class="lh-section">
 
-<div class="lh-align-center"><figure class="lh-image-container">
-<img src="https://pub-b0e952c65fd94549b83646f95f2b354b.r2.dev/update-1794601374093-sec2-img0-electronics.jpg" alt="Electronics on sale this week" title="Electronics on sale this week" class="lh-fluid-img">
-</figure></div>
 <div class="lh-text">
 **ELECTRONICS**
 
@@ -66,14 +63,14 @@ https://www.desidime.com/news/black-friday-sale-offers-deals-2026
 
 https://www.gadgets360.com/deals/amazon-offers-coupons
 </div>
+<div class="lh-align-center"><figure class="lh-image-container">
+<img src="https://pub-b0e952c65fd94549b83646f95f2b354b.r2.dev/update-1794601374093-sec2-img0-electronics.jpg" alt="Electronics on sale this week" title="Electronics on sale this week" class="lh-fluid-img">
+</figure></div>
 <div class="lh-clear"></div>
 </div>
 
 <div class="lh-section">
 
-<div class="lh-align-center"><figure class="lh-image-container">
-<img src="https://pub-b0e952c65fd94549b83646f95f2b354b.r2.dev/update-1794601374093-sec3-img0-fashion.jpg" alt="Fashion on sale this week" title="Fashion on sale this week" class="lh-fluid-img">
-</figure></div>
 <div class="lh-text">
 **FASHION**
 
@@ -89,14 +86,14 @@ https://lootbazaar.in/store/myntra/
 
 https://www.desidime.com/news/black-friday-sale-offers-deals-2026
 </div>
+<div class="lh-align-center"><figure class="lh-image-container">
+<img src="https://pub-b0e952c65fd94549b83646f95f2b354b.r2.dev/update-1794601374093-sec3-img0-fashion.jpg" alt="Fashion on sale this week" title="Fashion on sale this week" class="lh-fluid-img">
+</figure></div>
 <div class="lh-clear"></div>
 </div>
 
 <div class="lh-section">
 
-<div class="lh-align-center"><figure class="lh-image-container">
-<img src="https://pub-b0e952c65fd94549b83646f95f2b354b.r2.dev/update-1794601374093-sec4-img0-food.jpg" alt="Food on sale this week" title="Food on sale this week" class="lh-fluid-img">
-</figure></div>
 <div class="lh-text">
 FOOD
 
@@ -108,6 +105,9 @@ https://www.coupondunia.in/category/food-and-dining
 
 https://www.coupondunia.in/category/food-and-dining
 </div>
+<div class="lh-align-center"><figure class="lh-image-container">
+<img src="https://pub-b0e952c65fd94549b83646f95f2b354b.r2.dev/update-1794601374093-sec4-img0-food.jpg" alt="Food on sale this week" title="Food on sale this week" class="lh-fluid-img">
+</figure></div>
 <div class="lh-clear"></div>
 </div>
 
