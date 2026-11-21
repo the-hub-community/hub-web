@@ -1,0 +1,605 @@
+(function () {
+  "use strict";
+
+  const STORAGE_KEY = "hubcollective-community-posts-v1";
+  const seedEl = document.getElementById("civicSeedData");
+  let seed = { hubs: [], posts: [] };
+  try { seed = JSON.parse(seedEl?.textContent || '{"hubs":[],"posts":[]}'); } catch (_) {}
+
+  let posts = [];
+  let hubs = (seed.hubs || []).map((hub) => ({
+    ...hub,
+    name: decodeText(hub.name),
+    purpose: decodeText(hub.purpose),
+  }));
+  let activeHub = "all";
+  let activeType = "all";
+  let activeSort = "engagement";
+  let searchText = "";
+  let savedOnly = new URLSearchParams(location.search).get("saved") === "1";
+  let selectedPostType = "broadcast";
+  let publishedPostId = null;
+
+  function load() {
+    try {
+      const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || "null");
+      if (Array.isArray(saved)) posts = saved;
+    } catch (error) {
+      console.error("Could not load saved community posts.", error);
+      showPersistenceWarning(error, false);
+    }
+    if (!posts.length) posts = (seed.posts || []).map(normalizeSeedPost);
+    posts = posts.map((post) => normalizeSeedPost(post));
+  }
+
+  function normalizeSeedPost(post) {
+    const source = decodeText(post.source);
+    const imageFromSource = source.match(/<img\b[^>]*\bsrc=["']([^"']+)["']/i)?.[1];
+    const rawStatus = String(post.status || "").toLowerCase();
+    return {
+      ...post,
+      title: decodeText(post.title),
+      summary: decodeText(post.summary),
+      details: decodeText(post.details),
+      hub: decodeText(post.hub),
+      author: decodeText(post.author),
+      source,
+      image: decodeText(post.image || imageFromSource || ""),
+      priority: String(post.priority || "").toLowerCase() === "high" ||
+        String(post.priority || "").toLowerCase() === "critical" ? "Urgent" : post.priority,
+      status: post.type === "listing"
+        ? ["sold", "claimed"].includes(rawStatus) ? "Claimed"
+          : ["pending", "reserved"].includes(rawStatus) ? "Pending" : "Available"
+        : post.status || "Active",
+      upvotes: Number(post.upvotes) || 0,
+      replies: Array.isArray(post.replies) ? post.replies : [],
+      saved: Boolean(post.saved),
+      voted: Boolean(post.voted),
+      facts: Object.fromEntries(Object.entries(post.facts || {}).map(([label, value]) => [decodeText(label), decodeText(value)])),
+    };
+  }
+
+  function decodeText(value) {
+    const textarea = document.createElement("textarea");
+    textarea.innerHTML = String(value ?? "");
+    return textarea.value;
+  }
+
+  function persist() {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(posts));
+      return true;
+    } catch (error) {
+      console.error("Could not save community posts on this device.", error);
+      showPersistenceWarning(error, false);
+      return false;
+    }
+  }
+
+  async function postAction(post, action, extra) {
+    persist();
+    const endpoint = window.ResiHubApi?.ENDPOINTS?.communityPosts;
+    if (!endpoint) return;
+    try {
+      const response = await fetch(endpoint, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "Accept": "application/json" },
+        body: JSON.stringify({ action, id: post.id, actor_id: getActorId(), ...extra }),
+      });
+      if (!response.ok) throw new Error(`Community post update failed (${response.status}).`);
+    } catch (error) {
+      showPersistenceWarning(error);
+    }
+  }
+
+  function getActorId() {
+    const key = "hubcollective:anonymous-actor:v1";
+    let id = localStorage.getItem(key);
+    if (!/^[a-f0-9]{32}$/i.test(id || "")) {
+      const bytes = new Uint8Array(16);
+      if (window.crypto?.getRandomValues) window.crypto.getRandomValues(bytes);
+      else bytes.forEach((_, index) => { bytes[index] = Math.floor(Math.random() * 256); });
+      id = Array.from(bytes, (byte) => byte.toString(16).padStart(2, "0")).join("");
+      localStorage.setItem(key, id);
+    }
+    return id;
+  }
+
+  function showPersistenceWarning(error, deviceSaved = true) {
+    const confirmation = document.getElementById("publishConfirmation");
+    if (!confirmation) return;
+    confirmation.hidden = false;
+    confirmation.querySelector("span").textContent = deviceSaved
+      ? `Saved on this device. Server sync failed: ${error.message}`
+      : `Could not access saved posts on this device: ${error.message}`;
+    confirmation.dataset.syncFailed = "true";
+  }
+
+  async function syncCommunityPosts() {
+    const endpoint = window.ResiHubApi?.ENDPOINTS?.communityPosts;
+    if (!endpoint) return;
+    try {
+      const response = await fetch(`${endpoint}?actor_id=${encodeURIComponent(getActorId())}`, { headers: { Accept: "application/json" } });
+      if (!response.ok) throw new Error(`Community feed sync failed (${response.status}).`);
+      const payload = await response.json();
+      if (!Array.isArray(payload.posts)) return;
+      const byId = new Map(payload.posts.map((post) => [post.id, normalizeSeedPost(post)]));
+      posts = posts.map((post) => byId.get(post.id) || post);
+      payload.posts.forEach((post) => {
+        if (!posts.some((item) => item.id === post.id)) posts.unshift(normalizeSeedPost(post));
+      });
+      const storedIds = new Set(payload.posts.map((post) => post.id));
+      const missingPosts = posts.filter((post) => !storedIds.has(post.id));
+      if (missingPosts.length) {
+        for (let index = 0; index < missingPosts.length; index += 25) {
+          const migration = await fetch(endpoint, {
+            method: "POST",
+            headers: { "Content-Type": "application/json", "Accept": "application/json" },
+            body: JSON.stringify({ action: "seed", posts: missingPosts.slice(index, index + 25) }),
+          });
+          if (!migration.ok) throw new Error(`Community archive sync failed (${migration.status}).`);
+        }
+      }
+      persist();
+      render();
+    } catch (error) {
+      showPersistenceWarning(error);
+    }
+  }
+
+  function escapeHtml(value) {
+    return String(value ?? "").replace(/[&<>"']/g, (char) => ({
+      "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;",
+    })[char]);
+  }
+
+  function relativeTime(value) {
+    const date = new Date(value);
+    if (!Number.isFinite(date.getTime())) return "Recently";
+    const seconds = Math.max(0, Math.floor((Date.now() - date.getTime()) / 1000));
+    if (seconds < 60) return "Just now";
+    if (seconds < 3600) return `${Math.floor(seconds / 60)}m ago`;
+    if (seconds < 86400) return `${Math.floor(seconds / 3600)}h ago`;
+    return `${Math.floor(seconds / 86400)}d ago`;
+  }
+
+  function exactTime(value) {
+    const date = new Date(value);
+    return Number.isFinite(date.getTime())
+      ? date.toLocaleString(undefined, { dateStyle: "medium", timeStyle: "short" })
+      : "Recently";
+  }
+
+  function score(post) {
+    return post.upvotes * 2 + post.replies.length * 3 + (post.saved ? 2 : 0);
+  }
+
+  function filteredPosts() {
+    let list = posts.filter((post) => (activeHub === "all" || post.hubId === activeHub) && (!savedOnly || post.saved));
+    if (activeType !== "all") list = list.filter((post) => post.type === activeType);
+    const query = searchText.toLowerCase();
+    if (query) {
+      list = list.filter((post) => [
+        post.title, post.summary, post.details, post.author, post.hub,
+        post.pickupArea, post.tags?.join(" "), post.listingType,
+      ].join(" ").toLowerCase().includes(query));
+    }
+    list.sort((a, b) => {
+      if (activeSort === "newest") return new Date(b.createdAt) - new Date(a.createdAt);
+      if (activeSort === "discussed") {
+        return b.replies.length - a.replies.length || score(b) - score(a) ||
+          new Date(b.createdAt) - new Date(a.createdAt);
+      }
+      return score(b) - score(a) || new Date(b.createdAt) - new Date(a.createdAt);
+    });
+    return list;
+  }
+
+  function renderHubs() {
+    const rail = document.querySelector("[data-civic-hub-rail]");
+    const mobile = document.getElementById("mobileHubSwitcher");
+    const hubHtml = [
+      { id: "all", name: "All Community Hubs", count: posts.length },
+      ...hubs.map((hub) => ({
+        id: hub.id,
+        name: hub.name,
+        count: posts.filter((post) => post.hubId === hub.id).length,
+      })),
+    ];
+
+    if (rail) {
+      rail.innerHTML = `
+        <div class="civic-rail-label">Civic Stream</div>
+        ${hubHtml.slice(0, 1).map((hub) => hubButton(hub)).join("")}
+        <div class="civic-rail-label">Neighborhood Hubs</div>
+        ${hubHtml.slice(1).filter((hub) => !["Photography", "Rockies", "Stock"].some((v) => hub.name.includes(v))).map((hub) => hubButton(hub)).join("")}
+        <div class="civic-rail-label">Interest Groups</div>
+        ${hubHtml.slice(1).filter((hub) => ["Photography", "Rockies", "Stock"].some((v) => hub.name.includes(v))).map((hub) => hubButton(hub)).join("")}
+      `;
+    }
+    if (mobile) {
+      mobile.innerHTML = hubHtml.map((hub) => `<button type="button" data-hub="${escapeHtml(hub.id)}" class="${activeHub === hub.id ? "is-active" : ""}">${escapeHtml(hub.name)} <span>${hub.count}</span></button>`).join("");
+    }
+    document.querySelectorAll(".civic-top-nav a").forEach((link) => {
+      const isSaved = new URL(link.href).searchParams.get("saved") === "1";
+      if (link.textContent.trim() === "Saved") link.classList.toggle("is-active", savedOnly && isSaved);
+      else if (link.textContent.trim() === "Feed") link.classList.toggle("is-active", !savedOnly);
+    });
+  }
+
+  function hubButton(hub) {
+    return `<button type="button" class="civic-hub-link ${activeHub === hub.id ? "is-active" : ""}" data-hub="${escapeHtml(hub.id)}"><span>${escapeHtml(hub.name)}</span><strong>${hub.count}</strong></button>`;
+  }
+
+  function imageHtml(post, type) {
+    if (!post.image) return "";
+    const className = type === "listing" ? "civic-card__media civic-card__media--listing" : "civic-card__media";
+    return `<button type="button" class="${className}" data-open-post="${escapeHtml(post.id)}" aria-label="Open ${escapeHtml(post.title)}">
+      <img src="${escapeHtml(post.image)}" alt="${escapeHtml(post.title)}" referrerpolicy="no-referrer" data-fallback="true">
+    </button>`;
+  }
+
+  function metadata(post) {
+    const typeLabel = {
+      broadcast: post.priority === "Urgent" ? "Urgent Broadcast" : "Broadcast",
+      listing: "Listing",
+      evergreen: "Evergreen Info",
+      update: "Community Update",
+    }[post.type];
+    return `<span>${escapeHtml(typeLabel)} · ${escapeHtml(post.hub)} · ${relativeTime(post.createdAt)} · Score ${score(post)}</span>`;
+  }
+
+  function card(post) {
+    let extra = "";
+    if (post.type === "broadcast" && post.effectiveWindow) {
+      extra = `<div class="civic-effective-window"><strong>Effective window</strong> ${escapeHtml(post.effectiveWindow)}</div>`;
+    }
+    if (post.type === "listing") {
+      extra = `<div class="civic-listing-row"><strong>${escapeHtml(post.price || "Contact for price")}</strong><span>${escapeHtml(post.listingType || "For Sale")} · ${escapeHtml(post.pickupArea || "Nearby")}</span><em>${escapeHtml(post.status || "Available")}</em></div>`;
+    }
+    if (post.type === "evergreen") {
+      const facts = post.facts || {};
+      const entries = Object.entries(facts).slice(0, 4);
+      extra = entries.length ? `<dl class="civic-key-facts">${entries.map(([label, value]) => `<div><dt>${escapeHtml(label)}</dt><dd>${escapeHtml(value)}</dd></div>`).join("")}</dl>` :
+        `<div class="civic-verified">Verified ${exactTime(post.lastVerifiedAt || post.createdAt)}</div>`;
+    }
+    const listingMedia = post.type === "listing" ? imageHtml(post, "listing") : "";
+    const regularMedia = post.type !== "listing" ? imageHtml(post, "") : "";
+    return `<article class="civic-card civic-card--${escapeHtml(post.type)}">
+      ${listingMedia}
+      <div class="civic-card__body">
+        <div class="civic-card__meta">${post.type === "broadcast" && post.priority === "Urgent" ? '<span class="civic-urgent"><i class="fa-solid fa-triangle-exclamation"></i></span>' : ""}
+          ${metadata(post)}
+        </div>
+        <h2><button type="button" data-open-post="${escapeHtml(post.id)}">${escapeHtml(post.title)}</button></h2>
+        <p>${escapeHtml(post.summary)}</p>
+        ${regularMedia}
+        ${extra}
+      </div>
+      <footer class="civic-card__footer">
+        <button type="button" data-vote="${escapeHtml(post.id)}" class="${post.voted ? "is-active" : ""}" aria-pressed="${post.voted}"><i class="fa-solid fa-arrow-up"></i> Upvote</button>
+        <button type="button" data-replies="${escapeHtml(post.id)}"><i class="fa-regular fa-comment"></i> ${post.replies.length} Replies</button>
+        <button type="button" data-save="${escapeHtml(post.id)}" class="${post.saved ? "is-active" : ""}" aria-pressed="${post.saved}"><i class="fa-${post.saved ? "solid" : "regular"} fa-bookmark"></i> ${post.saved ? "Saved" : "Save"}</button>
+        <button type="button" data-open-post="${escapeHtml(post.id)}">Open Thread</button>
+      </footer>
+    </article>`;
+  }
+
+  function render() {
+    renderHubs();
+    const list = filteredPosts();
+    document.getElementById("resultCount").textContent = `${list.length} post${list.length === 1 ? "" : "s"}`;
+    const grid = document.getElementById("feedGrid");
+    grid.innerHTML = list.map(card).join("");
+    document.getElementById("feedEmpty").hidden = list.length !== 0;
+    bindImageFallbacks();
+    renderPinned();
+  }
+
+  function bindImageFallbacks() {
+    document.querySelectorAll("img[data-fallback]").forEach((img) => {
+      img.addEventListener("error", () => {
+        const slot = img.closest(".civic-card__media, .civic-detail-media");
+        if (slot) {
+          slot.classList.add("is-fallback");
+          slot.innerHTML = '<span>Photo unavailable</span>';
+        }
+      }, { once: true });
+    });
+  }
+
+  function renderPinned() {
+    const pinned = posts.filter((post) => post.type === "broadcast" && (activeHub === "all" || post.hubId === activeHub))
+      .sort((a, b) => score(b) - score(a))[0];
+    const el = document.getElementById("pinnedBroadcast");
+    if (!el) return;
+    el.hidden = !pinned;
+    if (!pinned) return;
+    el.innerHTML = `
+      <i class="fa-solid fa-thumbtack" aria-hidden="true"></i>
+      <div><strong>${pinned.priority === "Urgent" ? "Urgent Broadcast" : "Pinned Broadcast"}</strong>
+      <span>${escapeHtml(pinned.title)} · ${escapeHtml(pinned.hub)} · ${relativeTime(pinned.createdAt)}</span></div>
+      <button type="button" data-open-post="${escapeHtml(pinned.id)}">Read Notice</button>`;
+  }
+
+  function openPost(id) {
+    const post = posts.find((item) => item.id === id);
+    if (!post) return;
+    const drawer = document.getElementById("postDrawer");
+    const content = document.getElementById("drawerContent");
+    const facts = post.facts || {};
+    content.innerHTML = `
+      ${post.image ? `<div class="civic-detail-media"><img src="${escapeHtml(post.image)}" alt="${escapeHtml(post.title)}" referrerpolicy="no-referrer" data-fallback="true"></div>` : ""}
+      <div class="civic-detail-meta">${escapeHtml(metadata(post).replace(/<[^>]+>/g, ""))}</div>
+      <p class="civic-detail-author">${escapeHtml(post.author)} · ${escapeHtml(post.authorRole || "Community Member")}</p>
+      <h2>${escapeHtml(post.title)}</h2>
+      <p class="civic-detail-prose">${escapeHtml(post.details || post.summary)}</p>
+      ${post.type === "listing" ? listingDetail(post) : ""}
+      ${post.type === "evergreen" ? evergreenDetail(post, facts) : ""}
+      <section class="civic-replies">
+        <h3>Community Replies · ${post.replies.length}</h3>
+        <div id="replyList">${post.replies.map((reply) => `<article><strong>${escapeHtml(reply.author)}</strong><time>${relativeTime(reply.createdAt)}</time><p>${escapeHtml(reply.message)}</p></article>`).join("") || "<p>No replies yet.</p>"}</div>
+        <form id="replyForm" class="civic-reply-form">
+          <label><span>Author Name</span><input name="author" maxlength="60" required></label>
+          <label><span>Message</span><textarea name="message" maxlength="1000" required rows="3"></textarea></label>
+          <button type="submit" class="civic-btn civic-btn--primary">Post Reply</button>
+        </form>
+      </section>`;
+    drawer.classList.add("is-open");
+    drawer.setAttribute("aria-hidden", "false");
+    bindImageFallbacks();
+    const listingStatus = content.querySelector("#listingStatus");
+    if (listingStatus) {
+      listingStatus.addEventListener("change", () => {
+        post.status = listingStatus.value;
+        persist();
+        void postAction(post, "listing-status", { status: post.status });
+        render();
+      });
+    }
+    const verifyButton = content.querySelector("#markVerified");
+    if (verifyButton) {
+      verifyButton.addEventListener("click", () => {
+        post.lastVerifiedAt = new Date().toISOString();
+        persist();
+        void postAction(post, "verify");
+        openPost(id);
+        render();
+      });
+    }
+    document.getElementById("replyForm").addEventListener("submit", (event) => {
+      event.preventDefault();
+      const data = new FormData(event.currentTarget);
+      post.replies.push({
+        author: data.get("author").trim(),
+        message: data.get("message").trim(),
+        createdAt: new Date().toISOString(),
+      });
+      persist();
+      void postAction(post, "reply", {
+        author: data.get("author").trim(),
+        message: data.get("message").trim(),
+      });
+      openPost(id);
+      render();
+    });
+  }
+
+  function listingDetail(post) {
+    return `<div class="civic-listing-controls"><label>Listing Status<select id="listingStatus"><option ${post.status === "Available" ? "selected" : ""}>Available</option><option ${post.status === "Pending" ? "selected" : ""}>Pending</option><option ${post.status === "Claimed" ? "selected" : ""}>Claimed</option></select></label></div>`;
+  }
+
+  function evergreenDetail(post, facts) {
+    const factsHtml = Object.keys(facts).length
+      ? `<dl class="civic-detail-facts">${Object.entries(facts).map(([label, value]) => `<div><dt>${escapeHtml(label)}</dt><dd>${escapeHtml(value)}</dd></div>`).join("")}</dl>`
+      : "";
+    return `${factsHtml}<button type="button" class="civic-btn civic-btn--secondary" id="markVerified">Mark Verified Today</button>`;
+  }
+
+  function setupActions() {
+    document.addEventListener("click", (event) => {
+      const hub = event.target.closest("[data-hub]");
+      if (hub) {
+        activeHub = hub.dataset.hub;
+        updateHubBanner();
+        render();
+      }
+      const vote = event.target.closest("[data-vote]");
+      if (vote) toggleVote(vote.dataset.vote);
+      const save = event.target.closest("[data-save]");
+      if (save) toggleSave(save.dataset.save);
+      const open = event.target.closest("[data-open-post]");
+      if (open) openPost(open.dataset.openPost);
+      const replies = event.target.closest("[data-replies]");
+      if (replies) openPost(replies.dataset.replies);
+      if (event.target.closest("[data-drawer-close]")) closeDrawer();
+      if (event.target.closest("[data-share-post-open]")) openComposer();
+      if (event.target.closest("[data-composer-close]")) closeComposer();
+    });
+
+    document.getElementById("feedSearch").addEventListener("input", (event) => {
+      searchText = event.target.value.trim();
+      render();
+    });
+    document.getElementById("typeFilter").addEventListener("click", (event) => {
+      const button = event.target.closest("[data-type]");
+      if (!button) return;
+      activeType = button.dataset.type;
+      document.querySelectorAll("[data-type]").forEach((item) => {
+        item.classList.toggle("is-active", item === button);
+        item.setAttribute("aria-pressed", String(item === button));
+      });
+      render();
+    });
+    document.getElementById("sortSwitch").addEventListener("click", (event) => {
+      const button = event.target.closest("[data-sort]");
+      if (!button) return;
+      activeSort = button.dataset.sort;
+      document.querySelectorAll("[data-sort]").forEach((item) => {
+        item.classList.toggle("is-active", item === button);
+        item.setAttribute("aria-pressed", String(item === button));
+      });
+      render();
+    });
+    document.getElementById("showAllPosts").addEventListener("click", () => {
+      activeHub = "all"; activeType = "all"; searchText = ""; savedOnly = false;
+      document.getElementById("feedSearch").value = "";
+      document.querySelectorAll("[data-type]").forEach((button) => {
+        const active = button.dataset.type === "all";
+        button.classList.toggle("is-active", active);
+        button.setAttribute("aria-pressed", String(active));
+      });
+      updateHubBanner();
+      render();
+    });
+
+    document.querySelectorAll("[data-compose-type]").forEach((button) => {
+      button.addEventListener("click", () => selectComposerType(button.dataset.composeType));
+    });
+    document.getElementById("sharePostForm").addEventListener("submit", publishPost);
+    document.getElementById("openPublishedPost").addEventListener("click", () => {
+      if (publishedPostId) openPost(publishedPostId);
+      document.getElementById("publishConfirmation").hidden = true;
+    });
+  }
+
+  function toggleVote(id) {
+    const post = posts.find((item) => item.id === id);
+    if (!post) return;
+    post.voted = !post.voted;
+    post.upvotes = Math.max(0, post.upvotes + (post.voted ? 1 : -1));
+    persist(); void postAction(post, "vote"); render();
+  }
+
+  function toggleSave(id) {
+    const post = posts.find((item) => item.id === id);
+    if (!post) return;
+    post.saved = !post.saved;
+    persist(); void postAction(post, "save"); render();
+  }
+
+  function updateHubBanner() {
+    if (activeHub === "all") {
+      document.getElementById("hubLocation").textContent = "Unified community feed";
+      document.getElementById("hubTitle").textContent = "All Community Hubs";
+      document.getElementById("hubPurpose").textContent = "Local updates, broadcasts, listings, and long-term community knowledge in one civic stream.";
+      document.getElementById("hubMemberCount").textContent = String(hubs.reduce((sum, hub) => sum + (hub.members || 0), 0));
+      return;
+    }
+    const hub = hubs.find((item) => item.id === activeHub);
+    if (!hub) return;
+    document.getElementById("hubLocation").textContent = "Community hub";
+    document.getElementById("hubTitle").textContent = hub.name;
+    document.getElementById("hubPurpose").textContent = hub.purpose;
+    document.getElementById("hubMemberCount").textContent = String(hub.members || 0);
+  }
+
+  function openComposer() {
+    const dialog = document.getElementById("shareComposer");
+    populateComposerHubs();
+    if (typeof dialog.showModal === "function") dialog.showModal();
+  }
+
+  function closeComposer() {
+    document.getElementById("shareComposer").close();
+  }
+
+  function populateComposerHubs() {
+    const select = document.getElementById("composerHub");
+    select.innerHTML = hubs.map((hub) => `<option value="${escapeHtml(hub.id)}">${escapeHtml(hub.name)}</option>`).join("");
+    if (activeHub !== "all") select.value = activeHub;
+  }
+
+  function selectComposerType(type) {
+    selectedPostType = type;
+    document.querySelectorAll("[data-compose-type]").forEach((button) => {
+      const active = button.dataset.composeType === type;
+      button.classList.toggle("is-active", active);
+      button.setAttribute("aria-pressed", String(active));
+    });
+    document.getElementById("broadcastFields").hidden = type !== "broadcast";
+    document.getElementById("listingFields").hidden = type !== "listing";
+    document.getElementById("evergreenFields").hidden = type !== "evergreen";
+  }
+
+  async function publishPost(event) {
+    event.preventDefault();
+    const form = event.currentTarget;
+    const data = new FormData(form);
+    const hubId = String(data.get("hub") || "");
+    const hub = hubs.find((item) => item.id === hubId);
+    if (!data.get("headline")?.trim() || !data.get("summary")?.trim() || !data.get("details")?.trim()) return;
+    const now = new Date().toISOString();
+    const id = `post-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`;
+    const post = normalizeSeedPost({
+      id,
+      type: selectedPostType,
+      hub: hub?.name || "Community",
+      hubId,
+      title: data.get("headline").trim(),
+      summary: data.get("summary").trim(),
+      details: data.get("details").trim(),
+      author: data.get("author").trim(),
+      authorRole: "Community Member",
+      createdAt: now,
+      tags: String(data.get("tags") || "").split(",").map((tag) => tag.trim()).filter(Boolean),
+      image: data.get("image")?.trim() || "",
+      upvotes: 0,
+      replies: [],
+      saved: false,
+      voted: false,
+      status: selectedPostType === "listing" ? "Available" : "Active",
+      priority: data.get("priority")?.trim() || "Standard",
+      effectiveWindow: data.get("effectiveWindow")?.trim() || "",
+      listingType: data.get("listingType")?.trim() || "For Sale",
+      price: data.get("price")?.trim() || "",
+      pickupArea: data.get("pickupArea")?.trim() || "",
+      facts: Object.fromEntries(
+        [
+          [data.get("fact1Label")?.trim(), data.get("fact1Value")?.trim()],
+          [data.get("fact2Label")?.trim(), data.get("fact2Value")?.trim()],
+        ].filter(([label, value]) => label && value),
+      ),
+      lastVerifiedAt: now,
+    });
+    posts.unshift(post);
+    persist();
+    activeHub = hubId;
+    activeType = "all";
+    searchText = "";
+    updateHubBanner();
+    closeComposer();
+    form.reset();
+    selectComposerType("broadcast");
+    render();
+    publishedPostId = id;
+    const confirmation = document.getElementById("publishConfirmation");
+    confirmation.hidden = false;
+
+    try {
+      const endpoint = window.ResiHubApi?.ENDPOINTS?.communityPosts;
+      if (!endpoint) return;
+      const response = await fetch(endpoint, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "Accept": "application/json" },
+        body: JSON.stringify({ ...post, action: "create", actor_id: getActorId() }),
+      });
+      if (!response.ok) throw new Error(`Post server sync failed (${response.status}).`);
+    } catch (error) {
+      showPersistenceWarning(error);
+    }
+  }
+
+  function closeDrawer() {
+    const drawer = document.getElementById("postDrawer");
+    drawer.classList.remove("is-open");
+    drawer.setAttribute("aria-hidden", "true");
+  }
+
+  load();
+  setupActions();
+  updateHubBanner();
+  render();
+  selectComposerType("broadcast");
+  void syncCommunityPosts();
+})();

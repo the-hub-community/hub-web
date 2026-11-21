@@ -36,6 +36,7 @@
     // Search lives on the public worker too
     search: baseUrl + "/api/search",
     autoFormat: baseUrl + "/api/ai/auto-format",
+    communityPosts: baseUrl + "/api/community-posts",
   };
 
   function getSiteBaseUrl() {

@@ -26,7 +26,7 @@ Whether you are navigating the shuttle system to Moraine Lake or preparing for a
 
 
 <div class="lh-text">
-Wiki Pages in This Guide
+Community Posts in This Guide
 
 **[Pre-Trip Checklist: Bookings, Passes &amp; Family Prep]**
 

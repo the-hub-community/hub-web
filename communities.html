@@ -33,7 +33,7 @@ title: Communities
     </div>
     <h1 class="ed-hero__title">Every neighbourhood on the Hub.</h1>
     <p class="ed-hero__subtitle">
-      Explore local knowledge and see how each community grows. Choose a community to browse its wiki, marketplace, and notices.
+      Explore local knowledge and see how each hub grows. Choose a hub to browse community info, listings, and broadcasts.
     </p>
   </header>
 
@@ -44,12 +44,12 @@ title: Communities
       <span class="community-dashboard__stat-note">Local spaces on the Hub</span>
     </div>
     <div class="community-dashboard__stat">
-      <span class="community-dashboard__stat-label">Wiki guides</span>
+      <span class="community-dashboard__stat-label">Community posts</span>
       <strong>{{ total_wiki_page_count }}</strong>
       <span class="community-dashboard__stat-note">Resident-shared knowledge</span>
     </div>
     <div class="community-dashboard__stat">
-      <span class="community-dashboard__stat-label">Active wikis</span>
+      <span class="community-dashboard__stat-label">Active hubs</span>
       <strong>{{ communities_with_pages }}</strong>
       <span class="community-dashboard__stat-note">Communities with guides</span>
     </div>
@@ -63,8 +63,8 @@ title: Communities
   <section class="community-dashboard__distribution" id="community-directory" aria-labelledby="community-distribution-title">
     <div class="community-dashboard__header">
       <div>
-        <h2 id="community-distribution-title">Wiki guides by community</h2>
-        <p>Compare published guides across local spaces.</p>
+        <h2 id="community-distribution-title">Shared resources by hub</h2>
+        <p>Compare community information across local spaces.</p>
       </div>
       <label class="community-dashboard__search">
         <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
@@ -72,7 +72,7 @@ title: Communities
       </label>
     </div>
 
-    <div class="community-dashboard__chart" role="list" aria-label="Number of wiki guides in each community" data-community-list>
+    <div class="community-dashboard__chart" role="list" aria-label="Number of community posts in each hub" data-community-list>
       {% for community in communities %}
         {% assign community_name = community.condo | default: community.title %}
         {% assign community_slug = community_name | slugify %}
@@ -99,10 +99,10 @@ title: Communities
           </span>
           <span class="community-dashboard__row-copy">
             <span class="community-dashboard__name">{{ community_name }}</span>
-            <span class="community-dashboard__row-note">{{ community_page_count }} wiki guide{% if community_page_count != 1 %}s{% endif %}</span>
+            <span class="community-dashboard__row-note">{{ community_page_count }} shared resource{% if community_page_count != 1 %}s{% endif %}</span>
           </span>
           <span class="community-dashboard__bar" role="img"
-                aria-label="{{ community_page_count }} of {{ total_wiki_page_count }} wiki guides, {{ community_share | round }} percent">
+                aria-label="{{ community_page_count }} of {{ total_wiki_page_count }} shared resources, {{ community_share | round }} percent">
             <span style="width: {{ community_share }}%"></span>
           </span>
           <span class="community-dashboard__count">{{ community_page_count }}</span>

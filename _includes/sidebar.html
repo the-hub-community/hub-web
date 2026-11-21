@@ -1,4 +1,4 @@
-<aside class="sidebar" id="appSidebar">
+<aside class="sidebar civic-hub-rail" id="appSidebar" data-civic-hub-rail>
 
   <nav class="sidebar-nav" id="sideNav">
 
@@ -105,7 +105,7 @@
 
     <!-- Communities -->
     <div class="sidebar-nav__group sidebar-nav__group--communities">
-      <span class="sidebar-nav__label">Communities</span>
+      <span class="sidebar-nav__label">Hubs</span>
       {% assign community_indices = site.pages
       | where_exp: "p", "p.path contains 'content/'"
       | where_exp: "p", "p.name == 'index.md' or p.name == 'index.html'"

@@ -28,6 +28,9 @@
 {% endunless %}
 
 {% assign page_community_key = page.community_key %}
+{% if page.url == '/' and page.saved_view %}
+{% assign page_community_key = '' %}
+{% endif %}
 {% if page_community_key == nil or page_community_key == '' %}
 {% if current_condo %}
 {% assign page_community_key = current_condo | slugify | prepend: 'comm-' %}
@@ -36,7 +39,7 @@
 {% endif %}
 {% endif %}
 
-<body class="{% if page.url == '/submit.html' %}layout-submit{% endif %}{% if page.page_theme %} {{ page.page_theme }}{% endif %}"
+<body class="{% if page.url == '/' %}page-civic-feed{% endif %}{% if page.url == '/submit.html' %}layout-submit{% endif %}{% if page.page_theme %} {{ page.page_theme }}{% endif %}"
     data-baseurl="{{ site.baseurl | default: '' }}" data-page-condo="{{ page.condo | default: '' | escape }}"
     data-page-path="{{ page.path | default: '' | escape }}"
     data-page-key="{{ page.page_key | default: fallback_page_id | escape }}"
@@ -131,7 +134,36 @@
                     {% endif %}
                 {% endif %}
 
-                <div class="wiki-layout">
+                {% if page.url contains '/content/' and page.condo %}
+                <section class="community-hub-header" aria-labelledby="community-hub-name">
+                    <div class="community-hub-header__cover" aria-hidden="true"></div>
+                    <div class="community-hub-header__identity">
+                        <div class="community-hub-header__avatar" data-community-slug="{{ page.condo | slugify }}">{{ page.condo | slice: 0 | upcase }}</div>
+                        <div class="community-hub-header__copy">
+                            <h1 id="community-hub-name">{{ page.title }}</h1>
+                            <p>{{ page.tagline | default: "Neighborhood updates, useful local knowledge, and shared listings from your community." }}</p>
+                            <div class="community-hub-header__meta">
+                                <span><i class="fa-solid fa-location-dot"></i> {{ page.condo }}</span>
+                                <span><i class="fa-solid fa-users"></i> Community hub</span>
+                            </div>
+                        </div>
+                        <button type="button" class="community-hub-header__follow" data-community-follow>Following</button>
+                    </div>
+                </section>
+                <div class="community-pinned-strip">
+                    <i class="fa-solid fa-thumbtack" aria-hidden="true"></i>
+                    <span><strong>Pinned</strong> Community updates and important notices stay visible here.</span>
+                    <a href="{{ site.baseurl }}/notices.html?condo={{ page.condo | slugify }}">View broadcasts</a>
+                </div>
+                <nav class="community-topic-tabs" aria-label="Hub channels">
+                    <a href="{{ page.url | relative_url }}" class="is-active">All Activity</a>
+                    <a href="{{ site.baseurl }}/notices.html?condo={{ page.condo | slugify }}">Broadcasts &amp; Alerts</a>
+                    <a href="{{ page.url | relative_url }}#community-resource">Community Info</a>
+                    <a href="{{ site.baseurl }}/marketplace.html?community={{ page.condo | slugify }}">Marketplace &amp; Listings</a>
+                    <a href="{{ site.baseurl }}/favorites.html">Archived</a>
+                </nav>
+                {% endif %}
+                <div class="community-layout wiki-layout">
                     <article class="content-card">
                         {% if current_condo and current_condo != "General" and page.url != "/marketplace.html" and page.url != "/broadcast.html" and page.url != "/list-service.html" %}
                         <div class="page-community-chip" data-community-slug="{{ current_condo | slugify }}" aria-label="Current community" data-i18n-aria-label="default.current_community_aria">
@@ -141,7 +173,11 @@
                         {% endif %}
 
                         {% if page.path contains 'content/' and page_community_key != '' and page.layout != 'broadcast' and page.layout != 'notification' %}
-                        {% include wiki-community-nav.html %}
+                        <nav class="community-resource-nav" aria-label="Topic quick filters">
+                            <a href="#community-resource"><i class="fa-solid fa-circle-info"></i> Key Details</a>
+                            <a href="#community-discussion"><i class="fa-solid fa-comments"></i> Discussion</a>
+                            <button type="button" data-favorite-toggle><i class="fa-solid fa-bookmark"></i> Save</button>
+                        </nav>
                         {% endif %}
 
                         {% if page.tags and page.tags.size > 0 %}
@@ -200,6 +236,14 @@
                             data-ugc-text="{{ page.content | strip_html | strip_newlines | replace: '  ', ' ' | truncate: 220 }}">
                             {{ content }}
                         </div>
+                        {% if page.url contains '/content/' and page.condo %}
+                        <footer class="community-retention-footer" id="community-resource">
+                            <div><span>Originally Shared</span><strong>{{ page.date | date: "%B %-d, %Y" }}</strong></div>
+                            <div><span>Last Verified</span><strong>{{ page.last_checked | default: page.date | date: "%B %-d, %Y" }}</strong></div>
+                            <div><span>Archive Status</span><strong>{% if page.valid_until %}Active{% else %}Evergreen{% endif %}</strong></div>
+                            <button type="button" data-favorite-toggle><i class="fa-solid fa-bookmark"></i> Save</button>
+                        </footer>
+                        {% endif %}
 
                         {% if page.path contains 'content/' and page.layout != 'broadcast' and page.layout != 'notification' and page.layout != 'marketplace-item' %}
                         {% assign reaction_content_id = page.page_key | default: page.url | slugify %}
@@ -221,7 +265,7 @@
                             {% if current_condo and page.url != "/submit.html" and page.url != "/broadcast.html" and page.layout != "marketplace-item" %}
                             <button type="button" id="pageEditBtn" class="btn-edit-action" aria-haspopup="dialog" aria-expanded="false" onclick="prepareEdit()">
                                 <i class="fa-regular fa-pen-to-square"></i>
-                                <span data-i18n="default.edit">Edit</span>
+                                <span data-i18n="default.edit">Update Post</span>
                             </button>
                             {% endif %}
 

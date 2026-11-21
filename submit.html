@@ -29,19 +29,19 @@ sitemap: false
         <span class="page-hero__dot"></span>
         <span class="page-hero__eyebrow">Content Builder</span>
       </div>
-      <h1 class="page-hero__title">Contribute to The Hub Community</h1>
+      <h1 class="page-hero__title">Share with your Community</h1>
       <p class="page-hero__subtitle">
-        Share local knowledge with your community. Your submission will be <span data-i18n="trust_safety.reviewed_by_volunteers">Reviewed by volunteers before it goes live</span>
+        Post a helpful update, lasting resource, broadcast, or listing. Your submission will be <span data-i18n="trust_safety.reviewed_by_volunteers">reviewed by community moderators before it goes live</span>
         <a href="{{ site.baseurl }}/privacy.html" data-i18n="trust_safety.how_review_works">How review works</a>.
       </p>
     </div>
 
     <div class="submit-steps" role="tablist" aria-label="Submission steps">
       <button type="button" class="submit-step active" data-step="1" aria-selected="true">
-        <span class="submit-step__num">1</span><span class="submit-step__label">Community</span>
+        <span class="submit-step__num">1</span><span class="submit-step__label">Post type</span>
       </button>
       <button type="button" class="submit-step" data-step="2" aria-selected="false">
-        <span class="submit-step__num">2</span><span class="submit-step__label">Content</span>
+        <span class="submit-step__num">2</span><span class="submit-step__label">Details</span>
       </button>
       <button type="button" class="submit-step" data-step="3" aria-selected="false">
         <span class="submit-step__num">3</span><span class="submit-step__label">Review</span>
@@ -49,11 +49,17 @@ sitemap: false
     </div>
 
     <form id="thcSubmissionForm" class="submit-form" autocomplete="off">
-      <input type="hidden" name="type" value="wiki">
+      <input type="hidden" name="type" value="community">
       <input type="hidden" name="sections_json" id="sectionsJsonInput">
 
       <section class="submit-panel active" data-panel="1">
-        <h2 class="submit-panel__title">Which community is this for?</h2>
+        <h2 class="submit-panel__title">What do you want to share?</h2>
+        <div class="composer-intent-grid" role="radiogroup" aria-label="Post type">
+          <label class="composer-intent"><input type="radio" name="intent" value="broadcast"><i class="fa-solid fa-bullhorn"></i><strong>Broadcast / Alert</strong><span>Urgent or scheduled notice</span></label>
+          <label class="composer-intent"><input type="radio" name="intent" value="community"><i class="fa-solid fa-book-open"></i><strong>Community Info</strong><span>Helpful long-term resource</span></label>
+          <label class="composer-intent"><input type="radio" name="intent" value="notification"><i class="fa-solid fa-bell"></i><strong>Notification / Update</strong><span>Routine community change</span></label>
+          <label class="composer-intent"><input type="radio" name="intent" value="listing"><i class="fa-solid fa-tag"></i><strong>Marketplace Listing</strong><span>Sell, give away, rent, or request</span></label>
+        </div>
         <div class="form-group">
           <label for="thcCommunitySelect">Community</label>
           <select id="thcCommunitySelect" name="condo" required></select>
@@ -63,14 +69,14 @@ sitemap: false
           <input type="text" id="thcNewCommunity" name="new_community" placeholder="e.g. Elm Drive Neighbours" maxlength="60" data-char-limit="60">
         </div>
         <div class="form-group">
-          <label for="thcPageTitle">Page Title</label>
+          <label for="thcPageTitle">Post Title</label>
           <input type="text" id="thcPageTitle" name="title" placeholder="e.g. Best dog-walking routes" required maxlength="140" data-char-limit="140">
           <small class="form-hint">Maximum 140 characters</small>
         </div>
         <div class="form-group">
           <label for="thcTags">Tags <span class="form-optional">(optional)</span></label>
           <input type="text" id="thcTags" name="tags" placeholder="e.g. dogs, parks, outdoors" maxlength="120" data-char-limit="120">
-          <small class="form-hint">Maximum 120 characters. Helps people find your page.</small>
+          <small class="form-hint">Maximum 120 characters. Helps people find this post.</small>
         </div>
         <div class="form-group">
           <label for="thcLastChecked">Last checked <span class="form-optional">(optional)</span></label>
@@ -169,7 +175,7 @@ sitemap: false
       </section>
 
       <section class="submit-panel" data-panel="3" hidden>
-        <h2 class="submit-panel__title">Review your page</h2>
+        <h2 class="submit-panel__title">Review your post</h2>
         <div class="submit-preview"></div>
         <p id="templateValidationError" class="submission-error-inline" role="alert" hidden>Replace all bracketed template prompts before submitting.</p>
         <div class="submit-notice">
@@ -191,6 +197,12 @@ sitemap: false
 <script src="{{ '/assets/js/page-templates.js' | relative_url }}"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function () {
+  document.querySelectorAll('.composer-intent input').forEach((radio) => {
+    radio.addEventListener('change', () => {
+      const hiddenType = document.querySelector('input[name="type"]');
+      if (hiddenType) hiddenType.value = radio.value;
+    });
+  });
   const select = document.getElementById('thcCommunitySelect');
   const newGroup = document.getElementById('newCommunityGroup');
 
@@ -548,7 +560,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
       try {
         const formData = new FormData();
-        formData.append('type', 'wiki');
+        formData.append('type', 'community');
         const submissionId = window.ResiHubApi?.createSubmissionId('page');
         if (!submissionId) throw new Error('Could not create a submission reference. Reload and retry.');
         formData.append('submission_id', submissionId);
@@ -659,7 +671,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
         if (window.ResiHubSubmissionProgress) window.ResiHubSubmissionProgress.complete("Success!", "Your page has been submitted.");
         const resolvedSubmissionId = data.submission_id || submissionId;
-        const redirectUrl = window.ResiHubApi?.buildSuccessPageUrl({ type: "wiki", submissionId: resolvedSubmissionId }) || `/success.html?type=wiki&submission_id=${encodeURIComponent(resolvedSubmissionId)}`;
+        const redirectUrl = window.ResiHubApi?.buildSuccessPageUrl({ type: "community", submissionId: resolvedSubmissionId }) || `/success.html?type=community&submission_id=${encodeURIComponent(resolvedSubmissionId)}`;
         setTimeout(() => { window.location.href = redirectUrl; }, 1200);
       } catch (error) {
         if (window.ResiHubSubmissionProgress) window.ResiHubSubmissionProgress.error("Submission failed", error.message);

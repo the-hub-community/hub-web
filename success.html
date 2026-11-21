@@ -11,13 +11,13 @@ sitemap: false
   document.addEventListener("DOMContentLoaded", () => {
     const params = new URLSearchParams(window.location.search);
     const submissionId = (params.get("submission_id") || "").trim();
-    const submissionType = params.get("type") || "wiki";
+    const submissionType = params.get("type") || "community";
     const subtitles = {
       listing: "Your marketplace listing is queued for review.",
       broadcast: "Your broadcast is published and will appear after the site deploy completes.",
       notification: "Your notice is queued for review.",
-      wiki: "Your wiki contribution is queued for review.",
-      update: "Your wiki update is queued for review.",
+      community: "Your community post is queued for review.",
+      update: "Your community update is queued for review.",
     };
     const subtitle = document.getElementById("success-subtitle");
     if (subtitle) {

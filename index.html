@@ -1,160 +1,158 @@
 ---
 layout: default
-title: Dashboard
-custom_stylesheets:
-  - custom/festival-celebration
+title: All Community Hubs
+saved_view: false
 ---
 
-{% assign communities = site.pages | where_exp: "p", "p.path contains 'content/'" | where_exp: "p", "p.name == 'index.md' or p.name == 'index.html'" %}
-{% assign community_count = communities | size %}
-{% assign page_count = 0 %}
-{% for community in communities %}
-  {% assign community_key = community.community_key %}
-  {% assign community_folder = community.path | split: '/' | slice: 1 | first %}
-  {% if community_key == nil or community_key == '' %}
-    {% assign community_name = community.condo | default: community.title %}
-    {% assign community_key = community_name | slugify | prepend: 'comm-' %}
-  {% endif %}
-  {% capture community_page_count_output %}{% include community-page-count.html community_folder=community_folder %}{% endcapture %}
-  {% assign community_page_count = community_page_count_output | strip | plus: 0 %}
-  {% assign page_count = page_count | plus: community_page_count %}
-{% endfor %}
-{% assign listing_count = site.pros | size %}
+<main class="civic-feed" id="civicFeed">
+  <aside class="civic-mobile-hubs" id="mobileHubSwitcher" aria-label="Community hubs"></aside>
 
-<section class="dashboard-ed">
-
-  <!-- 1. Community hero (tinted card, replaces old text hero + data grid) -->
-  {% include community-hero.html %}
-
-  <!-- 2. Pulse strip — recent activity -->
-  {% include pulse-strip.html %}
-
-  <!-- 3. Two-column: communities + listings -->
-  <div class="ed-columns">
-    <div>
-      <section class="ed-section">
-        <div class="ed-section__header">
-          <h2 class="ed-section__title">Your communities</h2>
-          <a href="{{ site.baseurl }}/communities.html" class="ed-section__link">View all →</a>
-        </div>
-        <div class="ed-list">
-          {% assign communities = site.pages
-             | where_exp: "p", "p.path contains 'content/'"
-             | where_exp: "p", "p.name == 'index.md' or p.name == 'index.html'"
-             | sort: "title" %}
-          {% for c in communities %}
-            {% assign c_name = c.condo | default: c.title %}
-            {% assign c_slug = c_name | slugify %}
-            {% assign c_key = c.community_key %}
-            {% assign c_folder = c.path | split: '/' | slice: 1 | first %}
-            {% if c_key == nil or c_key == '' %}
-              {% assign c_key = c_slug | prepend: 'comm-' %}
-            {% endif %}
-            {% capture c_count_output %}{% include community-page-count.html community_folder=c_folder %}{% endcapture %}
-            {% assign c_count = c_count_output | strip | plus: 0 %}
-            <a href="{{ site.baseurl }}/content/{{ c_folder }}/" class="ed-list__row community-page-row" data-community-slug="{{ c_slug }}">
-              <span class="ed-list__monogram" data-community-slug="{{ c_slug }}" aria-hidden="true">
-                {{ c_name | slice: 0 | upcase }}
-              </span>
-              <span class="ed-list__body">
-                <span class="ed-list__title">{{ c_name }}</span>
-                <span class="ed-list__meta">
-                  <span>{{ c_count }} page{% if c_count != 1 %}s{% endif %}</span>
-                  <span class="ed-list__meta-sep">·</span>
-                  <span>Resident-maintained</span>
-                </span>
-              </span>
-              <span class="ed-list__arrow"><i class="fa-solid fa-arrow-right"></i></span>
-            </a>
-          {% endfor %}
-        </div>
-        <nav class="community-pagination" data-community-pagination data-page-size="6" aria-label="Dashboard community pages">
-          <p class="community-pagination__summary" data-page-summary aria-live="polite"></p>
-          <div class="community-pagination__controls">
-            <button type="button" class="community-pagination__button" data-page-previous aria-label="Previous communities">Previous</button>
-            <span class="community-pagination__page" data-page-indicator aria-live="polite"></span>
-            <button type="button" class="community-pagination__button" data-page-next aria-label="Next communities">Next</button>
-          </div>
-        </nav>
-      </section>
-    </div>
-
-    <div>
-      <section class="ed-section">
-        <div class="ed-section__header">
-          <h2 class="ed-section__title">Recent listings</h2>
-          <a href="{{ site.baseurl }}/marketplace.html" class="ed-section__link">Marketplace →</a>
-        </div>
-        <div class="ed-list">
-          {% for ad in site.pros limit: 5 %}
-            {% assign ad_img = ad.image_url | default: "" | split: "," | first | strip %}
-            <a href="{{ ad.url | relative_url }}" class="ed-list__row">
-              <span class="ed-list__thumb">
-                {% if ad_img != "" %}
-                  <img src="{{ ad_img | relative_url }}" alt="" loading="lazy">
-                {% else %}
-                  <i class="fa-solid fa-store" aria-hidden="true"></i>
-                {% endif %}
-              </span>
-              <span class="ed-list__body">
-                <span class="ed-list__title">{{ ad.title }}</span>
-                <span class="ed-list__meta">
-                  <span>{{ ad.target_community | default: ad.condo | default: "Nearby" }}</span>
-                </span>
-              </span>
-              <span class="ed-list__value">
-                {% if ad.price and ad.price != "" %}${{ ad.price }}{% else %}Contact for price{% endif %}
-              </span>
-            </a>
-          {% endfor %}
-        </div>
-      </section>
-    </div>
-  </div>
-
-  <!-- 4. Value proposition -->
-  <section class="ed-value">
-    <div class="ed-value__header">
-      <span class="ed-value__eyebrow">How it works</span>
-      <h2 class="ed-value__title">Community knowledge, kept alive by residents.</h2>
-    </div>
-    <div class="ed-value__grid">
-      <div class="ed-value__card">
-        <span class="ed-value__num">01</span>
-        <h3 class="ed-value__title-sm">Contribute locally</h3>
-        <p class="ed-value__desc">Write a guide, post a listing, or send a neighbourhood notice. No account required — your device is your identity.</p>
+  <section class="civic-stream">
+    <header class="civic-hub-banner" id="hubBanner">
+      <div class="civic-hub-banner__copy">
+        <p class="civic-hub-banner__location" id="hubLocation">Unified community feed</p>
+        <h1 id="hubTitle">All Community Hubs</h1>
+        <p id="hubPurpose">Local updates, broadcasts, listings, and long-term community knowledge in one civic stream.</p>
+        <div class="civic-hub-banner__metric"><strong id="hubMemberCount">0</strong> <span>active members</span></div>
       </div>
-      <div class="ed-value__card">
-        <span class="ed-value__num">02</span>
-        <h3 class="ed-value__title-sm">Reviewed by neighbours</h3>
-        <p class="ed-value__desc">Every submission is read by fellow residents and checked by our system before it goes live. Quality, not volume.</p>
+      <div class="civic-hub-banner__cover" id="hubCover" role="img" aria-label="Community neighborhood"></div>
+    </header>
+
+    <section class="civic-pinned" id="pinnedBroadcast" aria-label="Pinned broadcast" hidden></section>
+
+    <section class="civic-toolbar" aria-label="Feed controls">
+      <label class="civic-search">
+        <span class="sr-only">Search community posts</span>
+        <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
+        <input id="feedSearch" type="search" placeholder="Search posts, hubs, authors, tags…" autocomplete="off">
+      </label>
+      <div class="civic-segments civic-type-filter" id="typeFilter" aria-label="Post type">
+        <button type="button" class="is-active" data-type="all" aria-pressed="true">All Posts</button>
+        <button type="button" data-type="broadcast">Broadcasts</button>
+        <button type="button" data-type="listing">Listings</button>
+        <button type="button" data-type="update">Updates</button>
+        <button type="button" data-type="evergreen">Evergreen Info</button>
       </div>
-      <div class="ed-value__card">
-        <span class="ed-value__num">03</span>
-        <h3 class="ed-value__title-sm">Kept for the long run</h3>
-        <p class="ed-value__desc">Every page is versioned and reviewed. What's useful stays; what's stale gets updated. Your local knowledge lasts.</p>
+      <div class="civic-toolbar__meta">
+        <span id="resultCount" class="civic-result-count">0 posts</span>
+        <div class="civic-segments" id="sortSwitch" aria-label="Sort posts">
+          <button type="button" class="is-active" data-sort="engagement" aria-pressed="true">Top Engagement</button>
+          <button type="button" data-sort="newest" aria-pressed="false">Newest</button>
+          <button type="button" data-sort="discussed" aria-pressed="false">Most Discussed</button>
+        </div>
       </div>
-    </div>
+    </section>
+
+    <div class="civic-feed-grid" id="feedGrid" aria-live="polite"></div>
+    <section class="civic-empty" id="feedEmpty" hidden>
+      <h2>No posts match this view</h2>
+      <p>Try another hub or clear current filters.</p>
+      <div>
+        <button type="button" class="civic-btn civic-btn--secondary" id="showAllPosts">Show All Posts</button>
+        <button type="button" class="civic-btn civic-btn--primary" data-share-post-open>Share a Post</button>
+      </div>
+    </section>
   </section>
+</main>
 
-  <!-- 5. Inline actions -->
-  <nav class="ed-inline" aria-label="Quick actions">
-    <a href="{{ site.baseurl }}/submit.html" class="ed-inline__action">
-      <i class="fa-solid fa-pen-to-square"></i> Write a guide
-    </a>
-    <a href="{{ site.baseurl }}/list-service.html" class="ed-inline__action">
-      <i class="fa-solid fa-tag"></i> Post a listing
-    </a>
-    <a href="{{ site.baseurl }}/broadcast.html" class="ed-inline__action">
-      <i class="fa-solid fa-bullhorn"></i> Send broadcast
-    </a>
-    <a href="{{ site.baseurl }}/status.html" class="ed-inline__action">
-      <i class="fa-solid fa-circle-check"></i> Track submission
-    </a>
-  </nav>
+<aside class="civic-detail-drawer" id="postDrawer" aria-hidden="true" aria-label="Post details">
+  <div class="civic-detail-drawer__backdrop" data-drawer-close></div>
+  <div class="civic-detail-drawer__panel" role="dialog" aria-modal="true">
+    <button type="button" class="civic-drawer-close" data-drawer-close aria-label="Close post"><i class="fa-solid fa-xmark"></i></button>
+    <div id="drawerContent"></div>
+  </div>
+</aside>
 
-</section>
+<dialog class="civic-composer" id="shareComposer" aria-labelledby="shareComposerTitle">
+  <form id="sharePostForm">
+    <header class="civic-composer__header">
+      <div><p>Community feed</p><h2 id="shareComposerTitle">Share Post</h2></div>
+      <button type="button" class="civic-drawer-close" data-composer-close aria-label="Close composer"><i class="fa-solid fa-xmark"></i></button>
+    </header>
+    <div class="civic-composer__body">
+      <fieldset class="civic-composer__types">
+        <legend>Post type</legend>
+        <button type="button" class="is-active" data-compose-type="broadcast"><strong>Broadcast</strong><span>Urgent or scheduled notice</span></button>
+        <button type="button" data-compose-type="listing"><strong>Marketplace Listing</strong><span>Sell, give, rent, or request</span></button>
+        <button type="button" data-compose-type="update"><strong>Community Update</strong><span>Recommendation or observation</span></button>
+        <button type="button" data-compose-type="evergreen"><strong>Evergreen Info</strong><span>Long-term community resource</span></button>
+      </fieldset>
 
-<script type="application/json" id="festival-greeting-schedule">{{ site.data.festivals | jsonify }}</script>
-<script src="{{ site.baseurl }}/assets/js/pages/festival-greeting.js" defer></script>
-<script src="{{ site.baseurl }}/assets/js/pages/community-pagination.js" defer></script>
+      <div class="civic-form-grid">
+        <label><span>Target Hub</span><select name="hub" id="composerHub" required></select></label>
+        <label><span>Author Name</span><input name="author" maxlength="60" required placeholder="Your name"></label>
+        <label class="civic-form-wide"><span>Headline</span><input name="headline" maxlength="140" required placeholder="Clear, conversational headline"></label>
+        <label class="civic-form-wide"><span>Feed Card Summary</span><textarea name="summary" maxlength="280" required rows="3" placeholder="Short summary shown on the card"></textarea></label>
+      </div>
+
+      <div class="civic-form-grid civic-type-fields" id="broadcastFields" hidden>
+        <label><span>Priority</span><select name="priority"><option>Standard</option><option>Urgent</option></select></label>
+        <label><span>Effective Date / Window</span><input name="effectiveWindow" placeholder="Nov 21, 9 AM–2 PM"></label>
+      </div>
+      <div class="civic-form-grid civic-type-fields" id="listingFields" hidden>
+        <label><span>Listing Type</span><select name="listingType"><option>For Sale</option><option>Free</option><option>Service</option><option>Wanted</option><option>Rental</option></select></label>
+        <label><span>Price</span><input name="price" placeholder="$0"></label>
+        <label class="civic-form-wide"><span>Pickup Area</span><input name="pickupArea" placeholder="Elm Drive lobby or nearby intersection"></label>
+      </div>
+      <div class="civic-form-grid civic-type-fields" id="evergreenFields" hidden>
+        <label><span>Key Fact 1 Label</span><input name="fact1Label" placeholder="Applies To"></label>
+        <label><span>Key Fact 1 Value</span><input name="fact1Value" placeholder="Elm Drive residents"></label>
+        <label><span>Key Fact 2 Label</span><input name="fact2Label" placeholder="Key Contact"></label>
+        <label><span>Key Fact 2 Value</span><input name="fact2Value" placeholder="Building office"></label>
+      </div>
+
+      <div class="civic-form-grid">
+        <label class="civic-form-wide"><span>Full Details</span><textarea name="details" required maxlength="8000" rows="7" placeholder="Share complete details"></textarea></label>
+        <label class="civic-form-wide"><span>Cover Photo URL</span><input name="image" type="url" placeholder="https://…"></label>
+        <label class="civic-form-wide"><span>Topic Tags</span><input name="tags" placeholder="Transit, Schedule, Neighbours"></label>
+      </div>
+    </div>
+    <footer class="civic-composer__footer">
+      <button type="button" class="civic-btn civic-btn--secondary" data-composer-close>Cancel</button>
+      <button type="submit" class="civic-btn civic-btn--primary">Publish Post</button>
+    </footer>
+  </form>
+</dialog>
+
+<div class="civic-confirmation" id="publishConfirmation" role="status" hidden>
+  <span>Post published</span><button type="button" id="openPublishedPost">Open Post</button>
+</div>
+
+<script type="application/json" id="civicSeedData">
+{
+  "hubs": [
+    {% assign hub_pages = site.pages | where_exp: "p", "p.path contains 'content/'" | where_exp: "p", "p.name == 'index.md' or p.name == 'index.html'" | sort: "title" %}
+    {% for hub in hub_pages %}
+      {"id":"{{ hub.community_key | default: hub.title | slugify | prepend: 'comm-' | replace: 'comm-comm-', 'comm-' }}","name":"{{ hub.condo | default: hub.title | escape }}","purpose":"{{ hub.tagline | default: 'Local updates and shared community knowledge.' | escape }}","members":{{ hub.member_count | default: 0 }}}{% unless forloop.last %},{% endunless %}
+    {% endfor %}
+  ],
+  "posts": [
+    {% assign post_index = 0 %}
+    {% for hub in hub_pages %}
+      {% assign hub_name = hub.condo | default: hub.title %}
+      {% assign hub_id = hub.community_key | default: hub_name | slugify | prepend: 'comm-' | replace: 'comm-comm-', 'comm-' %}
+      {% assign hub_posts = site.pages | where: "community_key", hub_id %}
+      {% for post in hub_posts %}
+        {% if post.path contains '/broadcasts/' or post.layout == 'broadcast' %}
+          {% if post_index > 0 %},{% endif %}
+          {"id":"{{ post.page_key | default: post.url | slugify }}","type":"broadcast","hub":"{{ hub_name | escape }}","hubId":"{{ hub_id }}","title":"{{ post.title | escape }}","summary":"{{ post.description | default: post.excerpt | default: post.content | markdownify | xml_unescape | strip_html | replace: '**', '' | strip_newlines | truncate: 220 | escape }}","details":{{ post.content | markdownify | xml_unescape | strip_html | replace: '**', '' | strip | jsonify }},"source":{{ post.content | jsonify | replace: '</', '<\/' }},"author":"{{ post.author | default: 'Hub Moderator' | escape }}","authorRole":"Hub Moderator","createdAt":"{{ post.date | default: '2026-11-18' | date_to_xmlschema }}","effectiveWindow":"{{ post.valid_until | default: '' | escape }}","priority":"{{ post.urgency | default: 'Standard' | escape }}","tags":[{% for tag in post.tags %}"{{ tag | escape }}"{% unless forloop.last %},{% endunless %}{% endfor %}],"upvotes":0,"replies":[],"saved":false,"status":"Active","image":"{{ post.image_url | default: '' | escape }}"}
+          {% assign post_index = post_index | plus: 1 %}
+        {% elsif post.path contains 'content/' %}
+          {% if post_index > 0 %},{% endif %}
+          {"id":"{{ post.page_key | default: post.url | slugify }}","type":"evergreen","hub":"{{ hub_name | escape }}","hubId":"{{ hub_id }}","title":"{{ post.title | escape }}","summary":"{{ post.description | default: post.excerpt | default: post.content | markdownify | xml_unescape | strip_html | replace: '**', '' | strip_newlines | truncate: 220 | escape }}","details":{{ post.content | markdownify | xml_unescape | strip_html | replace: '**', '' | strip | jsonify }},"source":{{ post.content | jsonify | replace: '</', '<\/' }},"author":"{{ post.author | default: 'Posted by Community Member' | escape }}","authorRole":"Verified Neighbor","createdAt":"{{ post.date | default: '2026-11-18' | date_to_xmlschema }}","lastVerifiedAt":"{{ post.last_checked | default: post.date | default: '2026-11-18' | date_to_xmlschema }}","tags":[{% for tag in post.tags %}"{{ tag | escape }}"{% unless forloop.last %},{% endunless %}{% endfor %}],"facts":{},"upvotes":0,"replies":[],"saved":false,"status":"Evergreen","image":"{{ post.image_url | default: '' | escape }}"}
+          {% assign post_index = post_index | plus: 1 %}
+        {% endif %}
+      {% endfor %}
+    {% endfor %}
+    {% for ad in site.pros %}
+      {% assign ad_hub = ad.target_community | default: ad.condo | default: 'General' %}
+      {% assign ad_image = ad.image_url | default: '' | split: ',' | first | strip %}
+      {% if post_index > 0 %},{% endif %}
+      {"id":"{{ ad.page_key | default: ad.url | slugify }}","type":"listing","hub":"{{ ad_hub | escape }}","hubId":"comm-{{ ad_hub | slugify }}","title":"{{ ad.title | escape }}","summary":"{{ ad.description | default: ad.content | markdownify | xml_unescape | strip_html | replace: '**', '' | strip_newlines | truncate: 220 | escape }}","details":{{ ad.content | markdownify | xml_unescape | strip_html | replace: '**', '' | strip | jsonify }},"source":{{ ad.content | jsonify | replace: '</', '<\/' }},"author":"{{ ad.author | default: 'Community Member' | escape }}","authorRole":"Neighbor","createdAt":"{{ ad.date | default: '2026-11-18' | date_to_xmlschema }}","listingType":"{{ ad.listing_type | default: 'For Sale' | escape }}","price":"{{ ad.price | default: '' | escape }}","pickupArea":"{{ ad.pickup_area | default: ad.condo | default: ad_hub | escape }}","status":"{{ ad.listing_status | default: 'Available' | escape }}","tags":[{% for tag in ad.tags %}"{{ tag | escape }}"{% unless forloop.last %},{% endunless %}{% endfor %}],"upvotes":0,"replies":[],"saved":false,"image":"{{ ad_image | escape }}"}
+      {% assign post_index = post_index | plus: 1 %}
+    {% endfor %}
+  ]
+}
+</script>
+
+<script src="{{ site.baseurl }}/assets/js/pages/community-feed.js?v={{ css_version }}" defer></script>

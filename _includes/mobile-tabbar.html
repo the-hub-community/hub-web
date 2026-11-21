@@ -27,25 +27,25 @@
   <a
     href="{{ wiki_href | relative_url }}"
     class="mobile-tabbar__tab{% if page.url contains '/content/' %} is-active{% endif %}"
-    aria-label="Community Wiki"
+    aria-label="Community Hub"
     {% if page.url contains '/content/' %}aria-current="page"{% endif %}
   >
     <i class="fa-solid fa-book" aria-hidden="true"></i>
-    <span>{% if current_condo or first_community %}Wiki{% else %}Start{% endif %}</span>
+    <span>{% if current_condo or first_community %}Hub{% else %}Start{% endif %}</span>
   </a>
 
   <button
     type="button"
     class="mobile-tabbar__tab mobile-tabbar__tab--center"
     id="mobileTabbarContribute"
-    aria-label="Contribute"
+    aria-label="Share with Community"
     aria-expanded="false"
     aria-controls="mobile-contribute-sheet"
   >
     <span class="mobile-tabbar__center-icon">
       <i class="fa-solid fa-plus" aria-hidden="true"></i>
     </span>
-    <span>Contribute</span>
+    <span>Share</span>
   </button>
 
   <a
@@ -75,20 +75,20 @@
   aria-hidden="true"
   role="dialog"
   aria-modal="true"
-  aria-label="Contribute menu"
+  aria-label="Share with Community menu"
 >
   <div class="mobile-contribute-sheet__backdrop" data-sheet-close></div>
   <div class="mobile-contribute-sheet__panel">
     <div class="mobile-contribute-sheet__handle" aria-hidden="true"></div>
-    <h2 class="mobile-contribute-sheet__title">What would you like to add?</h2>
+    <h2 class="mobile-contribute-sheet__title">What would you like to share?</h2>
 
     <a href="{{ '/submit.html' | relative_url }}" class="mobile-contribute-sheet__option">
       <span class="mobile-contribute-sheet__option-icon" aria-hidden="true">
         <i class="fa-solid fa-pen-to-square"></i>
       </span>
       <span class="mobile-contribute-sheet__option-body">
-        <span class="mobile-contribute-sheet__option-title">Write a page</span>
-        <span class="mobile-contribute-sheet__option-desc">Share local knowledge or a guide</span>
+        <span class="mobile-contribute-sheet__option-title">Share Community Info</span>
+        <span class="mobile-contribute-sheet__option-desc">Post a helpful local resource or guide</span>
       </span>
       <i class="fa-solid fa-chevron-right mobile-contribute-sheet__option-arrow" aria-hidden="true"></i>
     </a>
