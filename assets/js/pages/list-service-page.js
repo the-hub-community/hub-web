@@ -76,6 +76,22 @@ function slugifyCommunityName(name) {
     .replace(/^-+|-+$/g, "");
 }
 
+const requestedCommunity = new URLSearchParams(window.location.search)
+  .get("community")
+  ?.trim();
+if (requestedCommunity && marketplaceCommunitySelect) {
+  const requestedSlug = slugifyCommunityName(requestedCommunity);
+  const matchingOption = Array.from(marketplaceCommunitySelect.options).find(
+    (option) =>
+      slugifyCommunityName(option.value) === requestedSlug ||
+      slugifyCommunityName(option.textContent) === requestedSlug,
+  );
+  if (matchingOption) {
+    marketplaceCommunitySelect.value = matchingOption.value;
+    syncMarketplaceCommunityKey();
+  }
+}
+
 function resolvePostSubmitRedirectUrl(submissionId) {
   // Attach community if one is selected from the dropdown.
   const selectedCondo =

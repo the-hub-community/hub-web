@@ -42,6 +42,8 @@
       summary: decodeText(post.summary),
       details: decodeText(post.details),
       hub: decodeText(post.hub),
+      pageKey: decodeText(post.pageKey || post.page_key || post.id),
+      communityKey: decodeText(post.communityKey || post.community_key || post.hubId || ""),
       author: decodeText(post.author),
       source,
       image: decodeText(post.image || imageFromSource || ""),
@@ -142,6 +144,7 @@
       }
       persist();
       render();
+      openLinkedPost();
     } catch (error) {
       showPersistenceWarning(error);
     }
@@ -277,7 +280,7 @@
         ${extra}
       </div>
       <footer class="civic-card__footer">
-        <button type="button" data-vote="${escapeHtml(post.id)}" class="${post.voted ? "is-active" : ""}" aria-pressed="${post.voted}"><i class="fa-solid fa-arrow-up"></i> Upvote</button>
+        <button type="button" data-vote="${escapeHtml(post.id)}" class="${post.voted ? "is-active" : ""}" aria-label="${post.voted ? "Remove upvote" : "Upvote post"}" aria-pressed="${post.voted}"><i class="fa-solid fa-arrow-up"></i> ${post.voted ? "Upvoted" : "Upvote"}</button>
         <button type="button" data-replies="${escapeHtml(post.id)}"><i class="fa-regular fa-comment"></i> ${post.replies.length} Replies</button>
         <button type="button" data-save="${escapeHtml(post.id)}" class="${post.saved ? "is-active" : ""}" aria-pressed="${post.saved}"><i class="fa-${post.saved ? "solid" : "regular"} fa-bookmark"></i> ${post.saved ? "Saved" : "Save"}</button>
         <button type="button" data-open-post="${escapeHtml(post.id)}">Open Thread</button>
@@ -327,6 +330,7 @@
     if (!post) return;
     const drawer = document.getElementById("postDrawer");
     const content = document.getElementById("drawerContent");
+    drawer.dataset.postId = post.id;
     const facts = post.facts || {};
     content.innerHTML = `
       ${post.image ? `<div class="civic-detail-media"><img src="${escapeHtml(post.image)}" alt="${escapeHtml(post.title)}" referrerpolicy="no-referrer" data-fallback="true"></div>` : ""}
@@ -334,10 +338,12 @@
       <p class="civic-detail-author">${escapeHtml(post.author)} · ${escapeHtml(post.authorRole || "Community Member")}</p>
       <h2>${escapeHtml(post.title)}</h2>
       <p class="civic-detail-prose">${escapeHtml(post.details || post.summary)}</p>
+      ${postShareLinks(post)}
       ${post.type === "listing" ? listingDetail(post) : ""}
       ${post.type === "evergreen" ? evergreenDetail(post, facts) : ""}
       <section class="civic-replies">
-        <h3>Community Replies · ${post.replies.length}</h3>
+        <h3>Community Replies · <span id="replyCount">${post.replies.length}</span></h3>
+        <p id="pageCommentsStatus" role="status" aria-live="polite"></p>
         <div id="replyList">${post.replies.map((reply) => `<article><strong>${escapeHtml(reply.author)}</strong><time>${relativeTime(reply.createdAt)}</time><p>${escapeHtml(reply.message)}</p></article>`).join("") || "<p>No replies yet.</p>"}</div>
         <form id="replyForm" class="civic-reply-form">
           <label><span>Author Name</span><input name="author" maxlength="60" required></label>
@@ -348,6 +354,7 @@
     drawer.classList.add("is-open");
     drawer.setAttribute("aria-hidden", "false");
     bindImageFallbacks();
+    void loadPageComments(post);
     const listingStatus = content.querySelector("#listingStatus");
     if (listingStatus) {
       listingStatus.addEventListener("change", () => {
@@ -393,7 +400,81 @@
     const factsHtml = Object.keys(facts).length
       ? `<dl class="civic-detail-facts">${Object.entries(facts).map(([label, value]) => `<div><dt>${escapeHtml(label)}</dt><dd>${escapeHtml(value)}</dd></div>`).join("")}</dl>`
       : "";
-    return `${factsHtml}<button type="button" class="civic-btn civic-btn--secondary" id="markVerified">Mark Verified Today</button>`;
+    const verifiedAt = post.lastVerifiedAt
+      ? `Last verified ${exactTime(post.lastVerifiedAt)}`
+      : "Not verified yet";
+    return `${factsHtml}<p class="civic-verified" role="status">${escapeHtml(verifiedAt)}</p><button type="button" class="civic-btn civic-btn--secondary" id="markVerified">Mark Verified Today</button>`;
+  }
+
+  function renderReplies(post, importedReplies = []) {
+    const replyList = document.getElementById("replyList");
+    const replyCount = document.getElementById("replyCount");
+    if (!replyList || !replyCount) return;
+
+    const replies = [...post.replies, ...importedReplies].sort(
+      (a, b) => new Date(a.createdAt) - new Date(b.createdAt),
+    );
+    replyCount.textContent = String(replies.length);
+    replyList.innerHTML = replies.map((reply) => `<article><strong>${escapeHtml(reply.author || "Anonymous")}</strong><time>${relativeTime(reply.createdAt)}</time><p>${escapeHtml(reply.message)}</p></article>`).join("") || "<p>No replies yet.</p>";
+  }
+
+  async function loadPageComments(post) {
+    const endpoint = window.ResiHubApi?.ENDPOINTS?.comments;
+    if (!endpoint || !post.pageKey || !post.communityKey) return;
+
+    const drawer = document.getElementById("postDrawer");
+    const status = document.getElementById("pageCommentsStatus");
+    if (!status) return;
+    status.textContent = "Loading existing comments…";
+    try {
+      const query = new URLSearchParams({
+        page_key: post.pageKey,
+        community_key: post.communityKey,
+      });
+      const response = await fetch(`${endpoint}?${query}`, {
+        headers: { Accept: "application/json" },
+      });
+      if (!response.ok) throw new Error(`Comments could not load (${response.status}).`);
+      const payload = await response.json();
+      if (payload?.success !== true || !Array.isArray(payload.comments)) {
+        throw new Error(payload?.error || "Comments service returned invalid data.");
+      }
+      if (drawer.dataset.postId !== post.id) return;
+
+      const replies = payload.comments.map((comment) => ({
+        author: comment.author || "Anonymous",
+        message: comment.text || "",
+        createdAt: comment.submitted_at || comment.createdAt,
+      })).filter((comment) => comment.message);
+      renderReplies(post, replies);
+      status.textContent = "";
+    } catch (error) {
+      if (drawer.dataset.postId === post.id) status.textContent = error.message;
+    }
+  }
+
+  function postShareLinks(post) {
+    const shareUrl = new URL("/", window.location.origin);
+    shareUrl.searchParams.set("post", post.id);
+    const encodedUrl = encodeURIComponent(shareUrl.toString());
+    const encodedTitle = encodeURIComponent(post.title);
+    const links = {
+      whatsapp: `https://api.whatsapp.com/send?text=${encodedTitle}%20${encodedUrl}`,
+      facebook: `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}`,
+      x: `https://twitter.com/intent/tweet?text=${encodedTitle}&url=${encodedUrl}`,
+      linkedin: `https://www.linkedin.com/sharing/share-offsite/?url=${encodedUrl}`,
+    };
+    return `<section class="civic-social-share" aria-label="Share this post"><span>Share this post</span>
+      <a href="${links.whatsapp}" target="_blank" rel="noopener noreferrer" aria-label="Share on WhatsApp"><i class="fa-brands fa-whatsapp" aria-hidden="true"></i></a>
+      <a href="${links.facebook}" target="_blank" rel="noopener noreferrer" aria-label="Share on Facebook"><i class="fa-brands fa-facebook-f" aria-hidden="true"></i></a>
+      <a href="${links.x}" target="_blank" rel="noopener noreferrer" aria-label="Share on X"><i class="fa-brands fa-x-twitter" aria-hidden="true"></i></a>
+      <a href="${links.linkedin}" target="_blank" rel="noopener noreferrer" aria-label="Share on LinkedIn"><i class="fa-brands fa-linkedin-in" aria-hidden="true"></i></a>
+    </section>`;
+  }
+
+  function openLinkedPost() {
+    const postId = new URLSearchParams(location.search).get("post");
+    if (postId && posts.some((post) => post.id === postId)) openPost(postId);
   }
 
   function setupActions() {
@@ -600,6 +681,7 @@
   setupActions();
   updateHubBanner();
   render();
+  openLinkedPost();
   selectComposerType("broadcast");
   void syncCommunityPosts();
 })();

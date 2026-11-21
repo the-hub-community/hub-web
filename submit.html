@@ -56,7 +56,7 @@ sitemap: false
         <h2 class="submit-panel__title">What do you want to share?</h2>
         <div class="composer-intent-grid" role="radiogroup" aria-label="Post type">
           <label class="composer-intent"><input type="radio" name="intent" value="broadcast"><i class="fa-solid fa-bullhorn"></i><strong>Broadcast / Alert</strong><span>Urgent or scheduled notice</span></label>
-          <label class="composer-intent"><input type="radio" name="intent" value="community"><i class="fa-solid fa-book-open"></i><strong>Community Info</strong><span>Helpful long-term resource</span></label>
+          <label class="composer-intent"><input type="radio" name="intent" value="community" checked><i class="fa-solid fa-book-open"></i><strong>Community Info</strong><span>Helpful long-term resource</span></label>
           <label class="composer-intent"><input type="radio" name="intent" value="notification"><i class="fa-solid fa-bell"></i><strong>Notification / Update</strong><span>Routine community change</span></label>
           <label class="composer-intent"><input type="radio" name="intent" value="listing"><i class="fa-solid fa-tag"></i><strong>Marketplace Listing</strong><span>Sell, give away, rent, or request</span></label>
         </div>
@@ -205,6 +205,7 @@ document.addEventListener('DOMContentLoaded', function () {
   });
   const select = document.getElementById('thcCommunitySelect');
   const newGroup = document.getElementById('newCommunityGroup');
+  const newCommunityInput = document.getElementById('thcNewCommunity');
 
   if (select) {
     const communities = [
@@ -220,7 +221,23 @@ document.addEventListener('DOMContentLoaded', function () {
     });
     const optNew = document.createElement('option');
     optNew.value = '__new__'; optNew.textContent = '＋ Start a new community'; select.appendChild(optNew);
-    select.addEventListener('change', () => { if (newGroup) newGroup.hidden = select.value !== '__new__'; });
+    const updateNewCommunityField = () => {
+      const creatingCommunity = select.value === '__new__';
+      if (newGroup) newGroup.hidden = !creatingCommunity;
+      if (newCommunityInput) newCommunityInput.required = creatingCommunity;
+    };
+    select.addEventListener('change', updateNewCommunityField);
+
+    if (new URLSearchParams(window.location.search).get('new_community') === '1') {
+      select.value = '__new__';
+      select.dispatchEvent(new Event('change', { bubbles: true }));
+      const communityIntent = document.querySelector('.composer-intent input[value="community"]');
+      if (communityIntent) {
+        communityIntent.checked = true;
+        communityIntent.dispatchEvent(new Event('change', { bubbles: true }));
+      }
+      document.getElementById('thcNewCommunity')?.focus({ preventScroll: true });
+    }
   }
 
   const pickerEl = document.getElementById('wizard-image-picker');
@@ -413,9 +430,34 @@ document.addEventListener('DOMContentLoaded', function () {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
-  document.querySelectorAll('.submit-next').forEach(btn => btn.addEventListener('click', () => showStep(btn.dataset.next)));
+  function openMarketplaceListingForm() {
+    if (select?.value === '__new__') {
+      alert('Create the community first, then add a marketplace listing.');
+      const communityIntent = document.querySelector('.composer-intent input[value="community"]');
+      if (communityIntent) {
+        communityIntent.checked = true;
+        communityIntent.dispatchEvent(new Event('change', { bubbles: true }));
+      }
+      return;
+    }
+
+    const listingUrl = new URL('list-service.html', window.location.href);
+    if (select?.value) listingUrl.searchParams.set('community', select.value);
+    window.location.href = listingUrl.href;
+  }
+
+  const navigateToStep = (step) => {
+    const selectedIntent = form?.querySelector('input[name="intent"]:checked')?.value;
+    if (String(step) !== '1' && selectedIntent === 'listing') {
+      openMarketplaceListingForm();
+      return;
+    }
+    showStep(step);
+  };
+
+  document.querySelectorAll('.submit-next').forEach(btn => btn.addEventListener('click', () => navigateToStep(btn.dataset.next)));
   document.querySelectorAll('.submit-back').forEach(btn => btn.addEventListener('click', () => showStep(btn.dataset.back)));
-  steps.forEach(s => s.addEventListener('click', () => showStep(s.dataset.step)));
+  steps.forEach(s => s.addEventListener('click', () => navigateToStep(s.dataset.step)));
 
   let savedEditorRange = null;
   document.querySelectorAll('.editor-toolbar button[data-cmd]').forEach(btn => {
@@ -537,6 +579,10 @@ document.addEventListener('DOMContentLoaded', function () {
   if (form) {
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
+      if (form.querySelector('input[name="intent"]:checked')?.value === 'listing') {
+        openMarketplaceListingForm();
+        return;
+      }
       const submitBtn = form.querySelector('button[type="submit"]');
       const originalBtnHtml = submitBtn.innerHTML;
       const editorArea = document.querySelector('.editor-area');
@@ -560,7 +606,21 @@ document.addEventListener('DOMContentLoaded', function () {
 
       try {
         const formData = new FormData();
-        formData.append('type', 'community');
+        const selectedIntent = form.querySelector('input[name="intent"]:checked')?.value || 'community';
+        const submissionTypes = {
+          community: 'wiki',
+          broadcast: 'broadcast',
+          notification: 'notification',
+        };
+        const submissionType = submissionTypes[selectedIntent];
+        if (!submissionType) throw new Error('Choose a valid post type.');
+        const successPageTypes = {
+          wiki: 'community',
+          broadcast: 'broadcast',
+          notification: 'notification',
+        };
+        const successPageType = successPageTypes[submissionType];
+        formData.append('type', submissionType);
         const submissionId = window.ResiHubApi?.createSubmissionId('page');
         if (!submissionId) throw new Error('Could not create a submission reference. Reload and retry.');
         formData.append('submission_id', submissionId);
@@ -671,7 +731,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
         if (window.ResiHubSubmissionProgress) window.ResiHubSubmissionProgress.complete("Success!", "Your page has been submitted.");
         const resolvedSubmissionId = data.submission_id || submissionId;
-        const redirectUrl = window.ResiHubApi?.buildSuccessPageUrl({ type: "community", submissionId: resolvedSubmissionId }) || `/success.html?type=community&submission_id=${encodeURIComponent(resolvedSubmissionId)}`;
+        const redirectUrl = window.ResiHubApi?.buildSuccessPageUrl({ type: successPageType, submissionId: resolvedSubmissionId }) || `/success.html?type=${encodeURIComponent(successPageType)}&submission_id=${encodeURIComponent(resolvedSubmissionId)}`;
         setTimeout(() => { window.location.href = redirectUrl; }, 1200);
       } catch (error) {
         if (window.ResiHubSubmissionProgress) window.ResiHubSubmissionProgress.error("Submission failed", error.message);

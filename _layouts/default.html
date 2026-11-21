@@ -313,6 +313,11 @@
                     {% endif %}
                 </div>
                 {% endif %}
+                {% unless page.path contains 'content/' or page.layout == 'broadcast' or page.layout == 'notification' or page.layout == 'marketplace-item' or page.url == '/submit.html' or page.url == '/broadcast.html' or page.url == '/list-service.html' %}
+                {% assign general_reaction_id = page.page_key | default: fallback_page_id %}
+                {% assign general_reaction_community = page_community_key | default: 'general' | slugify %}
+                {% include page-reactions.html reaction_type="wiki" community_key=general_reaction_community content_id=general_reaction_id %}
+                {% endunless %}
         </main>
     </div>
 

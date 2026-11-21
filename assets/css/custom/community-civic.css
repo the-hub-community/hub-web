@@ -113,6 +113,10 @@ h1, h2, h3, .header-brand-name { font-family: "Plus Jakarta Sans", Inter, sans-s
 .civic-detail-meta, .civic-detail-author { color: var(--civic-muted); font-family: "JetBrains Mono", monospace; font-size: .78rem; font-variant-numeric: tabular-nums; }
 .civic-detail-drawer h2 { margin: 12px 0 10px; font-size: 2rem; text-wrap: balance; }
 .civic-detail-prose { max-width: 65ch; color: var(--civic-ink); line-height: 1.65; white-space: pre-wrap; }
+.civic-social-share { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; margin: 16px 0; }
+.civic-social-share > span { margin-right: 4px; color: var(--civic-muted); font-size: .8rem; font-weight: 800; }
+.civic-social-share a { width: 38px; height: 38px; display: grid; place-items: center; border: 1px solid var(--civic-border); border-radius: 50%; color: var(--civic-cobalt); text-decoration: none; }
+.civic-social-share a:hover, .civic-social-share a:focus-visible { background: #eff6ff; border-color: var(--civic-cobalt); }
 .civic-replies { margin-top: 24px; border-top: 1px solid var(--civic-border); padding-top: 16px; }
 .civic-replies article { border-bottom: 1px solid var(--civic-border); padding: 10px 0; }
 .civic-replies article strong { margin-right: 8px; }
@@ -124,7 +128,7 @@ h1, h2, h3, .header-brand-name { font-family: "Plus Jakarta Sans", Inter, sans-s
 .civic-reply-form input, .civic-composer input, .civic-composer select, .civic-listing-controls select { height: 42px; padding: 0 10px; }
 .civic-reply-form textarea, .civic-composer textarea { padding: 10px; resize: vertical; }
 
-.civic-composer { width: min(760px, calc(100vw - 24px)); max-height: calc(100vh - 24px); border: 1px solid var(--civic-border); border-radius: 8px; padding: 0; color: var(--civic-ink); }
+.civic-composer { width: min(760px, calc(100vw - 24px)); max-height: calc(100vh - 24px); overflow: hidden; border: 1px solid var(--civic-border); border-radius: 8px; padding: 0; color: var(--civic-ink); }
 .civic-composer::backdrop { background: rgba(15,23,42,.45); }
 .civic-composer form { max-height: calc(100vh - 24px); display: grid; grid-template-rows: auto minmax(0, 1fr) auto; }
 .civic-composer__header, .civic-composer__footer { display: flex; align-items: center; justify-content: space-between; padding: 16px 20px; border-bottom: 1px solid var(--civic-border); }

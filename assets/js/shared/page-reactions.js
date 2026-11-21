@@ -76,7 +76,9 @@
       render(widget, payload);
     } catch (error) {
       setStatus(widget, `Feedback could not load: ${error.message}`, true);
-      return;
+      widget.querySelectorAll("[data-reaction]").forEach((button) => {
+        button.disabled = false;
+      });
     }
 
     widget.querySelectorAll("[data-reaction]").forEach((button) => {

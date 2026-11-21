@@ -10,6 +10,7 @@
       <a href="{{ '/' | relative_url }}"{% if page.url == '/' %} class="is-active" aria-current="page"{% endif %}>Feed</a>
       <a href="{{ '/notices.html' | relative_url }}"{% if page.url contains 'notices' or page.url contains 'broadcast' %} class="is-active" aria-current="page"{% endif %}>Broadcasts</a>
       <a href="{{ '/marketplace.html' | relative_url }}"{% if page.url contains 'marketplace' or page.url contains 'list-service' %} class="is-active" aria-current="page"{% endif %}>Listings</a>
+      <a href="{{ '/communities.html' | relative_url }}"{% if page.url contains 'communities' %} class="is-active" aria-current="page"{% endif %}>Communities</a>
       <a href="{{ '/?saved=1' | relative_url }}"{% if page.url == '/' and page.saved_view %} class="is-active" aria-current="page"{% endif %}>Saved</a>
     </nav>
     <div class="header-right">
