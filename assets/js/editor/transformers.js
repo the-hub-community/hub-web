@@ -142,9 +142,20 @@ export function deepCleanHTML(html) {
   const parseHtml = (source) => {
     const doc = parser.parseFromString(source, "text/html");
     doc.querySelectorAll("*").forEach((el) => {
-      while (el.attributes.length > 0) {
-        el.removeAttribute(el.attributes[0].name);
-      }
+      Array.from(el.attributes).forEach((attr) => {
+        if (el.tagName === "A" && attr.name.toLowerCase() === "href") {
+          try {
+            const url = new URL(attr.value, window.location.href);
+            if (!["http:", "https:", "mailto:"].includes(url.protocol)) {
+              el.removeAttribute(attr.name);
+            }
+          } catch (_) {
+            el.removeAttribute(attr.name);
+          }
+        } else {
+          el.removeAttribute(attr.name);
+        }
+      });
     });
     return doc.body.innerHTML;
   };

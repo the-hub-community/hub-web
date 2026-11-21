@@ -19,9 +19,7 @@ date: 2026-11-20T22:05:37.444Z
 <div class="lh-text">
 Last checked: Nov 20, 2026. Black Friday is Fri Nov 27, 2026.
 </div>
-<div class="lh-align-center"><figure class="lh-image-container">
-<img src="https://pub-b0e952c65fd94549b83646f95f2b354b.r2.dev/update-1794544045767-sec0-img0-mississauga_sale.gif" alt="Flashy Black Friday sale GIF for Mississauga deals - 50-90% off" title="Flashy Black Friday sale GIF for Mississauga deals - 50-90% off" class="lh-fluid-img">
-</figure></div>
+<div class="lh-sale-banner" role="img" aria-label="Mississauga Black Friday deals - 50 to 90 percent off"><strong>BLACK FRIDAY</strong><span>Mississauga deals · 50–90% off</span></div>
 <div class="lh-clear"></div>
 </div>
 
@@ -31,11 +29,11 @@ Last checked: Nov 20, 2026. Black Friday is Fri Nov 27, 2026.
 <div class="lh-text">
 **TOP PICKS THIS WEEK**
 
-- Samsung 65” S90H OLED TV —** Save $1,300 (48% off) at Best Buy**
+- **Samsung 65” S90H OLED TV — Save $1,300 (48% off) at Best Buy**
 
-- Bose Quiet Comfort headphones — S**ave $231 (48% off) at Best Buy**
+- **Bose Quiet Comfort headphones — Save $231 (48% off) at Best Buy**
 
-- **Mil**waukee M12 2.0Ah battery — Save $**80 (74% off) at Home Depot**
+- **Milwaukee M12 2.0Ah battery — Save $80 (74% off) at Home Depot**
 </div>
 <div class="lh-clear"></div>
 </div>
@@ -103,16 +101,16 @@ https://smartcanucks.ca/canadian-tire-weekly-black-friday-flyers-deals-2026-save
 Milwaukee M12 2.0Ah battery — **$28, was $108, 74% off**, Black Friday sale Nov 5-25- https://www.canooq.ca/deals
 
 -
-DEWALT 25-ft compact tape measure — **$9.98, was $26.98, 63% of**f- https://www.homedepot.ca/product/dewalt-25-ft-compact-tape-measure-with-finger-brake/1001663250
+DEWALT 25-ft compact tape measure — **$9.98, was $26.98, 63% off** - https://www.homedepot.ca/product/dewalt-25-ft-compact-tape-measure-with-finger-brake/1001663250
 
 -
-RIDGID starter kit, two 4.0Ah batteries + charger —** $149, free tool worth up to $18**9- https://torquedigest.com/deals/home-depot-canada-free-tool-battery-kit-offers/
+RIDGID starter kit, two 4.0Ah batteries + charger — **$149, free tool worth up to $189** - https://torquedigest.com/deals/home-depot-canada-free-tool-battery-kit-offers/
 
 -
 Buy an eligible Milwaukee M18 or RYOBI ONE+ battery or combo kit, get a qualifying tool free, while quantities last- https://www.canooq.ca/blog/black-friday-deals-canada-2026
 
 -
-DEWALT 20V MAX ATOMIC drill/driver kit — $**118, was $219, 46% off-** https://weeklyadhunters.com/home-depot-weekly-deals-flyer/
+DEWALT 20V MAX ATOMIC drill/driver kit — **$118, was $219, 46% off** - https://weeklyadhunters.com/home-depot-weekly-deals-flyer/
 </div>
 <div class="lh-clear"></div>
 </div>
@@ -257,7 +255,7 @@ Apple iPad Air 11-inch, 128GB, M4 — **$898.99, Costco**- https://cocoeast.ca/c
 **LIQUIDATION DEALS - GTA**
 
 -
-**Liquidation Expo** — Nov 18-23, International Centre Hall 6, 6900 Airport Rd, Mississauga, 10am-9pm daily, free entry and parking, branded shoes** $20-4**0, bedding** $4**0 or less, kids clothing $**4,** adult clothing $**4,** pallet deals $**1-** https://liquidationexpo.ca/
+**Liquidation Expo** — Nov 18-23, International Centre Hall 6, 6900 Airport Rd, Mississauga, 10am-9pm daily, free entry and parking, branded shoes **$20–40**, bedding **$40 or less**, kids clothing **$4**, adult clothing **$4**, pallet deals **$1** - https://liquidationexpo.ca/
 
 -
 **Revlon Warehouse Sale** — **up to 75% off**, Nov 18-23, International Centre Hall 6, 6900 Airport Rd, Mississauga, 10am-9pm daily, free admission and parking- https://ca.sale-events.com/sale/saleevent-ca-the-revlon-warehouse-sale-is-returning-to-mississauga-with-huge-_g4DPW

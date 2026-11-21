@@ -17,7 +17,9 @@ date: 2026-11-20T21:49:35.930Z
 <div class="lh-section">
 
 <div class="lh-text">
-Last checked: Nov 20, 2026TOP PICKS: Zepto **up** to** 75% off** groceries — Croma smartwatch **Save Rs 5,800 (73% of**f) — LuLu Super Friday** up to 50% off**, till Nov 26
+Last checked: Nov 20, 2026
+
+**TOP PICKS:** Zepto **up to 75% off** groceries — Croma smartwatch **Save Rs 5,800 (73% off)** — LuLu Super Friday **up to 50% off**, till Nov 26
 
 **Information only. Updated Fri Nov 20, 2026. Check the store link before you shop.**
 </div>
@@ -34,15 +36,15 @@ Last checked: Nov 20, 2026TOP PICKS: Zepto **up** to** 75% off** groceries — C
 
 - **LuLu Hypermarket Super Friday — Up to 50% off**, till Nov 26, 2026, Rajajinagar and Kanakapura Road
 
-https://thisweekindia.**news**/the-biggest-sale-of-karnataka-super-friday-begins-at-lulu-bengaluru-amazing-offers-up-to-50-percent-for-multiple-products/
+https://thisweekindia.news/the-biggest-sale-of-karnataka-super-friday-begins-at-lulu-bengaluru-amazing-offers-up-to-50-percent-for-multiple-products/
 
-- **BigBasket — Up to 55% off groceries, 40% off fruit and vegetables,** **till** Nov 30, 2026
+- **BigBasket — Up to 55% off groceries, 40% off fruit and vegetables, till Nov 30, 2026**
 
 https://cashkaro.com/stores/bigbasket
 
-- **Zepto — Up to 75% off groceries, snacks and dry fruits, e.g. toor dal 5 kg Rs 313, was Rs** 1,250
+- **Zepto — Up to 75% off groceries, snacks and dry fruits, e.g. toor dal 5 kg Rs 313, was Rs 1,250**
 
-https://**www**.desidime.com/deals/zepto-up-to-75-2192433
+https://www.desidime.com/deals/zepto-up-to-75-2192433
 </div>
 <div class="lh-align-center"><figure class="lh-image-container">
 <img src="https://pub-b0e952c65fd94549b83646f95f2b354b.r2.dev/update-1794603584228-sec1-img0-groceries.jpg" alt="Groceries on sale this week" title="Groceries on sale this week" class="lh-fluid-img">
@@ -63,7 +65,7 @@ https://www.croma.com/campaign/black-friday-deals/c/6305
 
 https://www.grabon.in/indulge/shopping-tips/flipkart-upcoming-sales/
 
-- **Amazon Blockbuster Deals on Appliances — Up to 60% off, washing machines 55%** o**ff, refrigerators** 55**% off, smart TVs** 50% off, live from Nov 19, 2026
+- **Amazon Blockbuster Deals on Appliances — Up to 60% off, washing machines 55% off, refrigerators 55% off, smart TVs 50% off**, live from Nov 19, 2026
 
 https://www.grabon.in/indulge/featured/amazon-india-upcoming-sales/
 </div>

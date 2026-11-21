@@ -112,6 +112,73 @@
       .replace(/>/g, "&gt;");
   }
 
+  function insertTable(editorArea) {
+    editorArea.focus();
+    const selection = window.getSelection();
+    const hasEditorSelection =
+      selection?.rangeCount &&
+      editorArea.contains(selection.anchorNode);
+    if (!hasEditorSelection) {
+      const range = document.createRange();
+      range.selectNodeContents(editorArea);
+      range.collapse(false);
+      selection.removeAllRanges();
+      selection.addRange(range);
+    }
+    const tableHtml =
+      '<table><tbody><tr><th>Header</th><th>Header</th></tr>' +
+      '<tr><td>Cell</td><td>Cell</td></tr></tbody></table><p><br></p>';
+    document.execCommand("insertHTML", false, tableHtml);
+  }
+
+  function sanitizePastedHtml(html) {
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(String(html || ""), "text/html");
+    const allowed = new Set([
+      "A", "B", "STRONG", "I", "EM", "U", "S", "P", "DIV", "BR", "SPAN",
+      "H1", "H2", "H3", "H4", "H5", "H6", "BLOCKQUOTE", "PRE", "CODE",
+      "UL", "OL", "LI", "TABLE", "THEAD", "TBODY", "TR", "TH", "TD",
+    ]);
+    doc.body.querySelectorAll("*").forEach((el) => {
+      if (!allowed.has(el.tagName)) {
+        el.replaceWith(...el.childNodes);
+        return;
+      }
+      Array.from(el.attributes).forEach((attr) => {
+        if (el.tagName === "A" && attr.name.toLowerCase() === "href") {
+          try {
+            const url = new URL(attr.value, window.location.href);
+            if (!["http:", "https:", "mailto:"].includes(url.protocol)) {
+              el.removeAttribute(attr.name);
+            }
+          } catch (_) {
+            el.removeAttribute(attr.name);
+          }
+        } else if (
+          attr.name.toLowerCase() === "style" &&
+          ["SPAN", "P", "DIV", "TD", "TH", "TR", "TABLE"].includes(el.tagName)
+        ) {
+          const allowedStyles = [];
+          for (const declaration of attr.value.split(";")) {
+            const colon = declaration.indexOf(":");
+            if (colon < 0) continue;
+            const property = declaration.slice(0, colon).trim().toLowerCase();
+            const value = declaration.slice(colon + 1).trim();
+            if (
+              ["text-align", "font-weight", "font-style", "text-decoration"].includes(property) &&
+              !/expression|javascript|url\s*\(/i.test(value)
+            ) allowedStyles.push(`${property}:${value}`);
+          }
+          if (allowedStyles.length) el.setAttribute("style", allowedStyles.join(";"));
+          else el.removeAttribute("style");
+        } else {
+          el.removeAttribute(attr.name);
+        }
+      });
+    });
+    return doc.body.innerHTML;
+  }
+
   class EditorInstance {
     constructor(container, options = {}) {
       if (!container) throw new Error("[EditorCore] container required");
@@ -193,6 +260,24 @@
       if (!editorArea) return;
       let savedRange = null;
 
+      editorArea.addEventListener("keydown", (event) => {
+        if (event.key !== "Tab") return;
+        event.preventDefault();
+        document.execCommand(event.shiftKey ? "outdent" : "indent", false, null);
+      });
+
+      editorArea.addEventListener("paste", (event) => {
+        event.preventDefault();
+        const clipboard = event.clipboardData;
+        if (!clipboard) return;
+        const html = clipboard.getData("text/html");
+        if (html) {
+          document.execCommand("insertHTML", false, sanitizePastedHtml(html));
+        } else {
+          document.execCommand("insertText", false, clipboard.getData("text/plain"));
+        }
+      });
+
       section.querySelectorAll("[data-editor-cmd]").forEach((btn) => {
         btn.addEventListener("mousedown", (e) => {
           e.preventDefault();
@@ -207,6 +292,16 @@
           if (cmd === "createLink") {
             const href = await window.ResiHubLinkDialog.open();
             if (!href) {
+              savedRange = null;
+              return;
+            }
+            if (cmd === "insertTable") {
+              if (savedRange) {
+                const selection = window.getSelection();
+                selection.removeAllRanges();
+                selection.addRange(savedRange);
+              }
+              insertTable(editorArea);
               savedRange = null;
               return;
             }

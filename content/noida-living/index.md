@@ -17,7 +17,9 @@ date: 2026-11-20T21:28:00.053Z
 <div class="lh-section">
 
 <div class="lh-text">
-Last checked: Nov 20, 2026TOP PICKS: Myntra** up to 90% off (jeans Rs 189)** — Croma smartwatch** Save Rs 5,800 (73**% off) — BigBasket** up to 55% off** groceries
+Last checked: Nov 20, 2026
+
+**TOP PICKS:** Myntra **up to 90% off (jeans Rs 189)** — Croma smartwatch **Save Rs 5,800 (73% off)** — BigBasket **up to 55% off** groceries
 
 **Information only. Updated Fri Nov 20, 2026. Check the store link before you shop.**
 </div>
@@ -51,11 +53,11 @@ https://zoutons.com/dmart-coupons
 <div class="lh-text">
 **ELECTRONICS**
 
-- **Croma Black Friday** — Noise Fit Mettle smartwatch** Rs 2,199, was Rs 7,999, Save 73%, save Rs 5,800**; **Bajaj kettle Rs 799, was Rs 2,150, 63% off**; sale Nov 25–30, 2026
+- **Croma Black Friday** — Noise Fit Mettle smartwatch — **Rs 2,199, was Rs 7,999, save Rs 5,800 (73% off)**; Bajaj kettle — **Rs 799, was Rs 2,150, 63% off**; sale Nov 25–30, 2026
 
 https://www.croma.com/campaign/black-friday-deals/c/6305
 
-- **Vijay Sales Black Friday** —** Up to 65% off TVs, laptops, ACs and washing machines**, from Nov 20, 2026
+- **Vijay Sales Black Friday** — **Up to 65% off TVs, laptops, ACs and washing machines**, from Nov 20, 2026
 
 https://www.desidime.com/news/black-friday-sale-offers-deals-2026
 

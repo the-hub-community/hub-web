@@ -364,6 +364,11 @@ document.addEventListener("DOMContentLoaded", () => {
   document.addEventListener("keydown", function (e) {
     if (!e.target.classList || !e.target.classList.contains("editor-area"))
       return;
+    if (e.key === "Tab") {
+      e.preventDefault();
+      document.execCommand(e.shiftKey ? "outdent" : "indent", false, null);
+      return;
+    }
     if (e.key === "Enter" && !e.shiftKey) {
       // On mobile, some browsers do not insert a new line. Try to force it.
       setTimeout(() => {
@@ -414,6 +419,74 @@ function unwrapEncodedCodeBlocks(html) {
   );
 }
 
+function insertEditorTable(editor) {
+  if (editor) editor.focus();
+  if (editor) {
+    const selection = window.getSelection();
+    const hasEditorSelection =
+      selection?.rangeCount &&
+      editor.contains(selection.anchorNode);
+    if (!hasEditorSelection) {
+      const range = document.createRange();
+      range.selectNodeContents(editor);
+      range.collapse(false);
+      selection.removeAllRanges();
+      selection.addRange(range);
+    }
+  }
+  const tableHtml =
+    "<table><tbody><tr><th>Header</th><th>Header</th></tr>" +
+    "<tr><td>Cell</td><td>Cell</td></tr></tbody></table><p><br></p>";
+  document.execCommand("insertHTML", false, tableHtml);
+}
+
+function sanitizePastedEditorHtml(html) {
+  const doc = new DOMParser().parseFromString(String(html || ""), "text/html");
+  const allowed = new Set([
+    "A", "B", "STRONG", "I", "EM", "U", "S", "P", "DIV", "BR", "SPAN",
+    "H1", "H2", "H3", "H4", "H5", "H6", "BLOCKQUOTE", "PRE", "CODE",
+    "UL", "OL", "LI", "TABLE", "THEAD", "TBODY", "TR", "TH", "TD",
+  ]);
+  doc.body.querySelectorAll("*").forEach((el) => {
+    if (!allowed.has(el.tagName)) {
+      el.replaceWith(...el.childNodes);
+      return;
+    }
+    Array.from(el.attributes).forEach((attr) => {
+      if (el.tagName === "A" && attr.name.toLowerCase() === "href") {
+        try {
+          const url = new URL(attr.value, window.location.href);
+          if (!["http:", "https:", "mailto:"].includes(url.protocol)) {
+            el.removeAttribute(attr.name);
+          }
+        } catch (_) {
+          el.removeAttribute(attr.name);
+        }
+      } else if (
+        attr.name.toLowerCase() === "style" &&
+        ["SPAN", "P", "DIV", "TD", "TH", "TR", "TABLE"].includes(el.tagName)
+      ) {
+        const allowedStyles = [];
+        attr.value.split(";").forEach((declaration) => {
+          const colon = declaration.indexOf(":");
+          if (colon < 0) return;
+          const property = declaration.slice(0, colon).trim().toLowerCase();
+          const value = declaration.slice(colon + 1).trim();
+          if (
+            ["text-align", "font-weight", "font-style", "text-decoration"].includes(property) &&
+            !/expression|javascript|url\s*\(/i.test(value)
+          ) allowedStyles.push(`${property}:${value}`);
+        });
+        if (allowedStyles.length) el.setAttribute("style", allowedStyles.join(";"));
+        else el.removeAttribute("style");
+      } else {
+        el.removeAttribute(attr.name);
+      }
+    });
+  });
+  return doc.body.innerHTML;
+}
+
 function deepCleanHTML(html) {
   if (
     !html ||
@@ -428,9 +501,20 @@ function deepCleanHTML(html) {
   const parseHtml = (source) => {
     const doc = parser.parseFromString(source, "text/html");
     doc.querySelectorAll("*").forEach((el) => {
-      while (el.attributes.length > 0) {
-        el.removeAttribute(el.attributes[0].name);
-      }
+      Array.from(el.attributes).forEach((attr) => {
+        if (el.tagName === "A" && attr.name.toLowerCase() === "href") {
+          try {
+            const url = new URL(attr.value, window.location.href);
+            if (!["http:", "https:", "mailto:"].includes(url.protocol)) {
+              el.removeAttribute(attr.name);
+            }
+          } catch (_) {
+            el.removeAttribute(attr.name);
+          }
+        } else {
+          el.removeAttribute(attr.name);
+        }
+      });
     });
     return doc.body.innerHTML;
   };
@@ -526,13 +610,37 @@ function handleGlobalClicks(e) {
   const target = e.target.closest("button");
   if (!target) return;
 
+  if (target.dataset.editorAction === "insertTable") {
+    e.preventDefault();
+    const editor =
+      target.closest(".editor-shell")?.querySelector(".editor-area") ||
+      document.querySelector(".editor-area");
+    insertEditorTable(editor);
+    return;
+  }
+
   if (target.dataset.cmd) {
     e.preventDefault();
-    document.execCommand(target.dataset.cmd, false, null);
     const section = target.closest(".content-section");
-    const editor = section?.querySelector(".editor-area");
+    const editor =
+      section?.querySelector(".editor-area") ||
+      target.closest(".drawer-section-card")?.querySelector(".editor-area") ||
+      target.closest(".editor-shell")?.querySelector(".editor-area");
     if (editor) {
       editor.focus();
+    }
+    if (target.dataset.cmd === "insertTable") {
+      insertEditorTable(editor);
+    } else if (target.dataset.cmd === "createLink") {
+      window.ResiHubLinkDialog
+        ?.open()
+        .then((href) => {
+          if (href) document.execCommand("createLink", false, href);
+        });
+    } else {
+      document.execCommand(target.dataset.cmd, false, null);
+    }
+    if (editor) {
       updateToolbarState(editor);
     }
   }
@@ -599,8 +707,17 @@ function updateToolbarState(editor) {
 document.addEventListener("paste", (e) => {
   if (e.target.classList.contains("editor-area")) {
     e.preventDefault();
-    const text = (e.originalEvent || e).clipboardData.getData("text/plain");
-    document.execCommand("insertText", false, text);
+    const event = e.originalEvent || e;
+    const html = event.clipboardData?.getData("text/html");
+    if (html) {
+      document.execCommand("insertHTML", false, sanitizePastedEditorHtml(html));
+    } else {
+      document.execCommand(
+        "insertText",
+        false,
+        event.clipboardData?.getData("text/plain") || "",
+      );
+    }
   }
 });
 

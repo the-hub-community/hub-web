@@ -107,6 +107,7 @@ sitemap: false
               <button type="button" data-cmd="italic" title="Italic"><i class="fa-solid fa-italic"></i></button>
               <button type="button" data-cmd="underline" title="Underline"><i class="fa-solid fa-underline"></i></button>
               <button type="button" data-cmd="insertUnorderedList" title="Bulleted List"><i class="fa-solid fa-list-ul"></i></button>
+              <button type="button" data-editor-action="insertTable" title="Insert table" aria-label="Insert table"><i class="fa-solid fa-table" aria-hidden="true"></i></button>
               <button type="button" data-cmd="createLink" title="Add link" aria-label="Add link"><i class="fa-solid fa-link" aria-hidden="true"></i></button>
               <button type="button" data-cmd="outdent" title="Decrease Indent"><i class="fa-solid fa-outdent"></i></button>
               <button type="button" data-cmd="indent" title="Increase Indent"><i class="fa-solid fa-indent"></i></button>
@@ -437,10 +438,53 @@ document.addEventListener('DOMContentLoaded', function () {
       restoreEditorRange();
       document.execCommand('createLink', false, href);
       savedEditorRange = null;
+    } else if (btn.dataset.cmd === 'insertTable') {
+      const selection = window.getSelection();
+      const hasEditorSelection =
+        selection?.rangeCount &&
+        editorArea?.contains(selection.anchorNode);
+      if (editorArea && !hasEditorSelection) {
+        const range = document.createRange();
+        range.selectNodeContents(editorArea);
+        range.collapse(false);
+        selection.removeAllRanges();
+        selection.addRange(range);
+      }
+      document.execCommand(
+        'insertHTML',
+        false,
+        '<table><tbody><tr><th>Header</th><th>Header</th></tr><tr><td>Cell</td><td>Cell</td></tr></tbody></table><p><br></p>'
+      );
+      savedEditorRange = null;
     } else {
       document.execCommand(btn.dataset.cmd, false, null);
       savedEditorRange = null;
     }
+  });
+
+  document.querySelectorAll('.editor-toolbar button[data-editor-action="insertTable"]').forEach((button) => {
+    button.addEventListener('click', (event) => {
+      event.preventDefault();
+      const editorArea = document.querySelector('.editor-area');
+      if (!editorArea) return;
+      editorArea.focus();
+      const selection = window.getSelection();
+      const hasEditorSelection =
+        selection?.rangeCount &&
+        editorArea.contains(selection.anchorNode);
+      if (!hasEditorSelection) {
+        const range = document.createRange();
+        range.selectNodeContents(editorArea);
+        range.collapse(false);
+        selection.removeAllRanges();
+        selection.addRange(range);
+      }
+      document.execCommand(
+        'insertHTML',
+        false,
+        '<table><tbody><tr><th>Header</th><th>Header</th></tr><tr><td>Cell</td><td>Cell</td></tr></tbody></table><p><br></p>'
+      );
+    });
   });
 
   const aiFormatBtn = document.getElementById('btn-ai-format');

@@ -67,7 +67,7 @@ Last checked: Nov 20, 2026. Events and kids' activities in Delhi, Nov–Dec 2026
 - Visit Sunder Nursery and IITF on weekday mornings for lighter crowds and easier entry.
 - Pack an extra layer for evening strolls at Kartavya Path or outdoor mall plazas once the sun sets.
 
-Cultural event poster reference:https://files.delhievents.com/images/events/2026/november/mushaira-kavi-sammelan-poetry.webp?=1a
+- Mushaira / Kavi Sammelan poetry event
 </div>
 <div class="lh-clear"></div>
 </div>

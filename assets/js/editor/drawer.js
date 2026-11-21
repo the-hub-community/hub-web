@@ -61,6 +61,18 @@ function getDraftKey() {
   return `editor-draft-${document.body?.dataset?.pageKey || "global"}`;
 }
 
+function clearLegacyGlobalDraft() {
+  localStorage.removeItem("editor-draft");
+  localStorage.removeItem("editor-draft-global");
+  const currentKey = getDraftKey();
+  for (let i = localStorage.length - 1; i >= 0; i -= 1) {
+    const key = localStorage.key(i);
+    if (key?.startsWith("editor-draft-") && key !== currentKey) {
+      localStorage.removeItem(key);
+    }
+  }
+}
+
 function lockPageScroll() {
   if (pageScrollLock) return;
 
@@ -681,6 +693,7 @@ export function addNewSection() {
 export function initDrawer() {
   // Only check for drafts if the edit drawer exists on the page
   if (document.getElementById("editor-panel")) {
+    clearLegacyGlobalDraft();
     restoreDraft();
   }
 

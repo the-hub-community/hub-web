@@ -20,6 +20,8 @@ date: 2026-11-20T22:44:46.592Z
 <div class="lh-text">
 Last checked: Nov 20, 2026. Black Friday is Fri Nov 27, 2026.
 
+<div class="lh-sale-banner" role="img" aria-label="North York Black Friday deals - 20 to 74 percent off"><strong>BLACK FRIDAY</strong><span>North York deals · Save up to 74%</span></div>
+
 **TOP PICKS THIS WEEK**
 
 -
@@ -94,7 +96,7 @@ DEWALT 25-ft compact tape measure — **$9.98, was $26.98, 63% off**
 https://www.homedepot.ca/product/dewalt-25-ft-compact-tape-measure-with-finger-brake/1001663250
 
 -
-RIDGID starter kit, two 4.0Ah batteries + charger — $1**49, free tool worth up to $189**
+RIDGID starter kit, two 4.0Ah batteries + charger — **$149, free tool worth up to $189**
 
 -
 **h**ttps://torquedigest.com/deals/home-depot-canada-free-tool-battery-kit-offers/
@@ -120,7 +122,7 @@ https://weeklyadhunters.com/home-depot-weekly-deals-flyer/
 https://flyerseek.com/no-frills-weekly-flyer-on/
 
 -
-**Food Basics **— flyer Nov 19-25
+- **Food Basics** — flyer Nov 19-25
 
 -
 **https://flye**rseek.com/food-basics-flyer/
@@ -152,7 +154,7 @@ https://flyerseek.com/home-depot-circular/
 **LIQUIDATION DEALS - GTA**
 
 -
-**Liquidation Expo** — Nov 18-23, International Centre Hall 6, 6900 Airport Rd, Mississauga, 10am-9pm daily, free entry and parking, branded shoes** $20-4**0, bedding** $4**0 or less, kids clothing $4, adult clothing** $4,** pallet deals **$1**
+**Liquidation Expo** — Nov 18-23, International Centre Hall 6, 6900 Airport Rd, Mississauga, 10am-9pm daily, free entry and parking, branded shoes **$20–40**, bedding **$40 or less**, kids clothing **$4**, adult clothing **$4**, pallet deals **$1**
 
 -
 https://liquidationexpo.ca/

@@ -200,6 +200,31 @@
   margin-bottom: 0;
 }
 
+.editor-section__body table,
+.editor-area table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1rem 0;
+  table-layout: fixed;
+}
+
+.editor-section__body th,
+.editor-section__body td,
+.editor-area th,
+.editor-area td {
+  border: 1px solid var(--border-default, #cbd5e1);
+  padding: 8px 10px;
+  text-align: left;
+  vertical-align: top;
+  overflow-wrap: anywhere;
+}
+
+.editor-section__body th,
+.editor-area th {
+  background: var(--surface-container-low, #f1f5f9);
+  font-weight: 700;
+}
+
 /* Media block */
 .editor-section__media {
   display: flex;

@@ -86,7 +86,26 @@ const SUBMIT_TIMEOUT_MS = 30000;
         section.querySelectorAll("[data-cmd]").forEach((btn) => {
           btn.addEventListener("click", function () {
             editor.focus();
-            document.execCommand(btn.dataset.cmd, false, null);
+            if (btn.dataset.cmd === "insertTable") {
+              const selection = window.getSelection();
+              const hasEditorSelection =
+                selection?.rangeCount &&
+                editor.contains(selection.anchorNode);
+              if (!hasEditorSelection) {
+                const range = document.createRange();
+                range.selectNodeContents(editor);
+                range.collapse(false);
+                selection.removeAllRanges();
+                selection.addRange(range);
+              }
+              document.execCommand(
+                "insertHTML",
+                false,
+                "<table><tbody><tr><th>Header</th><th>Header</th></tr><tr><td>Cell</td><td>Cell</td></tr></tbody></table><p><br></p>",
+              );
+            } else {
+              document.execCommand(btn.dataset.cmd, false, null);
+            }
           });
         });
         editor.addEventListener("focus", function () {
@@ -95,6 +114,11 @@ const SUBMIT_TIMEOUT_MS = 30000;
         });
         editor.addEventListener("blur", function () {
           if (!editor.textContent.trim()) editor.classList.add("empty");
+        });
+        editor.addEventListener("keydown", function (event) {
+          if (event.key !== "Tab") return;
+          event.preventDefault();
+          document.execCommand(event.shiftKey ? "outdent" : "indent", false, null);
         });
         editor.classList.add("empty");
         editor.addEventListener("input", function () {
