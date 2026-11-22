@@ -292,14 +292,6 @@
                             </button>
                             {% endif %}
 
-                            {% if page.community_key and page.page_key %}
-                            <div class="ugc-report-wrap" data-ugc-type="wiki" data-ugc-id="{{ page.page_key }}" data-community-key="{{ page.community_key }}" data-page-key="{{ page.page_key }}" data-ugc-text="{{ page.content | strip_html | truncate: 220 }}">
-                                <button type="button" class="btn-edit-action report-content-btn" style="border-color: #fca5a5; color: #b91c1c; background: #fef2f2;" aria-label="Report this page content">
-                                    <i class="fa-solid fa-flag"></i> Report
-                                </button>
-                            </div>
-                            {% endif %}
-
                             <div class="page-share-inline" style="margin-left: auto; display: flex; align-items: center; gap: 12px;">
                                 <span class="page-share-inline__label" style="font-size: 0.75rem; font-weight: 700; color: var(--outline); text-transform: uppercase;">Share</span>
                                 <div class="page-share-inline__links" style="display: flex; gap: 8px;">

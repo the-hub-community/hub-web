@@ -580,7 +580,7 @@
         <h3>Community replies</h3>
         <span id="replyCount" class="sr-only">${replyCount}</span>
         <p id="pageCommentsStatus" role="status" aria-live="polite"></p>
-        <div id="replyList">${post.replies.map((reply) => `<article><strong>${escapeHtml(reply.author)}</strong><time>${relativeTime(reply.createdAt)}</time><p>${escapeHtml(reply.message)}</p></article>`).join("") || "<p>No replies yet.</p>"}</div>
+        <div id="replyList">${post.replies.map(renderReplyCard).join("") || "<p>No replies yet.</p>"}</div>
         <form id="replyForm" class="civic-reply-form">
           <label><span>Author Name</span><input name="author" maxlength="60" required></label>
           <label><span>Message</span><textarea name="message" maxlength="1000" required rows="3"></textarea></label>
@@ -588,6 +588,7 @@
         </form>
       </section>
       </article>`;
+    syncReplyToggles(content.querySelector("#replyList"));
     bindImageFallbacks();
     void loadPostPageContent(post, page, content);
     void loadPageComments(post);
@@ -663,7 +664,20 @@
       post.replyCount = replies.length;
     }
     replyCount.textContent = String(replies.length);
-    replyList.innerHTML = replies.map((reply) => `<article><strong>${escapeHtml(reply.author || "Anonymous")}</strong><time>${relativeTime(reply.createdAt)}</time><p>${escapeHtml(reply.message)}</p></article>`).join("") || "<p>No replies yet.</p>";
+    replyList.innerHTML = replies.map(renderReplyCard).join("") || "<p>No replies yet.</p>";
+    syncReplyToggles(replyList);
+  }
+
+  function renderReplyCard(reply) {
+    return `<article><strong>${escapeHtml(reply.author || "Anonymous")}</strong><time>${relativeTime(reply.createdAt)}</time><p class="civic-reply__message">${escapeHtml(reply.message)}</p><button type="button" class="civic-reply__toggle" data-reply-toggle aria-expanded="false" hidden>Show more</button></article>`;
+  }
+
+  function syncReplyToggles(replyList) {
+    replyList.querySelectorAll(".civic-reply__message").forEach((message) => {
+      const toggle = message.nextElementSibling;
+      if (!toggle) return;
+      toggle.hidden = message.scrollHeight <= message.clientHeight + 1;
+    });
   }
 
   async function loadPageComments(post) {
@@ -764,6 +778,16 @@
   function setupActions() {
     window.addEventListener("popstate", openLinkedPost);
     document.addEventListener("click", (event) => {
+      const replyToggle = event.target.closest("[data-reply-toggle]");
+      if (replyToggle) {
+        const message = replyToggle.previousElementSibling;
+        if (message) {
+          const expanded = replyToggle.getAttribute("aria-expanded") !== "true";
+          message.classList.toggle("is-expanded", expanded);
+          replyToggle.setAttribute("aria-expanded", String(expanded));
+          replyToggle.textContent = expanded ? "Show less" : "Show more";
+        }
+      }
       const hub = event.target.closest("[data-hub]");
       if (hub) {
         activeHub = hub.dataset.hub;

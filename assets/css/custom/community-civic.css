@@ -142,12 +142,34 @@ button, input, select, textarea { font: inherit; }
   padding: 16px;
   box-shadow: 0 4px 14px rgb(15 23 42 / 4%);
 }
-.civic-replies h3 { margin: 0 0 8px; font-size: 1.1rem; line-height: 1.35; letter-spacing: normal; }
-.civic-replies article { border-top: 1px solid var(--civic-border); padding: 12px 0; }
-.civic-replies article:first-child { border-top: 0; }
-.civic-replies article strong { margin-right: 8px; }
-.civic-replies article time { color: var(--civic-muted); font-size: .72rem; }
-.civic-replies article p { margin: 6px 0 0; }
+.civic-replies h3 { margin: 0 0 14px; font-size: 1.1rem; line-height: 1.35; letter-spacing: normal; }
+.civic-replies #replyList { display: grid; gap: 10px; }
+.civic-replies #replyList > article {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: baseline;
+  gap: 4px 12px;
+  border: 1px solid var(--civic-border);
+  border-radius: 10px;
+  background: #f8fafc;
+  padding: 12px 14px;
+}
+.civic-replies article strong { color: var(--civic-ink); }
+.civic-replies article time { color: var(--civic-muted); font-size: .75rem; white-space: nowrap; }
+.civic-replies article p { grid-column: 1 / -1; margin: 2px 0 0; overflow-wrap: anywhere; white-space: pre-line; }
+.civic-reply__message { max-height: 6.4em; overflow: hidden; }
+.civic-reply__message.is-expanded { max-height: none; }
+.civic-reply__toggle {
+  grid-column: 1 / -1;
+  justify-self: start;
+  border: 0;
+  background: transparent;
+  color: var(--civic-cobalt);
+  padding: 0;
+  font-size: .82rem;
+  font-weight: 750;
+}
+.civic-replies #replyList > p { margin: 0; color: var(--civic-muted); }
 #markVerified {
   min-width: 178px;
   justify-content: center;
@@ -229,5 +251,7 @@ button, input, select, textarea { font: inherit; }
   .civic-form-grid { grid-template-columns: 1fr; }
   .civic-form-wide { grid-column: auto; }
   .civic-post-page__article { padding: 18px; }
+  .civic-replies { padding: 14px; }
+  .civic-replies #replyList > article { padding: 11px 12px; }
   .civic-confirmation { left: 12px; right: 12px; bottom: 68px; }
 }

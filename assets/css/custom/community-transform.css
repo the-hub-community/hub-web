@@ -28,6 +28,7 @@
   margin-top: -42px;
   padding: 0 24px 20px;
   position: relative;
+  background: var(--surface-container-lowest, #fff);
 }
 .community-hub-header__avatar {
   width: 112px;
@@ -45,9 +46,10 @@
 .community-hub-header__copy { min-width: 0; padding-bottom: 2px; }
 .community-hub-header__copy h1 {
   margin: 0 0 4px;
-  color: var(--on-surface, #041748);
-  font-size: clamp(1.5rem, 3vw, 2.15rem);
+  color: var(--civic-ink, #0f172a);
+  font-size: clamp(1.75rem, 3vw, 2.15rem);
   line-height: 1.15;
+  font-weight: 800;
   overflow-wrap: anywhere;
   text-wrap: pretty;
 }
