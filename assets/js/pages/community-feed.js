@@ -25,6 +25,8 @@
   let activeType = "all";
   let activeSort = "engagement";
   let searchText = "";
+  let siteSearchIndexPromise = null;
+  let siteSearchRequestId = 0;
   let savedOnly = new URLSearchParams(location.search).get("saved") === "1";
   let selectedPostType = "broadcast";
   let publishedPostId = null;
@@ -325,6 +327,93 @@
       return score(b) - score(a) || new Date(b.createdAt) - new Date(a.createdAt);
     });
     return list;
+  }
+
+  function loadSiteSearchIndex() {
+    if (!siteSearchIndexPromise) {
+      const baseUrl = document.body?.dataset.baseurl || "";
+      siteSearchIndexPromise = fetch(`${baseUrl}/search-index.json`, {
+        headers: { Accept: "application/json" },
+      }).then((response) => {
+        if (!response.ok) throw new Error(`Search index request failed (${response.status}).`);
+        return response.json();
+      }).then((entries) => {
+        if (!Array.isArray(entries)) throw new Error("Search index response must be an array.");
+        return entries;
+      }).catch((error) => {
+        siteSearchIndexPromise = null;
+        throw error;
+      });
+    }
+    return siteSearchIndexPromise;
+  }
+
+  function closeSiteSearchResults() {
+    const input = document.getElementById("feedSearch");
+    const results = document.getElementById("siteSearchResults");
+    results.hidden = true;
+    input.setAttribute("aria-expanded", "false");
+  }
+
+  async function updateSiteSearchResults(query) {
+    const input = document.getElementById("feedSearch");
+    const results = document.getElementById("siteSearchResults");
+    const requestId = ++siteSearchRequestId;
+    const terms = query.toLowerCase().trim().split(/\s+/).filter(Boolean);
+    if (!terms.length) {
+      closeSiteSearchResults();
+      results.replaceChildren();
+      return;
+    }
+
+    input.setAttribute("aria-expanded", "true");
+    results.hidden = false;
+    results.classList.add("is-message");
+    results.textContent = "Searching all community content…";
+    try {
+      const entries = await loadSiteSearchIndex();
+      if (requestId !== siteSearchRequestId) return;
+      const matches = entries.map((entry) => {
+        const title = String(entry.title || "");
+        const text = String(entry.text || "").replace(/\s+/g, " ").trim();
+        const url = String(entry.url || "");
+        const searchable = `${title} ${text} ${url}`.toLowerCase();
+        if (!terms.every((term) => searchable.includes(term))) return null;
+        const normalizedTitle = title.toLowerCase();
+        const score = terms.reduce((total, term) =>
+          total + (normalizedTitle.includes(term) ? 10 : 0) + (url.toLowerCase().includes(term) ? 5 : 0), 0);
+        return { title, text, url, type: entry.type, score };
+      }).filter(Boolean).sort((a, b) => b.score - a.score).slice(0, 7);
+
+      results.replaceChildren();
+      if (!matches.length) {
+        results.classList.add("is-message");
+        results.textContent = "No community content matches this search.";
+        return;
+      }
+
+      results.classList.remove("is-message");
+      matches.forEach((match) => {
+        const link = document.createElement("a");
+        link.className = "civic-search-result";
+        link.href = match.url;
+        const title = document.createElement("strong");
+        title.textContent = match.title || match.url;
+        const type = document.createElement("span");
+        type.className = "civic-search-result__type";
+        type.textContent = match.type === "listings" ? "Marketplace listing" : "Community page";
+        const excerpt = document.createElement("span");
+        excerpt.className = "civic-search-result__excerpt";
+        excerpt.textContent = match.text.slice(0, 150);
+        link.append(type, title, excerpt);
+        results.append(link);
+      });
+    } catch (error) {
+      if (requestId !== siteSearchRequestId) return;
+      console.error("Could not search community content.", error);
+      results.classList.add("is-message");
+      results.textContent = "Site search unavailable. Try again shortly.";
+    }
   }
 
   function renderHubs() {
@@ -881,9 +970,24 @@
       render();
     });
 
-    document.getElementById("feedSearch").addEventListener("input", (event) => {
+    const feedSearch = document.getElementById("feedSearch");
+    feedSearch.addEventListener("input", (event) => {
       searchText = event.target.value.trim();
       render();
+      void updateSiteSearchResults(searchText);
+    });
+    feedSearch.addEventListener("keydown", (event) => {
+      if (event.key === "Escape") closeSiteSearchResults();
+      if (event.key === "Enter") {
+        const firstResult = document.querySelector("#siteSearchResults a");
+        if (firstResult) {
+          event.preventDefault();
+          window.location.assign(firstResult.href);
+        }
+      }
+    });
+    document.addEventListener("click", (event) => {
+      if (!event.target.closest(".civic-header-search-inner")) closeSiteSearchResults();
     });
     document.getElementById("typeFilter").addEventListener("click", (event) => {
       const button = event.target.closest("[data-type]");
@@ -908,6 +1012,7 @@
     document.getElementById("showAllPosts").addEventListener("click", () => {
       activeHub = "all"; activeType = "all"; searchText = ""; savedOnly = false;
       document.getElementById("feedSearch").value = "";
+      closeSiteSearchResults();
       document.querySelectorAll("[data-type]").forEach((button) => {
         const active = button.dataset.type === "all";
         button.classList.toggle("is-active", active);

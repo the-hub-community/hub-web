@@ -36,8 +36,9 @@
       <label class="civic-header-search">
         <span class="sr-only">Search community posts</span>
         <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
-        <input id="feedSearch" type="search" placeholder="Search broadcasts, wikis, threads, or listings…" autocomplete="off">
+        <input id="feedSearch" type="search" placeholder="Search broadcasts, wikis, threads, or listings…" autocomplete="off" aria-controls="siteSearchResults" aria-expanded="false">
       </label>
+      <div class="civic-header-search-results" id="siteSearchResults" role="region" aria-label="Site search results" aria-live="polite" hidden></div>
     </div>
   </div>
   {% endif %}
