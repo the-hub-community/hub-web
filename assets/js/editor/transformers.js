@@ -224,7 +224,8 @@ export function htmlToMarkdown(html) {
     Array.from(node.childNodes, (child) => renderNode(child, listDepth)).join("");
   const renderList = (list, depth) => {
     const ordered = list.tagName === "OL";
-    let number = Number.parseInt(list.getAttribute("start") || "1", 10);
+    const start = Number.parseInt(list.getAttribute("start") || "1", 10);
+    let number = Number.isFinite(start) ? start : 1;
     return Array.from(list.children)
       .filter((item) => item.tagName === "LI")
       .map((item) => {
@@ -240,7 +241,7 @@ export function htmlToMarkdown(html) {
           }
         });
         const marker = ordered ? `${number++}.` : "-";
-        const text = body.join("").replace(/\s+/g, " ").trim();
+        const text = body.join(" ").replace(/\s+/g, " ").trim();
         const nested = nestedLists.length
           ? `\n${nestedLists.join("\n")}`
           : "";
@@ -254,20 +255,20 @@ export function htmlToMarkdown(html) {
     }
     if (node.nodeType !== Node.ELEMENT_NODE) return "";
 
-    const children = renderChildren(node, listDepth);
     switch (node.tagName) {
       case "BR":
         return "\n";
       case "STRONG":
       case "B":
-        return `**${children.trim()}**`;
+        return `**${renderChildren(node, listDepth).trim()}**`;
       case "EM":
       case "I":
-        return `*${children.trim()}*`;
+        return `*${renderChildren(node, listDepth).trim()}*`;
       case "CODE":
         return `\`${node.textContent || ""}\``;
       case "A": {
         const href = safeUrl(node.getAttribute("href") || "");
+        const children = renderChildren(node, listDepth);
         return href ? `[${children.trim()}](${href})` : children;
       }
       case "IMG": {
@@ -282,15 +283,16 @@ export function htmlToMarkdown(html) {
       case "PRE":
         return `\n\n\`\`\`\n${node.textContent || ""}\n\`\`\`\n\n`;
       case "BLOCKQUOTE":
-        return `\n${children.trim().split("\n").map((line) => `> ${line}`).join("\n")}\n\n`;
+        return `\n${renderChildren(node, listDepth).trim().split("\n").map((line) => `> ${line}`).join("\n")}\n\n`;
       case "H1":
       case "H2":
       case "H3":
       case "H4":
       case "H5":
       case "H6":
-        return `\n${"#".repeat(Number(node.tagName.slice(1)))} ${children.trim()}\n\n`;
+        return `\n${"#".repeat(Number(node.tagName.slice(1)))} ${renderChildren(node, listDepth).trim()}\n\n`;
       default:
+        const children = renderChildren(node, listDepth);
         return blockTags.has(node.tagName)
           ? `\n${children.trim()}\n\n`
           : children;
