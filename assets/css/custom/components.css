@@ -435,6 +435,7 @@
 .listing-form input[type="text"],
 .listing-form input[type="email"],
 .listing-form input[type="number"],
+.listing-form input[type="date"],
 .listing-form select,
 .listing-form textarea,
 .status-form input,
@@ -446,6 +447,7 @@
 form input[type="text"],
 form input[type="email"],
 form input[type="number"],
+form input[type="date"],
 form select,
 form textarea {
   width: 100%;

@@ -47,6 +47,15 @@
   clear: both;
 }
 
+.lh-content-body > .lh-section + .lh-section {
+  margin-top: 1.5rem;
+}
+
+.lh-content-body .lh-text {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
 @media (max-width: 768px) {
   .lh-align-left, .lh-align-right {
     float: none;

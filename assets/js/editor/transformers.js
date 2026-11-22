@@ -196,26 +196,110 @@ export function htmlToMarkdown(html) {
     return "";
   }
 
-  return html
-    .replace(/<br\s*\/?>/gi, "\n")
-    .replace(/<\/?div[^>]*>/gi, "")
-    .replace(/<\/?span[^>]*>/gi, "")
-    .replace(/<p[^>]*>/gi, "")
-    .replace(/<\/p>/gi, "\n\n")
-    .replace(/<strong>(.*?)<\/strong>/gi, "**$1**")
-    .replace(/<b>(.*?)<\/b>/gi, "**$1**")
-    .replace(/<em>(.*?)<\/em>/gi, "*$1*")
-    .replace(/<i>(.*?)<\/i>/gi, "*$1*")
-    .replace(/<a[^>]*href=["']([^"']+)["'][^>]*>(.*?)<\/a>/gi, "[$2]($1)")
-    .replace(/<ul[^>]*>/gi, "")
-    .replace(/<\/ul>/gi, "\n")
-    .replace(/<ol[^>]*>/gi, "")
-    .replace(/<\/ol>/gi, "\n")
-    .replace(/<li[^>]*>/gi, "- ")
-    .replace(/<\/li>/gi, "\n")
-    .replace(/<[^>]+>/g, "")
+  const root = new DOMParser().parseFromString(html, "text/html").body;
+  const blockTags = new Set([
+    "ARTICLE",
+    "BLOCKQUOTE",
+    "DIV",
+    "H1",
+    "H2",
+    "H3",
+    "H4",
+    "H5",
+    "H6",
+    "P",
+    "SECTION",
+  ]);
+  const safeUrl = (value) => {
+    try {
+      const url = new URL(value, window.location.href);
+      return ["http:", "https:", "mailto:"].includes(url.protocol)
+        ? value
+        : "";
+    } catch {
+      return "";
+    }
+  };
+  const renderChildren = (node, listDepth = 0) =>
+    Array.from(node.childNodes, (child) => renderNode(child, listDepth)).join("");
+  const renderList = (list, depth) => {
+    const ordered = list.tagName === "OL";
+    let number = Number.parseInt(list.getAttribute("start") || "1", 10);
+    return Array.from(list.children)
+      .filter((item) => item.tagName === "LI")
+      .map((item) => {
+        const body = [];
+        const nestedLists = [];
+        Array.from(item.childNodes).forEach((child) => {
+          if (child.nodeType === Node.ELEMENT_NODE && ["OL", "UL"].includes(child.tagName)) {
+            nestedLists.push(renderList(child, depth + 1));
+          } else if (child.nodeType === Node.ELEMENT_NODE && blockTags.has(child.tagName)) {
+            body.push(renderChildren(child, depth).trim());
+          } else {
+            body.push(renderNode(child, depth));
+          }
+        });
+        const marker = ordered ? `${number++}.` : "-";
+        const text = body.join("").replace(/\s+/g, " ").trim();
+        const nested = nestedLists.length
+          ? `\n${nestedLists.join("\n")}`
+          : "";
+        return `${"  ".repeat(depth)}${marker} ${text}${nested}`;
+      })
+      .join("\n");
+  };
+  const renderNode = (node, listDepth = 0) => {
+    if (node.nodeType === Node.TEXT_NODE) {
+      return (node.textContent || "").replace(/\u00a0/g, " ");
+    }
+    if (node.nodeType !== Node.ELEMENT_NODE) return "";
+
+    const children = renderChildren(node, listDepth);
+    switch (node.tagName) {
+      case "BR":
+        return "\n";
+      case "STRONG":
+      case "B":
+        return `**${children.trim()}**`;
+      case "EM":
+      case "I":
+        return `*${children.trim()}*`;
+      case "CODE":
+        return `\`${node.textContent || ""}\``;
+      case "A": {
+        const href = safeUrl(node.getAttribute("href") || "");
+        return href ? `[${children.trim()}](${href})` : children;
+      }
+      case "IMG": {
+        const src = safeUrl(node.getAttribute("src") || "");
+        return src ? `![${node.getAttribute("alt") || ""}](${src})` : "";
+      }
+      case "UL":
+      case "OL":
+        return `\n${renderList(node, listDepth)}\n`;
+      case "HR":
+        return "\n\n---\n\n";
+      case "PRE":
+        return `\n\n\`\`\`\n${node.textContent || ""}\n\`\`\`\n\n`;
+      case "BLOCKQUOTE":
+        return `\n${children.trim().split("\n").map((line) => `> ${line}`).join("\n")}\n\n`;
+      case "H1":
+      case "H2":
+      case "H3":
+      case "H4":
+      case "H5":
+      case "H6":
+        return `\n${"#".repeat(Number(node.tagName.slice(1)))} ${children.trim()}\n\n`;
+      default:
+        return blockTags.has(node.tagName)
+          ? `\n${children.trim()}\n\n`
+          : children;
+    }
+  };
+
+  return renderChildren(root)
+    .replace(/[ \t]+\n/g, "\n")
     .replace(/\n{3,}/g, "\n\n")
-    .replace(/[ \t]+$/gm, "")
     .trim();
 }
 

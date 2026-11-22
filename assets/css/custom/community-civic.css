@@ -46,6 +46,7 @@ h1, h2, h3, .header-brand-name { font-family: "Plus Jakarta Sans", Inter, sans-s
 .civic-hub-banner__metric { font-family: "JetBrains Mono", monospace; font-variant-numeric: tabular-nums; }
 .civic-hub-banner__metric strong { color: var(--civic-ink); }
 .civic-hub-banner__metric span { color: var(--civic-muted); }
+.civic-page-submit { display: inline-flex; align-items: center; align-self: flex-start; margin-top: 16px; text-decoration: none; }
 .civic-hub-banner__cover { min-height: 220px; background: linear-gradient(135deg, rgba(15,23,42,.12), rgba(29,78,216,.18)), url("https://images.unsplash.com/photo-1494526585095-c41746248156?auto=format&fit=crop&w=1000&q=85") center/cover; }
 
 .civic-pinned { min-height: 58px; display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 12px; margin-bottom: 12px; padding: 10px 12px; border: 1px solid #fecaca; border-radius: 6px; background: #fff; color: var(--civic-crimson); }

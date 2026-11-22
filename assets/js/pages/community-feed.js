@@ -7,6 +7,7 @@
   try { seed = JSON.parse(seedEl?.textContent || '{"hubs":[],"posts":[]}'); } catch (_) {}
 
   let posts = [];
+  let communitySyncPromise = Promise.resolve();
   let hubs = (seed.hubs || []).map((hub) => ({
     ...hub,
     name: decodeText(hub.name),
@@ -36,14 +37,22 @@
     const source = decodeText(post.source);
     const imageFromSource = source.match(/<img\b[^>]*\bsrc=["']([^"']+)["']/i)?.[1];
     const rawStatus = String(post.status || "").toLowerCase();
+    const pageKey = decodeText(post.pageKey || post.page_key || post.id);
+    const communityKey = decodeText(post.communityKey || post.community_key || post.hubId || "");
+    const replies = Array.isArray(post.replies) ? post.replies : [];
+    const suppliedReplyCount = post.replyCount ?? post.reply_count;
+    const hasExternalComments = Boolean(
+      (post.pageKey || post.page_key) &&
+      (post.communityKey || post.community_key || post.hubId || post.hub_id),
+    );
     return {
       ...post,
       title: decodeText(post.title),
-      summary: decodeText(post.summary),
-      details: decodeText(post.details),
+      summary: readableText(post.summary).replace(/\s+/g, " ").trim(),
+      details: readableText(post.details),
       hub: decodeText(post.hub),
-      pageKey: decodeText(post.pageKey || post.page_key || post.id),
-      communityKey: decodeText(post.communityKey || post.community_key || post.hubId || ""),
+      pageKey,
+      communityKey,
       author: decodeText(post.author),
       source,
       image: decodeText(post.image || imageFromSource || ""),
@@ -54,7 +63,11 @@
           : ["pending", "reserved"].includes(rawStatus) ? "Pending" : "Available"
         : post.status || "Active",
       upvotes: Number(post.upvotes) || 0,
-      replies: Array.isArray(post.replies) ? post.replies : [],
+      replies,
+      replyCount: Number.isSafeInteger(Number(suppliedReplyCount)) &&
+        suppliedReplyCount !== null && suppliedReplyCount !== ""
+        ? Math.max(0, Number(suppliedReplyCount))
+        : hasExternalComments ? null : replies.length,
       saved: Boolean(post.saved),
       voted: Boolean(post.voted),
       facts: Object.fromEntries(Object.entries(post.facts || {}).map(([label, value]) => [decodeText(label), decodeText(value)])),
@@ -65,6 +78,34 @@
     const textarea = document.createElement("textarea");
     textarea.innerHTML = String(value ?? "");
     return textarea.value;
+  }
+
+  function readableText(value) {
+    let text = String(value ?? "");
+    const blockTags = new Set([
+      "ADDRESS", "ARTICLE", "BLOCKQUOTE", "DD", "DIV", "DL", "DT",
+      "H1", "H2", "H3", "H4", "H5", "H6", "LI", "OL", "P", "SECTION",
+      "TABLE", "TR", "UL",
+    ]);
+    const extractText = (node) => {
+      if (node.nodeType === Node.TEXT_NODE) return node.textContent || "";
+      if (node.nodeType !== Node.ELEMENT_NODE) return "";
+      if (["IFRAME", "OBJECT", "SCRIPT", "STYLE", "SVG"].includes(node.tagName)) return "";
+      if (node.tagName === "BR") return "\n";
+      const content = Array.from(node.childNodes, extractText).join("");
+      return blockTags.has(node.tagName) ? `\n${content}\n` : content;
+    };
+
+    for (let pass = 0; pass < 3; pass += 1) {
+      const body = new DOMParser().parseFromString(text, "text/html").body;
+      const extracted = extractText(body)
+        .replace(/[ \t]+\n/g, "\n")
+        .replace(/\n{3,}/g, "\n\n")
+        .trim();
+      if (extracted === text) break;
+      text = extracted;
+    }
+    return text;
   }
 
   function persist() {
@@ -80,6 +121,7 @@
 
   async function postAction(post, action, extra) {
     persist();
+    await communitySyncPromise;
     const endpoint = window.ResiHubApi?.ENDPOINTS?.communityPosts;
     if (!endpoint) return;
     try {
@@ -88,7 +130,16 @@
         headers: { "Content-Type": "application/json", "Accept": "application/json" },
         body: JSON.stringify({ action, id: post.id, actor_id: getActorId(), ...extra }),
       });
-      if (!response.ok) throw new Error(`Community post update failed (${response.status}).`);
+      const payload = await response.json();
+      if (!response.ok || payload?.success !== true) {
+        throw new Error(payload?.error || `Community post update failed (${response.status}).`);
+      }
+      if (payload.post) {
+        const updatedPost = normalizeSeedPost(payload.post);
+        posts = posts.map((item) => item.id === updatedPost.id ? updatedPost : item);
+        persist();
+        render();
+      }
     } catch (error) {
       showPersistenceWarning(error);
     }
@@ -156,6 +207,14 @@
     })[char]);
   }
 
+  function formattedDetails(value) {
+    const text = readableText(value);
+    const formatter = window.ResiHubContentFormatter;
+    return formatter
+      ? formatter.markdownToHtml(text)
+      : escapeHtml(text).replace(/\n/g, "<br>");
+  }
+
   function relativeTime(value) {
     const date = new Date(value);
     if (!Number.isFinite(date.getTime())) return "Recently";
@@ -174,7 +233,7 @@
   }
 
   function score(post) {
-    return post.upvotes * 2 + post.replies.length * 3 + (post.saved ? 2 : 0);
+    return post.upvotes * 2 + (post.replyCount ?? post.replies.length) * 3 + (post.saved ? 2 : 0);
   }
 
   function filteredPosts() {
@@ -190,7 +249,7 @@
     list.sort((a, b) => {
       if (activeSort === "newest") return new Date(b.createdAt) - new Date(a.createdAt);
       if (activeSort === "discussed") {
-        return b.replies.length - a.replies.length || score(b) - score(a) ||
+        return (b.replyCount ?? b.replies.length) - (a.replyCount ?? a.replies.length) || score(b) - score(a) ||
           new Date(b.createdAt) - new Date(a.createdAt);
       }
       return score(b) - score(a) || new Date(b.createdAt) - new Date(a.createdAt);
@@ -268,6 +327,9 @@
     }
     const listingMedia = post.type === "listing" ? imageHtml(post, "listing") : "";
     const regularMedia = post.type !== "listing" ? imageHtml(post, "") : "";
+    const replyLabel = post.replyCount === null
+      ? "Replies"
+      : `${post.replyCount} Replies`;
     return `<article class="civic-card civic-card--${escapeHtml(post.type)}">
       ${listingMedia}
       <div class="civic-card__body">
@@ -281,7 +343,7 @@
       </div>
       <footer class="civic-card__footer">
         <button type="button" data-vote="${escapeHtml(post.id)}" class="${post.voted ? "is-active" : ""}" aria-label="${post.voted ? "Remove upvote" : "Upvote post"}" aria-pressed="${post.voted}"><i class="fa-solid fa-arrow-up"></i> ${post.voted ? "Upvoted" : "Upvote"}</button>
-        <button type="button" data-replies="${escapeHtml(post.id)}"><i class="fa-regular fa-comment"></i> ${post.replies.length} Replies</button>
+        <button type="button" data-replies="${escapeHtml(post.id)}"><i class="fa-regular fa-comment"></i> ${escapeHtml(replyLabel)}</button>
         <button type="button" data-save="${escapeHtml(post.id)}" class="${post.saved ? "is-active" : ""}" aria-pressed="${post.saved}"><i class="fa-${post.saved ? "solid" : "regular"} fa-bookmark"></i> ${post.saved ? "Saved" : "Save"}</button>
         <button type="button" data-open-post="${escapeHtml(post.id)}">Open Thread</button>
       </footer>
@@ -330,6 +392,7 @@
     if (!post) return;
     const drawer = document.getElementById("postDrawer");
     const content = document.getElementById("drawerContent");
+    const replyCount = post.replyCount === null ? "…" : post.replyCount;
     drawer.dataset.postId = post.id;
     const facts = post.facts || {};
     content.innerHTML = `
@@ -337,12 +400,12 @@
       <div class="civic-detail-meta">${escapeHtml(metadata(post).replace(/<[^>]+>/g, ""))}</div>
       <p class="civic-detail-author">${escapeHtml(post.author)} · ${escapeHtml(post.authorRole || "Community Member")}</p>
       <h2>${escapeHtml(post.title)}</h2>
-      <p class="civic-detail-prose">${escapeHtml(post.details || post.summary)}</p>
+      <div class="civic-detail-prose">${formattedDetails(post.details || post.summary)}</div>
       ${postShareLinks(post)}
       ${post.type === "listing" ? listingDetail(post) : ""}
       ${post.type === "evergreen" ? evergreenDetail(post, facts) : ""}
       <section class="civic-replies">
-        <h3>Community Replies · <span id="replyCount">${post.replies.length}</span></h3>
+        <h3>Community Replies · <span id="replyCount">${replyCount}</span></h3>
         <p id="pageCommentsStatus" role="status" aria-live="polite"></p>
         <div id="replyList">${post.replies.map((reply) => `<article><strong>${escapeHtml(reply.author)}</strong><time>${relativeTime(reply.createdAt)}</time><p>${escapeHtml(reply.message)}</p></article>`).join("") || "<p>No replies yet.</p>"}</div>
         <form id="replyForm" class="civic-reply-form">
@@ -382,6 +445,7 @@
         message: data.get("message").trim(),
         createdAt: new Date().toISOString(),
       });
+      if (post.replyCount !== null) post.replyCount += 1;
       persist();
       void postAction(post, "reply", {
         author: data.get("author").trim(),
@@ -406,14 +470,18 @@
     return `${factsHtml}<p class="civic-verified" role="status">${escapeHtml(verifiedAt)}</p><button type="button" class="civic-btn civic-btn--secondary" id="markVerified">Mark Verified Today</button>`;
   }
 
-  function renderReplies(post, importedReplies = []) {
+  function renderReplies(post, importedReplies) {
     const replyList = document.getElementById("replyList");
     const replyCount = document.getElementById("replyCount");
     if (!replyList || !replyCount) return;
 
-    const replies = [...post.replies, ...importedReplies].sort(
+    const commentsLoaded = Array.isArray(importedReplies);
+    const replies = [...post.replies, ...(importedReplies || [])].sort(
       (a, b) => new Date(a.createdAt) - new Date(b.createdAt),
     );
+    if (commentsLoaded || !post.pageKey || !post.communityKey) {
+      post.replyCount = replies.length;
+    }
     replyCount.textContent = String(replies.length);
     replyList.innerHTML = replies.map((reply) => `<article><strong>${escapeHtml(reply.author || "Anonymous")}</strong><time>${relativeTime(reply.createdAt)}</time><p>${escapeHtml(reply.message)}</p></article>`).join("") || "<p>No replies yet.</p>";
   }
@@ -447,6 +515,7 @@
         createdAt: comment.submitted_at || comment.createdAt,
       })).filter((comment) => comment.message);
       renderReplies(post, replies);
+      render();
       status.textContent = "";
     } catch (error) {
       if (drawer.dataset.postId === post.id) status.textContent = error.message;
@@ -683,5 +752,5 @@
   render();
   openLinkedPost();
   selectComposerType("broadcast");
-  void syncCommunityPosts();
+  communitySyncPromise = syncCommunityPosts();
 })();
