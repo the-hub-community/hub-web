@@ -8,16 +8,37 @@
       </a>
     </div>
     <nav class="header-center civic-top-nav" aria-label="Community navigation">
-      <a href="{{ '/' | relative_url }}"{% if page.url == '/' %} class="is-active" aria-current="page"{% endif %}>Feed</a>
+      <a href="{{ '/' | relative_url }}"{% if page.url == '/' and page.saved_view != true %} class="is-active" aria-current="page"{% endif %}>Stream</a>
       <a href="{{ '/notices.html' | relative_url }}"{% if page.url contains 'notices' or page.url contains 'broadcast' %} class="is-active" aria-current="page"{% endif %}>Broadcasts</a>
-      <a href="{{ '/marketplace.html' | relative_url }}"{% if page.url contains 'marketplace' or page.url contains 'list-service' %} class="is-active" aria-current="page"{% endif %}>Listings</a>
-      <a href="{{ '/communities.html' | relative_url }}"{% if page.url contains 'communities' %} class="is-active" aria-current="page"{% endif %}>Communities</a>
+      <a href="{{ '/general/daily-updates.html' | relative_url }}"{% if page.url contains 'daily-updates' %} class="is-active" aria-current="page"{% endif %}>Daily Updates</a>
+      <a href="{{ '/communities.html' | relative_url }}"{% if page.url contains 'communities' %} class="is-active" aria-current="page"{% endif %}>Wikis</a>
+      <a href="{{ '/marketplace.html' | relative_url }}"{% if page.url contains 'marketplace' or page.url contains 'list-service' %} class="is-active" aria-current="page"{% endif %}>Marketplace</a>
       <a href="{{ '/?saved=1' | relative_url }}"{% if page.url == '/' and page.saved_view %} class="is-active" aria-current="page"{% endif %}>Saved</a>
-      <a href="{{ '/settings.html' | relative_url }}" class="civic-nav-settings{% if page.url contains 'settings' %} is-active{% endif %}" aria-label="Settings" title="Settings"{% if page.url contains 'settings' %} aria-current="page"{% endif %}><i class="fa-solid fa-gear" aria-hidden="true"></i><span>Settings</span></a>
     </nav>
     <div class="header-right">
-      <button type="button" class="header-contribute" data-share-post-open><span>Share Post</span></button>
+      <details class="civic-account-menu">
+        <summary class="civic-account-menu__trigger" aria-label="Account menu">
+          <i class="fa-regular fa-user" aria-hidden="true"></i><span>Menu</span><i class="fa-solid fa-chevron-down civic-account-menu__chevron" aria-hidden="true"></i>
+        </summary>
+        <div class="civic-account-menu__panel">
+          <button type="button" disabled>Sign in (coming soon)</button>
+          <a href="{{ '/submit.html' | relative_url }}">Submit a Page</a>
+          <a href="{{ '/settings.html' | relative_url }}"{% if page.url contains 'settings' %} aria-current="page"{% endif %}>Settings</a>
+        </div>
+      </details>
+      <button type="button" class="header-contribute" data-share-post-open><span>New Entry</span></button>
     </div>
 
   </div>
+  {% if page.url == '/' %}
+  <div class="civic-header-search-row">
+    <div class="civic-header-search-inner">
+      <label class="civic-header-search">
+        <span class="sr-only">Search community posts</span>
+        <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
+        <input id="feedSearch" type="search" placeholder="Search broadcasts, wikis, threads, or listings…" autocomplete="off">
+      </label>
+    </div>
+  </div>
+  {% endif %}
 </header>

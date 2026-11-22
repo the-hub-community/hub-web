@@ -10,22 +10,28 @@ saved_view: false
   <section class="civic-stream">
     <header class="civic-hub-banner" id="hubBanner">
       <div class="civic-hub-banner__copy">
-        <p class="civic-hub-banner__location" id="hubLocation">Unified community feed</p>
+        <p class="civic-hub-banner__location" id="hubLocation">Global Civic Network · North America · APAC · Special Interest</p>
         <h1 id="hubTitle">All Community Hubs</h1>
-        <p id="hubPurpose">Local updates, broadcasts, listings, and long-term community knowledge in one civic stream.</p>
-        <a class="civic-btn civic-btn--primary civic-page-submit" href="{{ '/submit.html' | relative_url }}">Submit a Page</a>
+        <p id="hubPurpose">A fast, edge-cached community broadsheet uniting regional neighborhoods with global knowledge and local exchange.</p>
+        <div class="civic-hero-actions">
+          <a class="civic-btn civic-btn--primary" href="{{ '/communities.html' | relative_url }}">Explore Living Wikis</a>
+          <a class="civic-btn civic-btn--secondary" href="{{ '/marketplace.html' | relative_url }}">Browse Verified Marketplace</a>
+          <a class="civic-hero-alert-link" href="{{ '/settings.html' | relative_url }}">Configure Alert Tiers</a>
+        </div>
       </div>
       <div class="civic-hub-banner__cover" id="hubCover" role="img" aria-label="Community neighborhood"></div>
     </header>
 
     <section class="civic-pinned" id="pinnedBroadcast" aria-label="Pinned broadcast" hidden></section>
 
+    <header class="civic-stream-heading">
+      <div>
+        <h2>Global Civic Stream</h2>
+        <p>Signal-ranked neighborhood notices, urgent advisories, and resident discussions.</p>
+      </div>
+    </header>
+
     <section class="civic-toolbar" aria-label="Feed controls">
-      <label class="civic-search">
-        <span class="sr-only">Search community posts</span>
-        <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
-        <input id="feedSearch" type="search" placeholder="Search posts, hubs, authors, tags…" autocomplete="off">
-      </label>
       <div class="civic-segments civic-type-filter" id="typeFilter" aria-label="Post type">
         <button type="button" class="is-active" data-type="all" aria-pressed="true">All Posts</button>
         <button type="button" data-type="broadcast">Broadcasts</button>
@@ -152,4 +158,4 @@ saved_view: false
 }
 </script>
 
-<script src="{{ site.baseurl }}/assets/js/pages/community-feed.js?v={{ css_version }}" defer></script>
+<script src="{{ site.baseurl }}/assets/js/pages/community-feed.js?v={{ site.time | date: '%s' }}" defer></script>

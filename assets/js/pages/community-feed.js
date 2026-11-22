@@ -4,6 +4,8 @@
   const STORAGE_KEY = "hubcollective-community-posts-v1";
   const seedEl = document.getElementById("civicSeedData");
   const feedPageTitle = document.title;
+  const replyCountRequests = new Set();
+  let replyCountObserver = null;
   let seed = { hubs: [], posts: [] };
   try { seed = JSON.parse(seedEl?.textContent || '{"hubs":[],"posts":[]}'); } catch (_) {}
   const seedPostById = new Map();
@@ -67,9 +69,13 @@
     const communityKey = decodeText(post.communityKey || post.community_key || post.hubId || "");
     const replies = Array.isArray(post.replies) ? post.replies : [];
     const suppliedReplyCount = post.replyCount ?? post.reply_count;
+    const parsedReplyCount = Number(suppliedReplyCount);
+    const hasSuppliedReplyCount = Number.isSafeInteger(parsedReplyCount) &&
+      suppliedReplyCount !== null && suppliedReplyCount !== "";
     const hasExternalComments = Boolean(
-      (post.pageKey || post.page_key) &&
-      (post.communityKey || post.community_key || post.hubId || post.hub_id),
+      pageKey &&
+      communityKey &&
+      (post.pageUrl || seedPost?.pageUrl),
     );
     return {
       ...post,
@@ -91,10 +97,11 @@
         : post.status || "Active",
       upvotes: Number(post.upvotes) || 0,
       replies,
-      replyCount: Number.isSafeInteger(Number(suppliedReplyCount)) &&
-        suppliedReplyCount !== null && suppliedReplyCount !== ""
-        ? Math.max(0, Number(suppliedReplyCount))
-        : hasExternalComments ? null : replies.length,
+      replyCount: hasExternalComments
+        ? null
+        : hasSuppliedReplyCount
+          ? Math.max(0, parsedReplyCount, replies.length)
+          : replies.length,
       saved: Boolean(post.saved),
       voted: Boolean(post.voted),
       facts: Object.fromEntries(Object.entries(post.facts || {}).map(([label, value]) => [decodeText(label), decodeText(value)])),
@@ -353,7 +360,7 @@
     document.querySelectorAll(".civic-top-nav a").forEach((link) => {
       const isSaved = new URL(link.href).searchParams.get("saved") === "1";
       if (link.textContent.trim() === "Saved") link.classList.toggle("is-active", savedOnly && isSaved);
-      else if (link.textContent.trim() === "Feed") link.classList.toggle("is-active", !savedOnly);
+      else if (link.textContent.trim() === "Stream") link.classList.toggle("is-active", !savedOnly);
     });
   }
 
@@ -395,9 +402,10 @@
     }
     const listingMedia = post.type === "listing" ? imageHtml(post, "listing") : "";
     const regularMedia = post.type !== "listing" ? imageHtml(post, "") : "";
-    const replyLabel = post.replyCount === null
-      ? "Replies"
-      : `${post.replyCount} Replies`;
+    const replyLabel = post.replyCount === 1 ? "Reply" : "Replies";
+    const replyCount = post.replyCount === null
+      ? ""
+      : `<span class="civic-card__reply-count">${post.replyCount}</span>`;
     return `<article class="civic-card civic-card--${escapeHtml(post.type)}">
       ${listingMedia}
       <div class="civic-card__body">
@@ -411,7 +419,7 @@
       </div>
       <footer class="civic-card__footer">
         <button type="button" data-vote="${escapeHtml(post.id)}" class="${post.voted ? "is-active" : ""}" aria-label="${post.voted ? "Remove upvote" : "Upvote post"}" aria-pressed="${post.voted}"><i class="fa-solid fa-arrow-up"></i> ${post.voted ? "Upvoted" : "Upvote"}</button>
-        <button type="button" data-replies="${escapeHtml(post.id)}"><i class="fa-regular fa-comment"></i> ${escapeHtml(replyLabel)}</button>
+        <button type="button" data-replies="${escapeHtml(post.id)}" aria-label="${post.replyCount === null ? "Open replies" : `${post.replyCount} ${replyLabel}`}"><i class="fa-regular fa-comment" aria-hidden="true"></i>${replyCount}<span>${replyLabel}</span></button>
         <button type="button" data-save="${escapeHtml(post.id)}" class="${post.saved ? "is-active" : ""}" aria-pressed="${post.saved}"><i class="fa-${post.saved ? "solid" : "regular"} fa-bookmark"></i> ${post.saved ? "Saved" : "Save"}</button>
         <button type="button" data-open-post="${escapeHtml(post.id)}">Open Thread</button>
       </footer>
@@ -425,8 +433,67 @@
     const grid = document.getElementById("feedGrid");
     grid.innerHTML = list.map(card).join("");
     document.getElementById("feedEmpty").hidden = list.length !== 0;
+    observeReplyCounts(grid, list);
     bindImageFallbacks();
     renderPinned();
+  }
+
+  function observeReplyCounts(grid, list) {
+    replyCountObserver?.disconnect();
+    const pending = new Set(list
+      .filter((post) => post.replyCount === null && post.pageKey && post.communityKey)
+      .map((post) => post.id));
+    if (!pending.size) return;
+
+    if (!("IntersectionObserver" in window)) {
+      list.filter((post) => pending.has(post.id)).forEach((post) => void loadReplyCount(post));
+      return;
+    }
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (!entry.isIntersecting) return;
+        observer.unobserve(entry.target);
+        const post = posts.find((item) => item.id === entry.target.dataset.replies);
+        if (post) void loadReplyCount(post);
+      });
+    }, { rootMargin: "160px" });
+    replyCountObserver = observer;
+
+    grid.querySelectorAll("button[data-replies]").forEach((button) => {
+      if (pending.has(button.dataset.replies)) observer.observe(button);
+    });
+  }
+
+  async function loadReplyCount(post) {
+    const endpoint = window.ResiHubApi?.ENDPOINTS?.comments;
+    if (!endpoint || !post.pageKey || !post.communityKey) return;
+    const requestKey = `${post.communityKey}:${post.pageKey}`;
+    if (replyCountRequests.has(requestKey)) return;
+    replyCountRequests.add(requestKey);
+
+    try {
+      const query = new URLSearchParams({
+        page_key: post.pageKey,
+        community_key: post.communityKey,
+      });
+      const response = await fetch(`${endpoint}?${query}`, {
+        headers: { Accept: "application/json" },
+      });
+      if (!response.ok) throw new Error(`Replies could not load (${response.status}).`);
+      const payload = await response.json();
+      if (payload?.success !== true || !Number.isSafeInteger(payload.total) || payload.total < 0) {
+        throw new Error(payload?.error || "Comments service returned an invalid count.");
+      }
+
+      const currentPost = posts.find((item) => item.id === post.id);
+      if (!currentPost) return;
+      currentPost.replyCount = payload.total;
+      persist();
+      render();
+    } catch (error) {
+      console.error(`Could not load reply count for post "${post.id}".`, error);
+    }
   }
 
   function bindImageFallbacks() {
@@ -877,9 +944,9 @@
 
   function updateHubBanner() {
     if (activeHub === "all") {
-      document.getElementById("hubLocation").textContent = "Unified community feed";
+      document.getElementById("hubLocation").textContent = "Global Civic Network · North America · APAC · Special Interest";
       document.getElementById("hubTitle").textContent = "All Community Hubs";
-      document.getElementById("hubPurpose").textContent = "Local updates, broadcasts, listings, and long-term community knowledge in one civic stream.";
+      document.getElementById("hubPurpose").textContent = "A fast, edge-cached community broadsheet uniting regional neighborhoods with global knowledge and local exchange.";
       if (typeof window.applyFestivalGreeting === "function") {
         window.applyFestivalGreeting();
       }
