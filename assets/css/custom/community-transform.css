@@ -17,7 +17,7 @@
   height: clamp(180px, 22vw, 270px);
   background:
     linear-gradient(135deg, rgba(15, 62, 93, .18), rgba(20, 94, 75, .35)),
-    url("https://images.unsplash.com/photo-1449157291145-7efd050a4d0e?auto=format&fit=crop&w=1600&q=85") center 48% / cover;
+    url("../../images/hub_civic_banner.jpg") center 48% / cover;
 }
 .community-hub-header__identity {
   display: grid;

@@ -71,6 +71,20 @@
 
             <div id="drawer-preview-view" class="drawer-preview-hidden">
                 <div class="drawer-preview-canvas">
+                    <section class="community-hub-header drawer-preview-community-header" aria-label="Community preview">
+                        <div class="community-hub-header__cover" aria-hidden="true"></div>
+                        <div class="community-hub-header__identity">
+                            <div class="community-hub-header__avatar" id="drawer-preview-community-avatar" aria-hidden="true"></div>
+                            <div class="community-hub-header__copy">
+                                <h1 id="drawer-preview-community-title"></h1>
+                                <p>Neighborhood updates, useful local knowledge, and shared listings from your community.</p>
+                                <div class="community-hub-header__meta">
+                                    <span id="drawer-preview-community-name"></span>
+                                    <span><i class="fa-solid fa-users" aria-hidden="true"></i> Community hub</span>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
                     <div class="wiki-render">
                         <div id="drawer-live-preview-content" class="lh-content-body"></div>
                     </div>
@@ -328,7 +342,15 @@
 
             if (!previewRoot) return;
 
-            let html = `<h1>${title}</h1><p class="preview-subtitle">${condo}</p><hr class="preview-hr">`;
+            const previewHeader = document.querySelector('.drawer-preview-community-header');
+            const previewTitle = previewHeader?.querySelector('#drawer-preview-community-title');
+            const previewCommunity = previewHeader?.querySelector('#drawer-preview-community-name');
+            const previewAvatar = previewHeader?.querySelector('#drawer-preview-community-avatar');
+            if (previewTitle) previewTitle.textContent = title;
+            if (previewCommunity) previewCommunity.textContent = condo;
+            if (previewAvatar) previewAvatar.textContent = Array.from(condo)[0]?.toLocaleUpperCase() || "C";
+
+            let html = '<hr class="preview-hr">';
             const sections = document.querySelectorAll('#drawer-sections-container .drawer-section-card');
 
             sections.forEach((sec) => { html += getDrawerSectionPreview(sec); });

@@ -66,6 +66,30 @@
     toggles().forEach((toggle) => { toggle.disabled = true; });
   }
 
+  function getFavoriteMetadata(toggle) {
+    const metadata = {
+      type: toggle.dataset.favoriteType,
+      title: toggle.dataset.favoriteTitle,
+      community: toggle.dataset.favoriteCommunity,
+      url: toggle.dataset.favoriteUrl,
+    };
+    if (Object.values(metadata).some(Boolean)) return metadata;
+
+    const pageUrl = new URL(window.location.href);
+    const pageTitle = document.querySelector(".wiki-render > h1")?.textContent.trim()
+      || document.title.split("|")[0].trim();
+    const community = body.dataset.pageCondo
+      || document.querySelector(".wiki-render")?.dataset.communityKey
+      || pageTitle;
+    const normalizedPath = pageUrl.pathname.replace(/\/index\.html$/i, "/");
+    return {
+      type: normalizedPath.endsWith("/") ? "community" : "page",
+      title: pageTitle,
+      community,
+      url: pageUrl.pathname,
+    };
+  }
+
   function loadFavorites() {
     const stored = window.localStorage.getItem(STORAGE_KEY);
     if (!stored) return [];
@@ -144,12 +168,7 @@
     }
 
     toggles().forEach((toggle) => {
-      const current = normalizeFavorite({
-        type: toggle.dataset.favoriteType,
-        title: toggle.dataset.favoriteTitle,
-        community: toggle.dataset.favoriteCommunity,
-        url: toggle.dataset.favoriteUrl,
-      });
+      const current = normalizeFavorite(getFavoriteMetadata(toggle));
       if (!current) {
         toggle.disabled = true;
         console.error("Favorites: current wiki page has invalid favorite metadata.");
@@ -166,7 +185,16 @@
       const label = toggle.querySelector("[data-favorite-label]");
       if (label) label.textContent = isFavorite ? "Remove from favorites" : "Save to favorites";
       const icon = toggle.querySelector("i");
-      if (icon) icon.className = isFavorite ? "fa-solid fa-star" : "fa-regular fa-star";
+      if (icon) {
+        const iconName = icon.classList.contains("fa-bookmark") ? "bookmark" : "star";
+        icon.className = `fa-${isFavorite ? "solid" : "regular"} fa-${iconName}`;
+      }
+      if (!label) {
+        const textNode = Array.from(toggle.childNodes).find((node) =>
+          node.nodeType === Node.TEXT_NODE && node.textContent.trim(),
+        );
+        if (textNode) textNode.textContent = isFavorite ? " Saved" : " Save";
+      }
     });
   }
 
@@ -209,12 +237,7 @@
   document.addEventListener("click", (event) => {
     const toggle = event.target.closest?.("[data-favorite-toggle]");
     if (!toggle) return;
-    const favorite = normalizeFavorite({
-      type: toggle.dataset.favoriteType,
-      title: toggle.dataset.favoriteTitle,
-      community: toggle.dataset.favoriteCommunity,
-      url: toggle.dataset.favoriteUrl,
-    });
+    const favorite = normalizeFavorite(getFavoriteMetadata(toggle));
     if (favorite) {
       updateFavorite(favorite, !favorites.some((saved) => saved.url === favorite.url));
     } else {
