@@ -55,13 +55,10 @@ saved_view: false
   </section>
 </main>
 
-<aside class="civic-detail-drawer" id="postDrawer" aria-hidden="true" aria-label="Post details">
-  <div class="civic-detail-drawer__backdrop" data-drawer-close></div>
-  <div class="civic-detail-drawer__panel" role="dialog" aria-modal="true">
-    <button type="button" class="civic-drawer-close" data-drawer-close aria-label="Close post"><i class="fa-solid fa-xmark"></i></button>
-    <div id="drawerContent"></div>
-  </div>
-</aside>
+<section class="civic-post-page" id="postPage" aria-label="Post details" hidden>
+  <a class="civic-post-page__back" href="{{ '/' | relative_url }}"><i class="fa-solid fa-arrow-left" aria-hidden="true"></i> Back to community feed</a>
+  <div id="postPageContent"></div>
+</section>
 
 <dialog class="civic-composer" id="shareComposer" aria-labelledby="shareComposerTitle">
   <form id="sharePostForm">

@@ -158,7 +158,7 @@
                                 <span><i class="fa-solid fa-users"></i> Community hub</span>
                             </div>
                         </div>
-                        <button type="button" class="community-hub-header__follow" data-community-follow>Following</button>
+                        <button type="button" class="community-hub-header__follow" data-community-follow="{{ page.community_key | default: page.condo | slugify }}" aria-pressed="false"></button>
                     </div>
                 </section>
                 <div class="community-pinned-strip">

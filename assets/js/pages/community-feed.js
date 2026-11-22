@@ -3,6 +3,7 @@
 
   const STORAGE_KEY = "hubcollective-community-posts-v1";
   const seedEl = document.getElementById("civicSeedData");
+  const feedPageTitle = document.title;
   let seed = { hubs: [], posts: [] };
   try { seed = JSON.parse(seedEl?.textContent || '{"hubs":[],"posts":[]}'); } catch (_) {}
   const seedPostById = new Map();
@@ -431,7 +432,7 @@
   function bindImageFallbacks() {
     document.querySelectorAll("img[data-fallback]").forEach((img) => {
       img.addEventListener("error", () => {
-        const slot = img.closest(".civic-card__media, .civic-detail-media");
+        const slot = img.closest(".civic-card__media, .civic-post-image");
         if (slot) {
           slot.classList.add("is-fallback");
           slot.innerHTML = '<span>Photo unavailable</span>';
@@ -454,13 +455,13 @@
       <button type="button" data-open-post="${escapeHtml(pinned.id)}">Read Notice</button>`;
   }
 
-  function clearDrawerPageTheme(drawer) {
-    const addedClasses = (drawer.dataset.pageThemeClasses || "").split(/\s+/).filter(Boolean);
+  function clearPostPageTheme(page) {
+    const addedClasses = (page.dataset.pageThemeClasses || "").split(/\s+/).filter(Boolean);
     document.body.classList.remove(...addedClasses);
-    delete drawer.dataset.pageThemeClasses;
+    delete page.dataset.pageThemeClasses;
   }
 
-  async function loadPostPageContent(post, drawer, content) {
+  async function loadPostPageContent(post, page, content) {
     if (!post.pageUrl || post.type === "listing") return;
 
     try {
@@ -473,17 +474,35 @@
       const pageDocument = new DOMParser().parseFromString(await response.text(), "text/html");
       const pageContent = pageDocument.querySelector(".wiki-render");
       if (!pageContent) throw new Error("Community page content was not found.");
-      if (drawer.dataset.postId !== post.id || !drawer.classList.contains("is-open")) return;
+      if (page.dataset.postId !== post.id || page.hidden) return;
 
-      clearDrawerPageTheme(drawer);
+      clearPostPageTheme(page);
       const pageClasses = Array.from(pageDocument.body.classList)
         .filter((className) => className.startsWith("page-"));
       const addedClasses = pageClasses.filter((className) => !document.body.classList.contains(className));
       document.body.classList.add(...addedClasses);
-      if (addedClasses.length) drawer.dataset.pageThemeClasses = addedClasses.join(" ");
+      if (addedClasses.length) page.dataset.pageThemeClasses = addedClasses.join(" ");
 
       const preparePageElement = (element) => {
-        element.querySelectorAll("script, style, iframe, object, embed").forEach((child) => child.remove());
+        element.querySelectorAll("script, style, object, embed").forEach((child) => child.remove());
+        element.querySelectorAll("iframe").forEach((frame) => {
+          try {
+            const url = new URL(frame.getAttribute("src") || "", pageUrl);
+            if (
+              url.protocol !== "https:" ||
+              !["www.youtube.com", "www.youtube-nocookie.com"].includes(url.hostname)
+            ) {
+              throw new Error("Unsupported embedded video URL.");
+            }
+            frame.setAttribute("src", url.href);
+            frame.setAttribute("title", frame.getAttribute("title") || "Embedded video");
+            frame.setAttribute("allowfullscreen", "");
+            frame.setAttribute("loading", "lazy");
+            frame.setAttribute("referrerpolicy", "strict-origin-when-cross-origin");
+          } catch {
+            frame.remove();
+          }
+        });
         [element, ...element.querySelectorAll("*")].forEach((child) => {
           Array.from(child.attributes).forEach((attribute) => {
             if (/^on/i.test(attribute.name)) {
@@ -503,6 +522,7 @@
       };
 
       const renderedContent = pageContent.cloneNode(true);
+      window.ResiHubContentFormatter?.formatLegacyContent(renderedContent);
       preparePageElement(renderedContent);
 
       const firstHeading = renderedContent.querySelector("h1");
@@ -511,30 +531,47 @@
       }
 
       content.querySelector(".civic-detail-prose").replaceChildren(renderedContent);
-      const pageHeader = pageDocument.querySelector(".community-hub-header");
-      if (pageHeader) content.prepend(preparePageElement(pageHeader.cloneNode(true)));
     } catch (error) {
-      console.error("Could not load rendered community page in feed drawer.", error);
+      console.error("Could not load rendered community page in post view.", error);
     }
   }
 
   function openPost(id) {
     const post = posts.find((item) => item.id === id);
     if (!post) return;
-    const drawer = document.getElementById("postDrawer");
-    const content = document.getElementById("drawerContent");
-    clearDrawerPageTheme(drawer);
+    const url = new URL(window.location.href);
+    const alreadySelected = url.searchParams.get("post") === post.id;
+    if (!alreadySelected) {
+      url.searchParams.set("post", post.id);
+      history.pushState({ postId: post.id }, "", url);
+    }
+    showPostPage(post);
+  }
+
+  function showPostPage(post) {
+    const feed = document.getElementById("civicFeed");
+    const page = document.getElementById("postPage");
+    const content = document.getElementById("postPageContent");
+    clearPostPageTheme(page);
+    feed.hidden = true;
+    page.hidden = false;
+    document.title = `${post.title} | ${post.hub} | The Hub Community`;
     const replyCount = post.replyCount === null ? "…" : post.replyCount;
-    drawer.dataset.postId = post.id;
-    document.documentElement.classList.add("civic-drawer-open");
+    page.dataset.postId = post.id;
     const facts = post.facts || {};
+    const extraImage = !post.pageUrl && post.image
+      ? `<figure class="civic-post-image"><img src="${escapeHtml(post.image)}" alt="${escapeHtml(post.title)}" referrerpolicy="no-referrer" data-fallback="true"></figure>`
+      : "";
     content.innerHTML = `
-      ${post.image ? `<div class="civic-detail-media"><img src="${escapeHtml(post.image)}" alt="${escapeHtml(post.title)}" referrerpolicy="no-referrer" data-fallback="true"></div>` : ""}
-      <div class="civic-detail-meta">${escapeHtml(metadata(post).replace(/<[^>]+>/g, ""))}</div>
-      <p class="civic-detail-author">${escapeHtml(post.author)} · ${escapeHtml(post.authorRole || "Community Member")}</p>
-      <p class="civic-detail-reading-time"><i class="fa-regular fa-clock" aria-hidden="true"></i> ${estimatedReadMinutes(post.details || post.summary)} min read</p>
-      <h2>${escapeHtml(post.title)}</h2>
+      <article class="civic-post-page__article">
+      <header class="civic-post-page__header">
+        <div class="civic-detail-meta">${escapeHtml(metadata(post).replace(/<[^>]+>/g, ""))}</div>
+        <h1 id="postPageTitle">${escapeHtml(post.title)}</h1>
+        <p class="civic-detail-author">${escapeHtml(post.author)} · ${escapeHtml(post.authorRole || "Community Member")}</p>
+        <p class="civic-detail-reading-time"><i class="fa-regular fa-clock" aria-hidden="true"></i> ${estimatedReadMinutes(post.details || post.summary)} min read</p>
+      </header>
       <div class="civic-detail-prose">${formattedDetails(post.details || post.summary, post.title)}</div>
+      ${extraImage}
       ${postShareLinks(post)}
       ${detailActions(post)}
       ${post.type === "listing" ? listingDetail(post) : ""}
@@ -549,11 +586,10 @@
           <label><span>Message</span><textarea name="message" maxlength="1000" required rows="3"></textarea></label>
           <button type="submit" class="civic-btn civic-btn--primary">Post Reply</button>
         </form>
-      </section>`;
-    drawer.classList.add("is-open");
-    drawer.setAttribute("aria-hidden", "false");
+      </section>
+      </article>`;
     bindImageFallbacks();
-    void loadPostPageContent(post, drawer, content);
+    void loadPostPageContent(post, page, content);
     void loadPageComments(post);
     const listingStatus = content.querySelector("#listingStatus");
     if (listingStatus) {
@@ -592,7 +628,7 @@
         author: data.get("author").trim(),
         message: data.get("message").trim(),
       });
-      openPost(id);
+      openPost(post.id);
       render();
     });
   }
@@ -634,7 +670,7 @@
     const endpoint = window.ResiHubApi?.ENDPOINTS?.comments;
     if (!endpoint || !post.pageKey || !post.communityKey) return;
 
-    const drawer = document.getElementById("postDrawer");
+    const page = document.getElementById("postPage");
     const status = document.getElementById("pageCommentsStatus");
     if (!status) return;
     status.textContent = "Loading existing comments…";
@@ -651,7 +687,7 @@
       if (payload?.success !== true || !Array.isArray(payload.comments)) {
         throw new Error(payload?.error || "Comments service returned invalid data.");
       }
-      if (drawer.dataset.postId !== post.id) return;
+      if (page.dataset.postId !== post.id) return;
 
       const replies = payload.comments.map((comment) => ({
         author: comment.author || "Anonymous",
@@ -662,12 +698,14 @@
       render();
       status.textContent = "";
     } catch (error) {
-      if (drawer.dataset.postId === post.id) status.textContent = error.message;
+      if (page.dataset.postId === post.id) status.textContent = error.message;
     }
   }
 
   function postShareLinks(post) {
-    const shareUrl = new URL("/", window.location.origin);
+    const shareUrl = new URL(window.location.href);
+    shareUrl.search = "";
+    shareUrl.hash = "";
     shareUrl.searchParams.set("post", post.id);
     const encodedUrl = encodeURIComponent(shareUrl.toString());
     const encodedTitle = encodeURIComponent(post.title);
@@ -718,10 +756,13 @@
 
   function openLinkedPost() {
     const postId = new URLSearchParams(location.search).get("post");
-    if (postId && posts.some((post) => post.id === postId)) openPost(postId);
+    const post = posts.find((item) => item.id === postId);
+    if (postId && post) showPostPage(post);
+    else showFeedPage();
   }
 
   function setupActions() {
+    window.addEventListener("popstate", openLinkedPost);
     document.addEventListener("click", (event) => {
       const hub = event.target.closest("[data-hub]");
       if (hub) {
@@ -737,7 +778,6 @@
       if (open) openPost(open.dataset.openPost);
       const replies = event.target.closest("[data-replies]");
       if (replies) openPost(replies.dataset.replies);
-      if (event.target.closest("[data-drawer-close]")) closeDrawer();
       if (event.target.closest("[data-share-post-open]")) openComposer();
       if (event.target.closest("[data-composer-close]")) closeComposer();
     });
@@ -927,12 +967,12 @@
     }
   }
 
-  function closeDrawer() {
-    const drawer = document.getElementById("postDrawer");
-    drawer.classList.remove("is-open");
-    drawer.setAttribute("aria-hidden", "true");
-    document.documentElement.classList.remove("civic-drawer-open");
-    clearDrawerPageTheme(drawer);
+  function showFeedPage() {
+    const page = document.getElementById("postPage");
+    clearPostPageTheme(page);
+    page.hidden = true;
+    document.getElementById("civicFeed").hidden = false;
+    document.title = feedPageTitle;
   }
 
   load();

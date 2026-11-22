@@ -42,16 +42,20 @@
   font-weight: 800;
   box-shadow: 0 8px 24px rgba(15,23,42,.16);
 }
-.community-hub-header__copy { padding-bottom: 2px; }
+.community-hub-header__copy { min-width: 0; padding-bottom: 2px; }
 .community-hub-header__copy h1 {
   margin: 0 0 4px;
   color: var(--on-surface, #041748);
-  font-size: clamp(1.75rem, 3vw, 2.35rem);
-  text-wrap: balance;
+  font-size: clamp(1.5rem, 3vw, 2.15rem);
+  line-height: 1.15;
+  overflow-wrap: anywhere;
+  text-wrap: pretty;
 }
 .community-hub-header__copy p { margin: 0 0 8px; color: var(--on-surface-variant, #5d6978); }
 .community-hub-header__meta { display: flex; gap: 16px; font-size: .82rem; color: var(--outline, #64748b); }
 .community-hub-header__follow { min-height: 42px; padding: 0 18px; border: 0; border-radius: 999px; background: #235f52; color: #fff; font-weight: 750; cursor: pointer; }
+.community-hub-header__follow.is-following { border: 1px solid #235f52; background: #fff; color: #235f52; }
+.community-hub-header__follow:focus-visible { outline: 3px solid rgba(35, 95, 82, .3); outline-offset: 2px; }
 
 .community-pinned-strip {
   display: flex;
