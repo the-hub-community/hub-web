@@ -567,11 +567,14 @@
     const verifyButton = content.querySelector("#markVerified");
     if (verifyButton) {
       verifyButton.addEventListener("click", () => {
+        if (verifyButton.disabled) return;
         post.lastVerifiedAt = new Date().toISOString();
         persist();
         void postAction(post, "verify");
         const verifiedStatus = content.querySelector(".civic-verified");
         if (verifiedStatus) verifiedStatus.textContent = `Last verified ${exactTime(post.lastVerifiedAt)}`;
+        verifyButton.disabled = true;
+        verifyButton.textContent = "Verified Today";
         render();
       });
     }
@@ -602,10 +605,13 @@
     const factsHtml = Object.keys(facts).length
       ? `<dl class="civic-detail-facts">${Object.entries(facts).map(([label, value]) => `<div><dt>${escapeHtml(label)}</dt><dd>${escapeHtml(value)}</dd></div>`).join("")}</dl>`
       : "";
+    const verifiedDate = post.lastVerifiedAt ? new Date(post.lastVerifiedAt) : null;
+    const verifiedToday = verifiedDate && Number.isFinite(verifiedDate.getTime())
+      && verifiedDate.toDateString() === new Date().toDateString();
     const verifiedAt = post.lastVerifiedAt
       ? `Last verified ${exactTime(post.lastVerifiedAt)}`
       : "Not verified yet";
-    return `${factsHtml}<p class="civic-verified" role="status">${escapeHtml(verifiedAt)}</p><button type="button" class="civic-btn civic-btn--secondary" id="markVerified">Mark Verified Today</button>`;
+    return `${factsHtml}<p class="civic-verified" role="status">${escapeHtml(verifiedAt)}</p><button type="button" class="civic-btn civic-btn--secondary" id="markVerified"${verifiedToday ? " disabled" : ""}>${verifiedToday ? "Verified Today" : "Mark Verified Today"}</button>`;
   }
 
   function renderReplies(post, importedReplies) {

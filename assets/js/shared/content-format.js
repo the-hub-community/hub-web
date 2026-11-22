@@ -4,9 +4,10 @@
 
   const allowedTags = new Set([
     "A", "B", "BLOCKQUOTE", "BR", "CODE", "EM", "H2", "H3", "H4",
-    "HR", "I", "LI", "OL", "P", "PRE", "STRONG", "UL",
+    "HR", "I", "IFRAME", "LI", "OL", "P", "PRE", "SECTION", "SPAN", "STRONG",
+    "UL", "DIV",
   ]);
-  const droppedTags = new Set(["IFRAME", "OBJECT", "SCRIPT", "STYLE", "SVG"]);
+  const droppedTags = new Set(["OBJECT", "SCRIPT", "STYLE", "SVG"]);
   const urlPattern = /https?:\/\/[^\s<>"']+/gi;
   const labelPattern =
     /(^|[\s.])((?:Price|Address|Website|Map|Date|Time|Location|What to try)):\s*/gi;
@@ -85,6 +86,24 @@
         const href = element.tagName === "A"
           ? safeUrl(element.getAttribute("href") || "")
           : "";
+        const iframeSrc = element.tagName === "IFRAME"
+          ? safeUrl(element.getAttribute("src") || "")
+          : "";
+        const safeIframe = iframeSrc
+          ? ["www.youtube.com", "youtube.com", "player.vimeo.com"].includes(
+              new URL(iframeSrc).hostname,
+            )
+          : false;
+        if (element.tagName === "IFRAME" && !safeIframe) {
+          element.remove();
+          return;
+        }
+        const allowedClass = element.tagName === "DIV" || element.tagName === "SECTION" || element.tagName === "SPAN"
+          ? (element.getAttribute("class") || "")
+              .split(/\s+/)
+              .filter((name) => /^(?:lh-|wiki-|drawer-)/.test(name))
+              .join(" ")
+          : "";
         Array.from(element.attributes).forEach((attribute) => {
           element.removeAttribute(attribute.name);
         });
@@ -96,6 +115,14 @@
             element.target = "_blank";
             element.rel = "noopener noreferrer";
           }
+        } else if (element.tagName === "IFRAME") {
+          element.src = iframeSrc;
+          element.title = "Embedded video";
+          element.setAttribute("allowfullscreen", "");
+          element.setAttribute("loading", "lazy");
+          element.setAttribute("referrerpolicy", "strict-origin-when-cross-origin");
+        } else if (allowedClass) {
+          element.setAttribute("class", allowedClass);
         }
       });
     };
@@ -104,11 +131,16 @@
   }
 
   function markdownToHtml(markdown) {
-    const source = String(markdown || "")
+    let source = String(markdown || "")
       .trim()
       .replace(/^```(?:markdown|md)?\s*\n([\s\S]*?)\n```$/i, "$1")
       .replace(/(^|[\s>])((?:Price|Address|Website|Map|Date|Time|Location|What to try)):/gim, "$1**$2:**")
       .replace(/^(\s*)•\s+/gm, "$1- ");
+    if (/&lt;\/?(?:div|p|ul|ol|li|section|span)\b/i.test(source)) {
+      const decoded = document.createElement("textarea");
+      decoded.innerHTML = source;
+      source = decoded.value;
+    }
     if (!source) return "";
     const html = window.marked && typeof window.marked.parse === "function"
       ? window.marked.parse(source, { gfm: true, breaks: true })
