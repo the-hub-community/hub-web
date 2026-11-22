@@ -35,7 +35,26 @@
       showPersistenceWarning(error, false);
     }
     if (!posts.length) posts = (seed.posts || []).map(normalizeSeedPost);
-    posts = posts.map((post) => normalizeSeedPost(post));
+    posts = posts
+      .map((post) => normalizeSeedPost(post))
+      .filter(isPostWithinVisibilityWindow);
+  }
+
+  const BROADCAST_VISIBILITY_MS = 5 * 24 * 60 * 60 * 1000;
+  const NOTICE_VISIBILITY_MS = 48 * 60 * 60 * 1000;
+
+  function isPostWithinVisibilityWindow(post) {
+    if (!post || !["broadcast", "notification"].includes(post.type)) return true;
+    const createdAt = new Date(post.createdAt).getTime();
+    if (!Number.isFinite(createdAt)) return false;
+    const expiresAt = post.expiresAt
+      ? new Date(post.expiresAt).getTime()
+      : createdAt + (
+          post.type === "notification"
+            ? NOTICE_VISIBILITY_MS
+            : BROADCAST_VISIBILITY_MS
+        );
+    return Number.isFinite(expiresAt) && expiresAt > Date.now();
   }
 
   function normalizeSeedPost(post) {
@@ -323,7 +342,12 @@
       `;
     }
     if (mobile) {
-      mobile.innerHTML = hubHtml.map((hub) => `<button type="button" data-hub="${escapeHtml(hub.id)}" class="${activeHub === hub.id ? "is-active" : ""}">${escapeHtml(hub.name)} <span>${hub.count}</span></button>`).join("");
+      mobile.innerHTML = `
+        <label class="sr-only" for="mobileHubSelect">Community hub</label>
+        <select id="mobileHubSelect" aria-label="Community hub">
+          ${hubHtml.map((hub) => `<option value="${escapeHtml(hub.id)}" ${activeHub === hub.id ? "selected" : ""}>${escapeHtml(hub.name)} (${hub.count} ${hub.count === 1 ? "page" : "pages"})</option>`).join("")}
+        </select>
+      `;
     }
     document.querySelectorAll(".civic-top-nav a").forEach((link) => {
       const isSaved = new URL(link.href).searchParams.get("saved") === "1";
@@ -646,6 +670,14 @@
       if (event.target.closest("[data-composer-close]")) closeComposer();
     });
 
+    document.addEventListener("change", (event) => {
+      const hubSelect = event.target.closest("#mobileHubSelect");
+      if (!hubSelect) return;
+      activeHub = hubSelect.value;
+      updateHubBanner();
+      render();
+    });
+
     document.getElementById("feedSearch").addEventListener("input", (event) => {
       searchText = event.target.value.trim();
       render();
@@ -712,6 +744,9 @@
       document.getElementById("hubLocation").textContent = "Unified community feed";
       document.getElementById("hubTitle").textContent = "All Community Hubs";
       document.getElementById("hubPurpose").textContent = "Local updates, broadcasts, listings, and long-term community knowledge in one civic stream.";
+      if (typeof window.applyFestivalGreeting === "function") {
+        window.applyFestivalGreeting();
+      }
       return;
     }
     const hub = hubs.find((item) => item.id === activeHub);
@@ -719,6 +754,9 @@
     document.getElementById("hubLocation").textContent = "Community hub";
     document.getElementById("hubTitle").textContent = hub.name;
     document.getElementById("hubPurpose").textContent = hub.purpose;
+    if (typeof window.applyFestivalGreeting === "function") {
+      window.applyFestivalGreeting();
+    }
   }
 
   function openComposer() {

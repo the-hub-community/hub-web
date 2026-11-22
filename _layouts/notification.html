@@ -9,7 +9,7 @@
     <div class="notification-container">
         {% assign notice_urgency = page.urgency | default: 'medium' %}
         {% assign notice_category = page.notice_category | default: 'other' %}
-        <article class="notification-card" data-urgency="{{ notice_urgency }}">
+        <article class="notification-card" data-urgency="{{ notice_urgency }}" data-content-type="notification" data-created-at="{{ page.date | date_to_xmlschema }}" data-expires-at="{{ page.expires_at | default: '' }}">
             <div class="notification-header">
                 <div class="notification-header__meta">
                     <span class="notification-badge" data-category="{{ notice_category }}">

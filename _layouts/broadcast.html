@@ -11,7 +11,7 @@ layout: default
   {% else %}{% assign urgency_label = 'Notice' %}
 {% endcase %}
 
-<article class="broadcast-page" data-urgency="{{ alert_urgency }}">
+<article class="broadcast-page" data-urgency="{{ alert_urgency }}" data-content-type="broadcast" data-created-at="{{ page.date | date_to_xmlschema }}" data-expires-at="{{ page.expires_at | default: '' }}">
 
   <header class="broadcast-page__hero">
     <div class="broadcast-page__eyebrow">

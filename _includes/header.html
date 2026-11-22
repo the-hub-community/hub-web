@@ -3,6 +3,7 @@
 
     <div class="header-left">
       <a href="{{ '/' | relative_url }}" class="header-brand" aria-label="The Hub Community home">
+        <img src="{{ '/assets/images/logos/the-hub-community-mark.svg' | relative_url }}" alt="" class="header-brand-mark">
         <span class="header-brand-name">HubCollective</span>
       </a>
     </div>
@@ -12,6 +13,7 @@
       <a href="{{ '/marketplace.html' | relative_url }}"{% if page.url contains 'marketplace' or page.url contains 'list-service' %} class="is-active" aria-current="page"{% endif %}>Listings</a>
       <a href="{{ '/communities.html' | relative_url }}"{% if page.url contains 'communities' %} class="is-active" aria-current="page"{% endif %}>Communities</a>
       <a href="{{ '/?saved=1' | relative_url }}"{% if page.url == '/' and page.saved_view %} class="is-active" aria-current="page"{% endif %}>Saved</a>
+      <a href="{{ '/settings.html' | relative_url }}" class="civic-nav-settings{% if page.url contains 'settings' %} is-active{% endif %}" aria-label="Settings" title="Settings"{% if page.url contains 'settings' %} aria-current="page"{% endif %}><i class="fa-solid fa-gear" aria-hidden="true"></i><span>Settings</span></a>
     </nav>
     <div class="header-right">
       <button type="button" class="header-contribute" data-share-post-open><span>Share Post</span></button>

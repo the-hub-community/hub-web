@@ -47,6 +47,9 @@
     data-valid-until="{{ page.valid_until | default: '' | escape }}"
     data-community-key="{{ page_community_key | escape }}"{% if site.resources.expose_debug_bindings != false and site.resources.mode != 'prod' and jekyll.environment != 'production' %} data-expose-debug-bindings="true"{% endif %}>
 
+    <script type="application/json" id="festival-greeting-schedule">{{ site.data.festivals | jsonify }}</script>
+    <script src="{{ '/assets/js/pages/festival-greeting.js?v=' | append: css_version | relative_url }}" defer></script>
+
     {% include header.html %}
 
     <div class="app-shell">

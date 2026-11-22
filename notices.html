@@ -4,7 +4,7 @@ title: Community Notices
 ---
 
 {% assign communities = site.pages | where_exp: "p", "p.path contains 'content/'" | where_exp: "p", "p.name == 'index.md' or p.name == 'index.html'" | sort: "condo" %}
-{% assign all_alerts = site.pages | where: "layout", "broadcast" | sort: 'date' | reverse %}
+{% assign all_alerts = site.pages | where_exp: "p", "p.layout == 'broadcast' or p.layout == 'notification'" | sort: 'date' | reverse %}
 
 <main class="notices-shell">
   <header class="notices-hero page-hero">
@@ -49,15 +49,23 @@ title: Community Notices
 
   <!-- Alerts List -->
   <div class="wiki-alerts notices-list" id="noticeList">
-    {% assign now_ts = 'now' | date: '%s' %}
+    {% assign now_ts = 'now' | date: '%s' | plus: 0 %}
     {% assign alert_ttl_seconds = 432000 %}
     {% assign visible_count = 0 %}
 
     {% for alert in all_alerts %}
-      {% assign alert_ts = alert.date | date: '%s' %}
+      {% assign alert_ts = alert.date | date: '%s' | plus: 0 %}
       {% assign alert_age = now_ts | minus: alert_ts %}
-      
-      {% if alert_age >= 0 and alert_age <= alert_ttl_seconds %}
+      {% if alert.layout == 'notification' %}{% assign alert_ttl_seconds = 172800 %}{% else %}{% assign alert_ttl_seconds = 432000 %}{% endif %}
+      {% assign expires_at_ts = alert.expires_at | date: '%s' %}
+      {% assign expires_at_ts = expires_at_ts | plus: 0 %}
+      {% if expires_at_ts and expires_at_ts > 0 %}
+        {% assign expires_ts = expires_at_ts %}
+      {% else %}
+        {% assign expires_ts = alert_ts | plus: alert_ttl_seconds %}
+      {% endif %}
+
+      {% if alert_age >= 0 and expires_ts > now_ts %}
         {% assign visible_count = visible_count | plus: 1 %}
         {% assign expires_ts = alert_ts | plus: alert_ttl_seconds %}
         {% assign remaining_seconds = expires_ts | minus: now_ts %}

@@ -67,10 +67,10 @@ Tinted per-community, shows live stats inline.
     <div class="community-hero__body">
       <div class="community-hero__eyebrow">
         <span class="community-hero__dot" aria-hidden="true"></span>
-        <span class="community-hero__eyebrow-text">{{ hero_name }}</span>
+        <span class="community-hero__eyebrow-text" id="ed-greeting-eyebrow">{{ hero_name }}</span>
       </div>
       <h1 class="community-hero__title" id="ed-greeting-title">Good evening.</h1>
-      <p class="community-hero__subtitle">Your neighbourhood, kept current by the people in it.</p>
+      <p class="community-hero__subtitle" id="ed-greeting-subtitle">Your neighbourhood, kept current by the people in it.</p>
       <div class="community-hero__stats">
         <span class="community-hero__stat"><strong>{{ hero_page_count }}</strong> pages</span>
         <span class="community-hero__stat-sep">·</span>
@@ -78,6 +78,11 @@ Tinted per-community, shows live stats inline.
         <span class="community-hero__stat-sep">·</span>
         <span class="community-hero__stat"><strong>{{ hero_alert_count }}</strong> alerts</span>
       </div>
+    </div>
+    <div class="community-hero__celebration" aria-hidden="true" hidden>
+      <span class="community-hero__firework community-hero__firework--one"></span>
+      <span class="community-hero__firework community-hero__firework--two"></span>
+      <span class="community-hero__firework community-hero__firework--three"></span>
     </div>
     
     <!-- COMMUNITY CTA -->

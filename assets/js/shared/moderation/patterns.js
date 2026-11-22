@@ -13,6 +13,15 @@
   "use strict";
   if (window.ResiHubPatterns) return;
 
+  function hasPaymentCardNumber(text) {
+    const textWithoutUrls = text.replace(/https?:\/\/\S+/gi, " ");
+
+    return (
+      /\b\d{4}(?:[ -]?\d{4}){3}\b/.test(textWithoutUrls) ||
+      /\b\d{13,19}\b/.test(textWithoutUrls)
+    );
+  }
+
   const RULES = [
     // ── Contact harvesting ────────────────────────────────────
     {
@@ -83,7 +92,7 @@
     {
       id: "payment-card",
       severity: "block",
-      test: (t) => /\b\d{4}[\s-]?\d{4}[\s-]?\d{4}[\s-]?\d{4}\b/.test(t),
+      test: hasPaymentCardNumber,
       message:
         "This content contains something that looks like a payment card. Please remove it before posting.",
     },
