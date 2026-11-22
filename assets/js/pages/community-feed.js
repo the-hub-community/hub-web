@@ -5,6 +5,11 @@
   const seedEl = document.getElementById("civicSeedData");
   let seed = { hubs: [], posts: [] };
   try { seed = JSON.parse(seedEl?.textContent || '{"hubs":[],"posts":[]}'); } catch (_) {}
+  const seedPostById = new Map();
+  (seed.posts || []).forEach((post) => {
+    if (post.id) seedPostById.set(String(post.id), post);
+    if (post.pageKey) seedPostById.set(String(post.pageKey), post);
+  });
 
   let posts = [];
   let communitySyncPromise = Promise.resolve();
@@ -38,6 +43,7 @@
     const imageFromSource = source.match(/<img\b[^>]*\bsrc=["']([^"']+)["']/i)?.[1];
     const rawStatus = String(post.status || "").toLowerCase();
     const pageKey = decodeText(post.pageKey || post.page_key || post.id);
+    const seedPost = seedPostById.get(String(post.id)) || seedPostById.get(pageKey);
     const communityKey = decodeText(post.communityKey || post.community_key || post.hubId || "");
     const replies = Array.isArray(post.replies) ? post.replies : [];
     const suppliedReplyCount = post.replyCount ?? post.reply_count;
@@ -52,6 +58,7 @@
       details: readableText(post.details),
       hub: decodeText(post.hub),
       pageKey,
+      pageUrl: decodeText(post.pageUrl || seedPost?.pageUrl || ""),
       communityKey,
       author: decodeText(post.author),
       source,
@@ -207,12 +214,48 @@
     })[char]);
   }
 
-  function formattedDetails(value) {
+  function formattedDetails(value, title) {
     const text = readableText(value);
     const formatter = window.ResiHubContentFormatter;
-    return formatter
-      ? formatter.markdownToHtml(text)
-      : escapeHtml(text).replace(/\n/g, "<br>");
+    if (!formatter) return escapeHtml(text).replace(/\n/g, "<br>");
+
+    let html = formatter.markdownToHtml(text);
+    if (!/^\s*```/.test(text)) {
+      const codeBlock = new DOMParser().parseFromString(html, "text/html")
+        .body.querySelector("pre code");
+      if (
+        codeBlock &&
+        codeBlock.textContent.trim().length > text.trim().length * 0.5
+      ) {
+        // Rendered wiki indentation can make most prose look like a code block.
+        const unindented = text.replace(/^[\t ]+/gm, "");
+        if (unindented !== text) {
+          const normalizedHtml = formatter.markdownToHtml(unindented);
+          const normalized = new DOMParser().parseFromString(normalizedHtml, "text/html");
+          if (!normalized.body.querySelector("pre code")) html = normalizedHtml;
+        }
+      }
+    }
+
+    const rendered = new DOMParser().parseFromString(html, "text/html");
+    const firstBlock = rendered.body.firstElementChild;
+    const normalizedTitle = String(title || "")
+      .replace(/\s+/g, " ")
+      .trim()
+      .toLocaleLowerCase();
+    const firstBlockText = firstBlock?.textContent
+      .replace(/\s+/g, " ")
+      .trim()
+      .toLocaleLowerCase();
+    if (
+      normalizedTitle &&
+      firstBlock &&
+      /^(H[1-6]|P)$/.test(firstBlock.tagName) &&
+      firstBlockText === normalizedTitle
+    ) {
+      firstBlock.remove();
+    }
+    return rendered.body.innerHTML;
   }
 
   function relativeTime(value) {
@@ -394,18 +437,22 @@
     const content = document.getElementById("drawerContent");
     const replyCount = post.replyCount === null ? "…" : post.replyCount;
     drawer.dataset.postId = post.id;
+    document.documentElement.classList.add("civic-drawer-open");
     const facts = post.facts || {};
     content.innerHTML = `
       ${post.image ? `<div class="civic-detail-media"><img src="${escapeHtml(post.image)}" alt="${escapeHtml(post.title)}" referrerpolicy="no-referrer" data-fallback="true"></div>` : ""}
       <div class="civic-detail-meta">${escapeHtml(metadata(post).replace(/<[^>]+>/g, ""))}</div>
       <p class="civic-detail-author">${escapeHtml(post.author)} · ${escapeHtml(post.authorRole || "Community Member")}</p>
+      <p class="civic-detail-reading-time"><i class="fa-regular fa-clock" aria-hidden="true"></i> ${estimatedReadMinutes(post.details || post.summary)} min read</p>
       <h2>${escapeHtml(post.title)}</h2>
-      <div class="civic-detail-prose">${formattedDetails(post.details || post.summary)}</div>
+      <div class="civic-detail-prose">${formattedDetails(post.details || post.summary, post.title)}</div>
       ${postShareLinks(post)}
+      ${detailActions(post)}
       ${post.type === "listing" ? listingDetail(post) : ""}
       ${post.type === "evergreen" ? evergreenDetail(post, facts) : ""}
       <section class="civic-replies">
-        <h3>Community Replies · <span id="replyCount">${replyCount}</span></h3>
+        <h3>Community replies</h3>
+        <span id="replyCount" class="sr-only">${replyCount}</span>
         <p id="pageCommentsStatus" role="status" aria-live="polite"></p>
         <div id="replyList">${post.replies.map((reply) => `<article><strong>${escapeHtml(reply.author)}</strong><time>${relativeTime(reply.createdAt)}</time><p>${escapeHtml(reply.message)}</p></article>`).join("") || "<p>No replies yet.</p>"}</div>
         <form id="replyForm" class="civic-reply-form">
@@ -433,7 +480,8 @@
         post.lastVerifiedAt = new Date().toISOString();
         persist();
         void postAction(post, "verify");
-        openPost(id);
+        const verifiedStatus = content.querySelector(".civic-verified");
+        if (verifiedStatus) verifiedStatus.textContent = `Last verified ${exactTime(post.lastVerifiedAt)}`;
         render();
       });
     }
@@ -541,6 +589,37 @@
     </section>`;
   }
 
+  function estimatedReadMinutes(text) {
+    const wordCount = String(text || "").trim().split(/\s+/).filter(Boolean).length;
+    return Math.max(1, Math.ceil(wordCount / 200));
+  }
+
+  function editPageUrl(post) {
+    if (!post.pageUrl || post.type === "listing") return "";
+    try {
+      const url = new URL(post.pageUrl, window.location.href);
+      if (url.origin !== window.location.origin) return "";
+      url.searchParams.set("edit", "1");
+      return url.href;
+    } catch (error) {
+      console.error("Could not create edit link for community page.", error);
+      return "";
+    }
+  }
+
+  function detailActions(post) {
+    const editUrl = editPageUrl(post);
+    const editButton = editUrl
+      ? `<a class="civic-btn civic-btn--secondary" href="${escapeHtml(editUrl)}" aria-label="Edit page with full editor"><i class="fa-regular fa-pen-to-square" aria-hidden="true"></i> Edit</a>`
+      : "";
+    const reportButton = post.pageKey && post.communityKey
+      ? `<div class="ugc-report-wrap" data-ugc-type="wiki" data-ugc-id="${escapeHtml(post.pageKey)}" data-community-key="${escapeHtml(post.communityKey)}" data-page-key="${escapeHtml(post.pageKey)}" data-ugc-text="${escapeHtml((post.details || post.summary).slice(0, 220))}"><button type="button" class="civic-btn civic-btn--secondary report-content-btn" aria-label="Report this page"><i class="fa-solid fa-flag" aria-hidden="true"></i> Report</button></div>`
+      : "";
+    return editButton || reportButton
+      ? `<div class="civic-detail-actions">${editButton}${reportButton}</div>`
+      : "";
+  }
+
   function openLinkedPost() {
     const postId = new URLSearchParams(location.search).get("post");
     if (postId && posts.some((post) => post.id === postId)) openPost(postId);
@@ -633,7 +712,6 @@
       document.getElementById("hubLocation").textContent = "Unified community feed";
       document.getElementById("hubTitle").textContent = "All Community Hubs";
       document.getElementById("hubPurpose").textContent = "Local updates, broadcasts, listings, and long-term community knowledge in one civic stream.";
-      document.getElementById("hubMemberCount").textContent = String(hubs.reduce((sum, hub) => sum + (hub.members || 0), 0));
       return;
     }
     const hub = hubs.find((item) => item.id === activeHub);
@@ -641,7 +719,6 @@
     document.getElementById("hubLocation").textContent = "Community hub";
     document.getElementById("hubTitle").textContent = hub.name;
     document.getElementById("hubPurpose").textContent = hub.purpose;
-    document.getElementById("hubMemberCount").textContent = String(hub.members || 0);
   }
 
   function openComposer() {
@@ -744,6 +821,7 @@
     const drawer = document.getElementById("postDrawer");
     drawer.classList.remove("is-open");
     drawer.setAttribute("aria-hidden", "true");
+    document.documentElement.classList.remove("civic-drawer-open");
   }
 
   load();

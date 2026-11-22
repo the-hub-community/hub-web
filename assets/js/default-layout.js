@@ -117,6 +117,17 @@ function bootstrap() {
   initDrawer();
   initDrawerSubmit();
   initGlobalErrorHandling();
+
+  const url = new URL(window.location.href);
+  if (url.searchParams.get("edit") === "1") {
+    if (!document.getElementById("pageEditBtn")) {
+      console.error("Could not open page editor: edit controls are unavailable.");
+      return;
+    }
+    prepareEdit();
+    url.searchParams.delete("edit");
+    window.history.replaceState(window.history.state, "", url);
+  }
 }
 
 document.addEventListener("DOMContentLoaded", bootstrap);
