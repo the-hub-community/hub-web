@@ -6,13 +6,13 @@
   const body = document.body;
   const baseUrl = (body.dataset.baseurl || "").replace(/\/+$/, "");
   const contentPrefix = `${baseUrl}/content/`;
-  const toggle = document.querySelector("[data-favorite-toggle]");
+  const toggles = () => document.querySelectorAll("[data-favorite-toggle]");
   const sidebarGroup = document.querySelector("[data-favorites-sidebar]");
   const sidebarList = document.querySelector("[data-favorites-sidebar-list]");
   const favoritesList = document.querySelector("[data-favorites-list]");
   const emptyState = document.querySelector("[data-favorites-empty]");
   const errorState = document.querySelector("[data-favorites-error]");
-  const toggleStatus = document.querySelector("[data-favorite-status]");
+  const toggleStatuses = () => document.querySelectorAll("[data-favorite-status]");
   let favorites = [];
   let storageFailed = false;
 
@@ -55,15 +55,15 @@
   function setError(message, error) {
     storageFailed = true;
     console.error(`Favorites: ${message}`, error);
-    if (toggleStatus) {
-      toggleStatus.textContent = "Favorites unavailable in this browser.";
-      toggleStatus.hidden = false;
-    }
+    toggleStatuses().forEach((status) => {
+      status.textContent = "Favorites unavailable in this browser.";
+      status.hidden = false;
+    });
     if (errorState) {
       errorState.textContent = "Favorites could not be loaded or saved in this browser.";
       errorState.hidden = false;
     }
-    if (toggle) toggle.disabled = true;
+    toggles().forEach((toggle) => { toggle.disabled = true; });
   }
 
   function loadFavorites() {
@@ -143,7 +143,7 @@
       });
     }
 
-    if (toggle) {
+    toggles().forEach((toggle) => {
       const current = normalizeFavorite({
         type: toggle.dataset.favoriteType,
         title: toggle.dataset.favoriteTitle,
@@ -153,22 +153,21 @@
       if (!current) {
         toggle.disabled = true;
         console.error("Favorites: current wiki page has invalid favorite metadata.");
-        if (toggleStatus) {
-          toggleStatus.textContent = "This page cannot be added to favorites.";
-          toggleStatus.hidden = false;
-        }
+        toggleStatuses().forEach((status) => {
+          status.textContent = "This page cannot be added to favorites.";
+          status.hidden = false;
+        });
         return;
       }
 
+      toggle.disabled = false;
       const isFavorite = favorites.some((favorite) => favorite.url === current.url);
       toggle.setAttribute("aria-pressed", String(isFavorite));
-      toggle.querySelector("[data-favorite-label]").textContent = isFavorite
-        ? "Remove from favorites"
-        : "Save to favorites";
-      toggle.querySelector("i").className = isFavorite
-        ? "fa-solid fa-star"
-        : "fa-regular fa-star";
-    }
+      const label = toggle.querySelector("[data-favorite-label]");
+      if (label) label.textContent = isFavorite ? "Remove from favorites" : "Save to favorites";
+      const icon = toggle.querySelector("i");
+      if (icon) icon.className = isFavorite ? "fa-solid fa-star" : "fa-regular fa-star";
+    });
   }
 
   function persist() {
@@ -189,10 +188,10 @@
     try {
       favorites = next;
       persist();
-      if (toggleStatus) {
-        toggleStatus.textContent = shouldSave ? "Added to favorites." : "Removed from favorites.";
-        toggleStatus.hidden = false;
-      }
+      toggleStatuses().forEach((status) => {
+        status.textContent = shouldSave ? "Added to favorites." : "Removed from favorites.";
+        status.hidden = false;
+      });
       render();
     } catch (error) {
       favorites = previous;
@@ -207,27 +206,27 @@
     setError("Could not load favorites.", error);
   }
 
-  if (toggle) {
-    toggle.addEventListener("click", () => {
-      const favorite = normalizeFavorite({
-        type: toggle.dataset.favoriteType,
-        title: toggle.dataset.favoriteTitle,
-        community: toggle.dataset.favoriteCommunity,
-        url: toggle.dataset.favoriteUrl,
-      });
-      if (favorite) {
-        updateFavorite(favorite, !favorites.some((saved) => saved.url === favorite.url));
-      } else {
-        setError("Could not update favorite because page metadata was invalid.", new TypeError("Invalid favorite metadata."));
-      }
+  document.addEventListener("click", (event) => {
+    const toggle = event.target.closest?.("[data-favorite-toggle]");
+    if (!toggle) return;
+    const favorite = normalizeFavorite({
+      type: toggle.dataset.favoriteType,
+      title: toggle.dataset.favoriteTitle,
+      community: toggle.dataset.favoriteCommunity,
+      url: toggle.dataset.favoriteUrl,
     });
-  }
+    if (favorite) {
+      updateFavorite(favorite, !favorites.some((saved) => saved.url === favorite.url));
+    } else {
+      setError("Could not update favorite because page metadata was invalid.", new TypeError("Invalid favorite metadata."));
+    }
+  });
 
   window.addEventListener("storage", (event) => {
     if (event.key !== STORAGE_KEY && event.key !== null) return;
     try {
       favorites = loadFavorites();
-      if (toggleStatus) toggleStatus.hidden = true;
+      toggleStatuses().forEach((status) => { status.hidden = true; });
       render();
     } catch (error) {
       setError("Could not refresh favorites.", error);

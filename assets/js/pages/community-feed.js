@@ -454,11 +454,76 @@
       <button type="button" data-open-post="${escapeHtml(pinned.id)}">Read Notice</button>`;
   }
 
+  function clearDrawerPageTheme(drawer) {
+    const addedClasses = (drawer.dataset.pageThemeClasses || "").split(/\s+/).filter(Boolean);
+    document.body.classList.remove(...addedClasses);
+    delete drawer.dataset.pageThemeClasses;
+  }
+
+  async function loadPostPageContent(post, drawer, content) {
+    if (!post.pageUrl || post.type === "listing") return;
+
+    try {
+      const pageUrl = new URL(post.pageUrl, window.location.href);
+      if (pageUrl.origin !== window.location.origin) return;
+
+      const response = await fetch(pageUrl.href, { headers: { Accept: "text/html" } });
+      if (!response.ok) throw new Error(`Community page could not load (${response.status}).`);
+
+      const pageDocument = new DOMParser().parseFromString(await response.text(), "text/html");
+      const pageContent = pageDocument.querySelector(".wiki-render");
+      if (!pageContent) throw new Error("Community page content was not found.");
+      if (drawer.dataset.postId !== post.id || !drawer.classList.contains("is-open")) return;
+
+      clearDrawerPageTheme(drawer);
+      const pageClasses = Array.from(pageDocument.body.classList)
+        .filter((className) => className.startsWith("page-"));
+      const addedClasses = pageClasses.filter((className) => !document.body.classList.contains(className));
+      document.body.classList.add(...addedClasses);
+      if (addedClasses.length) drawer.dataset.pageThemeClasses = addedClasses.join(" ");
+
+      const preparePageElement = (element) => {
+        element.querySelectorAll("script, style, iframe, object, embed").forEach((child) => child.remove());
+        [element, ...element.querySelectorAll("*")].forEach((child) => {
+          Array.from(child.attributes).forEach((attribute) => {
+            if (/^on/i.test(attribute.name)) {
+              child.removeAttribute(attribute.name);
+            } else if (["href", "src", "poster"].includes(attribute.name.toLowerCase())) {
+              try {
+                const url = new URL(attribute.value, pageUrl);
+                if (!["http:", "https:"].includes(url.protocol)) throw new Error("Unsupported URL protocol.");
+                child.setAttribute(attribute.name, url.href);
+              } catch {
+                child.removeAttribute(attribute.name);
+              }
+            }
+          });
+        });
+        return element;
+      };
+
+      const renderedContent = pageContent.cloneNode(true);
+      preparePageElement(renderedContent);
+
+      const firstHeading = renderedContent.querySelector("h1");
+      if (firstHeading?.textContent.trim().toLocaleLowerCase() === post.title.trim().toLocaleLowerCase()) {
+        firstHeading.remove();
+      }
+
+      content.querySelector(".civic-detail-prose").replaceChildren(renderedContent);
+      const pageHeader = pageDocument.querySelector(".community-hub-header");
+      if (pageHeader) content.prepend(preparePageElement(pageHeader.cloneNode(true)));
+    } catch (error) {
+      console.error("Could not load rendered community page in feed drawer.", error);
+    }
+  }
+
   function openPost(id) {
     const post = posts.find((item) => item.id === id);
     if (!post) return;
     const drawer = document.getElementById("postDrawer");
     const content = document.getElementById("drawerContent");
+    clearDrawerPageTheme(drawer);
     const replyCount = post.replyCount === null ? "…" : post.replyCount;
     drawer.dataset.postId = post.id;
     document.documentElement.classList.add("civic-drawer-open");
@@ -488,6 +553,7 @@
     drawer.classList.add("is-open");
     drawer.setAttribute("aria-hidden", "false");
     bindImageFallbacks();
+    void loadPostPageContent(post, drawer, content);
     void loadPageComments(post);
     const listingStatus = content.querySelector("#listingStatus");
     if (listingStatus) {
@@ -860,6 +926,7 @@
     drawer.classList.remove("is-open");
     drawer.setAttribute("aria-hidden", "true");
     document.documentElement.classList.remove("civic-drawer-open");
+    clearDrawerPageTheme(drawer);
   }
 
   load();

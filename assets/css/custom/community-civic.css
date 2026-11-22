@@ -115,7 +115,7 @@ html.civic-drawer-open, html.civic-drawer-open body { overflow: hidden; }
 .civic-detail-meta, .civic-detail-author { color: var(--civic-muted); font-size: .78rem; font-variant-numeric: tabular-nums; }
 .civic-detail-reading-time { margin: 4px 0 0; color: var(--civic-muted); font-size: .82rem; }
 .civic-detail-drawer h2 { margin: 12px 0 10px; font-size: 2rem; text-wrap: balance; }
-.civic-detail-prose { min-width: 0; max-width: 100%; color: var(--civic-ink); line-height: 1.65; white-space: pre-wrap; overflow-wrap: anywhere; }
+.civic-detail-prose { min-width: 0; max-width: 100%; color: var(--civic-ink); line-height: 1.65; white-space: normal; overflow-wrap: anywhere; }
 .civic-detail-prose a, .civic-detail-prose p, .civic-detail-prose li { overflow-wrap: anywhere; }
 .civic-detail-prose pre, .civic-detail-prose code { max-width: 100%; font-family: var(--font-body); white-space: pre-wrap; overflow-wrap: anywhere; }
 .civic-detail-prose img, .civic-detail-prose iframe { max-width: 100%; }

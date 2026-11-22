@@ -39,6 +39,14 @@
 {% endif %}
 {% endif %}
 
+{% assign favorite_page_title = page.title | default: page.name | replace: '.md', '' | replace: '.html', '' | replace: '-', ' ' %}
+{% assign favorite_page_type = 'page' %}
+{% assign favorite_page_community = current_condo | default: page.title %}
+{% if page.name == 'index.md' or page.name == 'index.html' %}
+{% assign favorite_page_title = current_condo | default: page.title %}
+{% assign favorite_page_type = 'community' %}
+{% endif %}
+
 <body class="{% if page.url == '/' %}page-civic-feed{% endif %}{% if page.url == '/submit.html' %}layout-submit{% endif %}{% if page.page_theme %} {{ page.page_theme }}{% endif %}"
     data-baseurl="{{ site.baseurl | default: '' }}" data-page-condo="{{ page.condo | default: '' | escape }}"
     data-page-path="{{ page.path | default: '' | escape }}"
@@ -179,7 +187,13 @@
                         <nav class="community-resource-nav" aria-label="Topic quick filters">
                             <a href="#community-resource"><i class="fa-solid fa-circle-info"></i> Key Details</a>
                             <a href="#community-discussion"><i class="fa-solid fa-comments"></i> Discussion</a>
-                            <button type="button" data-favorite-toggle><i class="fa-solid fa-bookmark"></i> Save</button>
+                            <button type="button" data-favorite-toggle data-favorite-url="{{ page.url | relative_url | escape }}"
+                                data-favorite-title="{{ favorite_page_title | escape }}"
+                                data-favorite-community="{{ favorite_page_community | escape }}"
+                                data-favorite-type="{{ favorite_page_type }}" aria-pressed="false">
+                                <i class="fa-regular fa-star" aria-hidden="true"></i>
+                                <span data-favorite-label>Save to favorites</span>
+                            </button>
                         </nav>
                         {% endif %}
 
@@ -244,7 +258,13 @@
                             <div><span>Originally Shared</span><strong>{{ page.date | date: "%B %-d, %Y" }}</strong></div>
                             <div><span>Last Verified</span><strong>{{ page.last_checked | default: page.date | date: "%B %-d, %Y" }}</strong></div>
                             <div><span>Archive Status</span><strong>{% if page.valid_until %}Active{% else %}Evergreen{% endif %}</strong></div>
-                            <button type="button" data-favorite-toggle><i class="fa-solid fa-bookmark"></i> Save</button>
+                            <button type="button" data-favorite-toggle data-favorite-url="{{ page.url | relative_url | escape }}"
+                                data-favorite-title="{{ favorite_page_title | escape }}"
+                                data-favorite-community="{{ favorite_page_community | escape }}"
+                                data-favorite-type="{{ favorite_page_type }}" aria-pressed="false">
+                                <i class="fa-regular fa-star" aria-hidden="true"></i>
+                                <span data-favorite-label>Save to favorites</span>
+                            </button>
                         </footer>
                         {% endif %}
 
