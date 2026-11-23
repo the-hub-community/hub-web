@@ -147,3 +147,15 @@
   .community-retention-footer { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .community-retention-footer button { grid-column: 1 / -1; }
 }
+
+@media (max-width: 480px) {
+  .community-hub-header__identity {
+    grid-template-columns: minmax(0, 1fr);
+    align-items: start;
+    gap: 10px;
+  }
+  .community-hub-header__avatar { width: 64px; height: 64px; border-radius: 16px; font-size: 1.35rem; }
+  .community-hub-header__copy { grid-column: 1; padding-bottom: 0; }
+  .community-hub-header__copy h1 { font-size: 1.25rem !important; line-height: 1.2; overflow-wrap: break-word; }
+  .community-hub-header__follow { grid-column: 1; }
+}
