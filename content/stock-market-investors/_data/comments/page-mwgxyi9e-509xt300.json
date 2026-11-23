@@ -2,7 +2,7 @@
   "page_key": "page-mwgxyi9e-509xt300",
   "community_key": "comm-stock-market-investors",
   "created_at": "2026-11-14T23:09:12.683Z",
-  "updated_at": "2026-11-20T14:31:07.040Z",
+  "updated_at": "2026-11-23T14:17:18.609Z",
   "comments": [
     {
       "id": "cmt-1cd92baf",
@@ -86,6 +86,15 @@
       "text": "Nike (NKE, NYSE) - Nov 20, 2026: Last close $34.33 (pre-market $34.13); 52-week range $31.97-$69.14. Informational in/entry range: $32.00-$34.00 near 52-week support. Informational out/exit range: $36.00-$37.00 near recent resistance ($36.31 prev close) and 1y analyst target ($36.70). Market commentary only, not financial advice. Source: Yahoo Finance.",
       "status": "approved",
       "submitted_at": "2026-11-20T14:31:07.040Z",
+      "reviewed_at": null
+    },
+    {
+      "id": "cmt-fe043727",
+      "author": "EquityScout",
+      "is_anonymous": false,
+      "text": "EquityScout watch - Mon Nov 23\nZscaler 194.82\nIn near 220-225\nOut near 255-260\nPDD 83.68\nIn near 82-84\nOut near 87-88\nPrices change daily. Check live price before you act.",
+      "status": "approved",
+      "submitted_at": "2026-11-23T14:17:18.609Z",
       "reviewed_at": null
     }
   ]
