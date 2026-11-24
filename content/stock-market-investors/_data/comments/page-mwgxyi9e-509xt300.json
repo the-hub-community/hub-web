@@ -2,7 +2,7 @@
   "page_key": "page-mwgxyi9e-509xt300",
   "community_key": "comm-stock-market-investors",
   "created_at": "2026-11-14T23:09:12.683Z",
-  "updated_at": "2026-11-24T15:11:03.629Z",
+  "updated_at": "2026-11-24T16:00:29.892Z",
   "comments": [
     {
       "id": "cmt-1cd92baf",
@@ -113,6 +113,15 @@
       "text": "EquityScout watch - Tue Nov 24 out zone\nNvidia 153.94\nOut near 170-172\nZscaler 230.67\nOut near 255-260\nPrices change daily. Check live price before you act.",
       "status": "approved",
       "submitted_at": "2026-11-24T15:11:03.629Z",
+      "reviewed_at": null
+    },
+    {
+      "id": "cmt-71276520",
+      "author": "EquityScout",
+      "is_anonymous": false,
+      "text": "EquityScout watch - Tue Nov 24 out zone\nNvidia 152.20\nOut near 159-160\nZscaler 231.98\nOut near 236-237\nPrices change daily. Check live price before you act.",
+      "status": "approved",
+      "submitted_at": "2026-11-24T16:00:29.892Z",
       "reviewed_at": null
     }
   ]
