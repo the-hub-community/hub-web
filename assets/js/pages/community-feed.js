@@ -105,6 +105,9 @@
           ? Math.max(0, parsedReplyCount, replies.length)
           : replies.length,
       saved: Boolean(post.saved),
+      pinned: post.pinned === undefined
+        ? seedPost?.pinned === true
+        : post.pinned === true,
       voted: Boolean(post.voted),
       facts: Object.fromEntries(Object.entries(post.facts || {}).map(([label, value]) => [decodeText(label), decodeText(value)])),
     };
@@ -598,7 +601,7 @@
   }
 
   function renderPinned() {
-    const pinned = posts.filter((post) => post.type === "broadcast" && (activeHub === "all" || post.hubId === activeHub))
+    const pinned = posts.filter((post) => post.type === "broadcast" && post.pinned && (activeHub === "all" || post.hubId === activeHub))
       .sort((a, b) => score(b) - score(a))[0];
     const el = document.getElementById("pinnedBroadcast");
     if (!el) return;
