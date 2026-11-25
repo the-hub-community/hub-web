@@ -37,6 +37,15 @@ jobs:
         with:
           source: ./
           destination: ./_site
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: Install minification tools
+        run: npm ci
+      - name: Minify production output
+        run: npm run minify:site -- ./_site
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
 

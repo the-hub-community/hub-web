@@ -422,12 +422,18 @@
   function renderHubs() {
     const rail = document.querySelector("[data-civic-hub-rail]");
     const mobile = document.getElementById("mobileHubSwitcher");
+    const wikiPageCounts = new Map();
+    (seed.posts || []).forEach((post) => {
+      if (post.type !== "evergreen" || post.isCommunityHome === true) return;
+      const hubId = String(post.hubId || "");
+      wikiPageCounts.set(hubId, (wikiPageCounts.get(hubId) || 0) + 1);
+    });
     const hubHtml = [
       { id: "all", name: "All Community Hubs", count: posts.length },
       ...hubs.map((hub) => ({
         id: hub.id,
         name: hub.name,
-        count: posts.filter((post) => post.hubId === hub.id).length,
+        count: wikiPageCounts.get(hub.id) || 0,
       })),
     ];
 
@@ -698,13 +704,33 @@
   function openPost(id) {
     const post = posts.find((item) => item.id === id);
     if (!post) return;
-    const url = new URL(window.location.href);
-    const alreadySelected = url.searchParams.get("post") === post.id;
-    if (!alreadySelected) {
-      url.searchParams.set("post", post.id);
-      history.pushState({ postId: post.id }, "", url);
+    const currentUrl = new URL(window.location.href);
+    const canonicalUrl = canonicalPostUrl(post);
+    if (canonicalUrl) {
+      if (currentUrl.searchParams.get("post") === post.id) {
+        history.replaceState({ postId: post.id }, "", canonicalUrl);
+      } else if (currentUrl.href !== canonicalUrl.href) {
+        history.pushState({ postId: post.id }, "", canonicalUrl);
+      }
+    } else if (currentUrl.searchParams.get("post") !== post.id) {
+      currentUrl.searchParams.set("post", post.id);
+      history.pushState({ postId: post.id }, "", currentUrl);
     }
     showPostPage(post);
+  }
+
+  function canonicalPostUrl(post) {
+    if (!post.pageUrl) return null;
+    try {
+      const url = new URL(post.pageUrl, window.location.href);
+      if (url.origin !== window.location.origin) return null;
+      url.search = "";
+      url.hash = "";
+      return url;
+    } catch (error) {
+      console.error("Could not create public URL for community post.", error);
+      return null;
+    }
   }
 
   function showPostPage(post) {
@@ -876,10 +902,13 @@
   }
 
   function postShareLinks(post) {
-    const shareUrl = new URL(window.location.href);
-    shareUrl.search = "";
-    shareUrl.hash = "";
-    shareUrl.searchParams.set("post", post.id);
+    const canonicalUrl = canonicalPostUrl(post);
+    const shareUrl = canonicalUrl || new URL(window.location.href);
+    if (!canonicalUrl) {
+      shareUrl.search = "";
+      shareUrl.hash = "";
+      shareUrl.searchParams.set("post", post.id);
+    }
     const encodedUrl = encodeURIComponent(shareUrl.toString());
     const encodedTitle = encodeURIComponent(post.title);
     const links = {
@@ -928,10 +957,20 @@
   }
 
   function openLinkedPost() {
-    const postId = new URLSearchParams(location.search).get("post");
-    const post = posts.find((item) => item.id === postId);
-    if (postId && post) showPostPage(post);
-    else showFeedPage();
+    const currentUrl = new URL(location.href);
+    const postId = currentUrl.searchParams.get("post");
+    const post = posts.find((item) => item.id === postId) ||
+      posts.find((item) => canonicalPostUrl(item)?.pathname === currentUrl.pathname);
+    if (!post) {
+      showFeedPage();
+      return;
+    }
+
+    const canonicalUrl = canonicalPostUrl(post);
+    if (canonicalUrl && currentUrl.href !== canonicalUrl.href) {
+      history.replaceState({ postId: post.id }, "", canonicalUrl);
+    }
+    showPostPage(post);
   }
 
   function setupActions() {

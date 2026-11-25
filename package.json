@@ -1,5 +1,13 @@
 {
   "name": "hub-web",
   "version": "1.0.0",
-  "private": true
+  "private": true,
+  "scripts": {
+    "minify:site": "node scripts/minify-site.js"
+  },
+  "devDependencies": {
+    "clean-css": "^5.3.3",
+    "html-minifier-terser": "^7.2.0",
+    "terser": "^5.51.4"
+  }
 }

@@ -1,45 +1,21 @@
 {% assign community_slug = current_condo | slugify %}
-{% assign community_home_url = '/content/' | append: community_slug | append: '/' %}
 {% assign community_pages = site.pages | where: "community_key", page_community_key | sort: "title" %}
 {% assign wiki_subpage_count = 0 %}
 {% for community_page in community_pages %}
 {% assign community_page_path = community_page.path | default: '' %}
-{% if community_page_path contains 'content/' and community_page.url != community_home_url and community_page.layout != 'broadcast' and community_page.layout != 'notification' %}
+{% if community_page_path contains 'content/' and community_page.name != 'index.md' and community_page.name != 'index.html' and community_page.layout != 'broadcast' and community_page.layout != 'notification' %}
 {% unless community_page_path contains '/broadcasts/' or community_page_path contains '/notifications/' or community_page_path contains '/_data/' %}
 {% assign wiki_subpage_count = wiki_subpage_count | plus: 1 %}
 {% endunless %}
 {% endif %}
 {% endfor %}
 {% assign community_dialog_id = 'wiki-pages-' | append: community_slug %}
-{% assign favorite_page_title = page.title | default: page.name | replace: '.md', '' | replace: '.html', '' | replace: '-', ' ' %}
-{% assign favorite_page_type = 'page' %}
-{% if page.name == 'index.md' or page.name == 'index.html' %}
-{% assign favorite_page_title = current_condo | default: page.title %}
-{% assign favorite_page_type = 'community' %}
-{% endif %}
+{% if wiki_subpage_count > 0 %}
 <nav class="wiki-community-nav" aria-label="Community pages">
-  <a class="wiki-community-nav__home"
-     href="{{ community_home_url | relative_url }}"
-     {% if page.url == community_home_url %}aria-current="page"{% endif %}>
-    <i class="fa-solid fa-house" aria-hidden="true"></i>
-    <span>{{ current_condo }} home</span>
-  </a>
-  <button class="wiki-community-nav__favorite" type="button"
-          data-favorite-toggle
-          data-favorite-url="{{ page.url | relative_url | escape }}"
-          data-favorite-title="{{ favorite_page_title | escape }}"
-          data-favorite-community="{{ current_condo | escape }}"
-          data-favorite-type="{{ favorite_page_type }}"
-          aria-pressed="false">
-    <i class="fa-regular fa-star" aria-hidden="true"></i>
-    <span data-favorite-label>Save to favorites</span>
-  </button>
-  <span class="wiki-community-nav__favorite-status" data-favorite-status role="status" aria-live="polite" hidden></span>
-  {% if wiki_subpage_count > 0 %}
   <button class="wiki-community-nav__browse" type="button"
           aria-haspopup="dialog" aria-controls="{{ community_dialog_id }}">
     <i class="fa-solid fa-list" aria-hidden="true"></i>
-    <span>Browse pages</span>
+    <span>Browse community pages</span>
     <span class="wiki-community-nav__count">{{ wiki_subpage_count }}</span>
   </button>
   <dialog class="wiki-pages-dialog" id="{{ community_dialog_id }}"
@@ -66,7 +42,7 @@
     <div class="wiki-pages-dialog__list" aria-label="Pages in {{ current_condo }}">
       {% for community_page in community_pages %}
       {% assign community_page_path = community_page.path | default: '' %}
-      {% if community_page_path contains 'content/' and community_page.url != community_home_url and community_page.layout != 'broadcast' and community_page.layout != 'notification' %}
+      {% if community_page_path contains 'content/' and community_page.name != 'index.md' and community_page.name != 'index.html' and community_page.layout != 'broadcast' and community_page.layout != 'notification' %}
       {% unless community_page_path contains '/broadcasts/' or community_page_path contains '/notifications/' or community_page_path contains '/_data/' %}
       {% assign community_page_title = community_page.title | default: community_page.name | replace: '.md', '' | replace: '.html', '' | replace: '-', ' ' %}
       <a class="wiki-pages-dialog__link"
@@ -81,5 +57,5 @@
       {% endfor %}
     </div>
   </dialog>
-  {% endif %}
 </nav>
+{% endif %}

@@ -173,6 +173,7 @@
                     <a href="{{ site.baseurl }}/marketplace.html?community={{ page.condo | slugify }}">Marketplace &amp; Listings</a>
                     <a href="{{ site.baseurl }}/favorites.html">Archived</a>
                 </nav>
+                {% include wiki-community-nav.html %}
                 {% endif %}
                 <div class="community-layout wiki-layout">
                     <article class="content-card">
@@ -250,7 +251,7 @@
                             data-community-key="{{ page_community_key }}"
                             data-page-key="{{ page.page_key | default: fallback_page_id }}"
                             data-valid-until="{{ page.valid_until | default: '' | escape }}"
-                            data-ugc-text="{{ page.content | strip_html | strip_newlines | replace: '  ', ' ' | truncate: 220 }}">
+                            data-ugc-text="{{ page.content | strip_html | strip_newlines | replace: '  ', ' ' | truncate: 220 | escape }}">
                             {{ content }}
                         </div>
                         {% if page.url contains '/content/' and page.condo %}
@@ -278,7 +279,7 @@
                         <div class="ugc-report-wrap ugc-report-wrap--detail" data-ugc-type="wiki"
                             data-ugc-id="{{ page.page_key }}" data-community-key="{{ page.community_key }}"
                             data-page-key="{{ page.page_key }}"
-                            data-ugc-text="{{ page.content | strip_html | strip_newlines | replace: '  ', ' ' | truncate: 220 }}">
+                            data-ugc-text="{{ page.content | strip_html | strip_newlines | replace: '  ', ' ' | truncate: 220 | escape }}">
                             <button type="button" class="report-content-btn" aria-label="Report this page content" data-i18n-aria-label="trust_safety.report_page_aria" data-i18n="trust_safety.report_content">Report Content</button>
                         </div>
                         {% endif %}

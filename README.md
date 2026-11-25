@@ -89,6 +89,7 @@ Production recommendation:
 Important limitation:
 
 - Browser JS cannot be fully hidden in production because the client must download executable code.
+- Production builds minify HTML, JavaScript, CSS, and JSON to make source less readable; this does not prevent inspection or copying.
 - Security should rely on server-side validation (worker), not secrecy of frontend JS.
 
 ## Special Pages
@@ -128,7 +129,9 @@ bundle exec jekyll build
 Production static-site deployment:
 
 ```bash
+npm ci
 bundle exec jekyll build --config _config.yml,_config.prod.yml
+npm run minify:site -- ./_site
 wrangler deploy
 ```
 
