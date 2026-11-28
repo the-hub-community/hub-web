@@ -58,7 +58,9 @@ button, input, select, textarea { font: inherit; }
 .civic-header-search-results.is-message { padding: 12px 14px; }
 .civic-hero-actions { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; margin-top: 14px; }
 .civic-hero-actions .civic-btn { display: inline-flex; align-items: center; justify-content: center; margin-top: 0; text-align: center; text-decoration: none; }
-.civic-hero-alert-link { color: var(--civic-ink); font-size: .9rem; padding: 8px 10px; }
+.civic-hero-alert-link { min-height: 42px; display: inline-flex; align-items: center; justify-content: center; border: 1px solid var(--civic-border); border-radius: 6px; background: #fff; color: var(--civic-ink); font-size: .9rem; font-weight: 700; padding: 8px 12px; text-decoration: none; transition: background-color .15s ease, border-color .15s ease, color .15s ease; }
+.civic-hero-alert-link:hover, .civic-hero-alert-link:focus-visible { border-color: var(--civic-cobalt); background: #eff6ff; color: var(--civic-cobalt); }
+.civic-hero-alert-link:focus-visible { outline: 2px solid var(--civic-cobalt); outline-offset: 2px; }
 .civic-stream-heading { display: flex; align-items: end; justify-content: space-between; margin: 36px 0 12px; }
 .civic-stream-heading h2 { margin: 0; font-size: 1.5rem; }
 .civic-stream-heading p { margin: 2px 0 0; color: var(--civic-muted); }

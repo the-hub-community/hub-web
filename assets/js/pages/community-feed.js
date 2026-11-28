@@ -2,6 +2,7 @@
   "use strict";
 
   const STORAGE_KEY = "hubcollective-community-posts-v1";
+  const ONBOARDING_KEY = "hubcollective-onboarding:v1";
   const seedEl = document.getElementById("civicSeedData");
   const feedPageTitle = document.title;
   const replyCountRequests = new Set();
@@ -30,6 +31,7 @@
   let savedOnly = new URLSearchParams(location.search).get("saved") === "1";
   let selectedPostType = "broadcast";
   let publishedPostId = null;
+  const onboardingDialog = document.getElementById("newcomerOnboarding");
 
   function load() {
     try {
@@ -108,6 +110,8 @@
       pinned: post.pinned === undefined
         ? seedPost?.pinned === true
         : post.pinned === true,
+      resolved: post.resolved === true,
+      canResolve: Boolean(post.canResolve),
       voted: Boolean(post.voted),
       facts: Object.fromEntries(Object.entries(post.facts || {}).map(([label, value]) => [decodeText(label), decodeText(value)])),
     };
@@ -311,6 +315,18 @@
     return post.upvotes * 2 + (post.replyCount ?? post.replies.length) * 3 + (post.saved ? 2 : 0);
   }
 
+  function lastUpdatedAt(post) {
+    const timestamps = [
+      post.updatedAt,
+      post.updated_at,
+      post.lastVerifiedAt,
+      post.last_verified_at,
+      post.createdAt,
+      ...post.replies.map((reply) => reply.createdAt || reply.created_at),
+    ].map((value) => new Date(value).getTime()).filter(Number.isFinite);
+    return timestamps.length ? Math.max(...timestamps) : 0;
+  }
+
   function filteredPosts() {
     let list = posts.filter((post) => (activeHub === "all" || post.hubId === activeHub) && (!savedOnly || post.saved));
     if (activeType !== "all") list = list.filter((post) => post.type === activeType);
@@ -327,7 +343,10 @@
         return (b.replyCount ?? b.replies.length) - (a.replyCount ?? a.replies.length) || score(b) - score(a) ||
           new Date(b.createdAt) - new Date(a.createdAt);
       }
-      return score(b) - score(a) || new Date(b.createdAt) - new Date(a.createdAt);
+      return lastUpdatedAt(b) - lastUpdatedAt(a) ||
+        (b.replyCount ?? b.replies.length) - (a.replyCount ?? a.replies.length) ||
+        score(b) - score(a) ||
+        new Date(b.createdAt) - new Date(a.createdAt);
     });
     return list;
   }
@@ -480,6 +499,8 @@
       listing: "Listing",
       evergreen: "Evergreen Info",
       update: "Community Update",
+      ask: "Neighbor Ask",
+      offer: "Neighbor Offer",
     }[post.type];
     return `<span>${escapeHtml(typeLabel)} · ${escapeHtml(post.hub)} · ${relativeTime(post.createdAt)} · Score ${score(post)}</span>`;
   }
@@ -491,6 +512,9 @@
     }
     if (post.type === "listing") {
       extra = `<div class="civic-listing-row"><strong>${escapeHtml(post.price || "Contact for price")}</strong><span>${escapeHtml(post.listingType || "For Sale")} · ${escapeHtml(post.pickupArea || "Nearby")}</span><em>${escapeHtml(post.status || "Available")}</em></div>`;
+    }
+    if (post.type === "ask" || post.type === "offer") {
+      extra = `<div class="civic-request-state">${post.type === "ask" ? (post.resolved ? "Resolved" : "Open question") : "Community offer"}</div>`;
     }
     if (post.type === "evergreen") {
       const facts = post.facts || {};
@@ -526,6 +550,11 @@
 
   function render() {
     renderHubs();
+    document.querySelectorAll("#typeFilter [data-type]").forEach((button) => {
+      const active = button.dataset.type === activeType;
+      button.classList.toggle("is-active", active);
+      button.setAttribute("aria-pressed", String(active));
+    });
     const list = filteredPosts();
     document.getElementById("resultCount").textContent = `${list.length} post${list.length === 1 ? "" : "s"}`;
     const grid = document.getElementById("feedGrid");
@@ -740,6 +769,7 @@
     clearPostPageTheme(page);
     feed.hidden = true;
     page.hidden = false;
+    window.scrollTo(0, 0);
     document.title = `${post.title} | ${post.hub} | The Hub Community`;
     const replyCount = post.replyCount === null ? "…" : post.replyCount;
     page.dataset.postId = post.id;
@@ -763,6 +793,7 @@
       ${post.type === "evergreen" ? evergreenDetail(post, facts) : ""}
       <section class="civic-replies">
         <h3>Community replies</h3>
+        ${post.type === "ask" ? `<p class="civic-request-state" data-request-state>${post.resolved ? "Resolved" : "Open question"}</p>${post.canResolve ? `<button type="button" class="civic-btn civic-btn--secondary" data-resolve-post="${escapeHtml(post.id)}" aria-pressed="${post.resolved}">${post.resolved ? "Reopen question" : "Mark question resolved"}</button>` : ""}` : ""}
         <span id="replyCount" class="sr-only">${replyCount}</span>
         <p id="pageCommentsStatus" role="status" aria-live="polite"></p>
         <div id="replyList">${post.replies.map(renderReplyCard).join("") || "<p>No replies yet.</p>"}</div>
@@ -1000,6 +1031,19 @@
       if (open) openPost(open.dataset.openPost);
       const replies = event.target.closest("[data-replies]");
       if (replies) openPost(replies.dataset.replies);
+      const resolvePostButton = event.target.closest("[data-resolve-post]");
+      if (resolvePostButton) {
+        const post = posts.find((item) => item.id === resolvePostButton.dataset.resolvePost);
+        if (!post || post.type !== "ask" || !post.canResolve) return;
+        post.resolved = !post.resolved;
+        persist();
+        resolvePostButton.setAttribute("aria-pressed", String(post.resolved));
+        resolvePostButton.textContent = post.resolved ? "Reopen question" : "Mark question resolved";
+        const requestState = document.querySelector("[data-request-state]");
+        if (requestState) requestState.textContent = post.resolved ? "Resolved" : "Open question";
+        void postAction(post, "resolve", { resolved: post.resolved });
+        render();
+      }
       if (event.target.closest("[data-share-post-open]")) openComposer();
       if (event.target.closest("[data-composer-close]")) closeComposer();
     });
@@ -1091,7 +1135,7 @@
 
   function updateHubBanner() {
     if (activeHub === "all") {
-      document.getElementById("hubLocation").textContent = "Global Civic Network · North America · APAC · Special Interest";
+      document.getElementById("hubLocation").textContent = "Global Civic Network · One community, worldwide";
       document.getElementById("hubTitle").textContent = "All Community Hubs";
       document.getElementById("hubPurpose").textContent = "A fast, edge-cached community broadsheet uniting regional neighborhoods with global knowledge and local exchange.";
       if (typeof window.applyFestivalGreeting === "function") {
@@ -1176,6 +1220,7 @@
         ].filter(([label, value]) => label && value),
       ),
       lastVerifiedAt: now,
+      canResolve: selectedPostType === "ask",
     });
     posts.unshift(post);
     persist();
@@ -1213,10 +1258,81 @@
     document.title = feedPageTitle;
   }
 
+  function restoreOnboardingPreferences() {
+    try {
+      const preferences = JSON.parse(localStorage.getItem(ONBOARDING_KEY) || "null");
+      if (!preferences || preferences.seen !== true) return false;
+      activeHub = hubs.some((hub) => hub.id === preferences.hubId) ? preferences.hubId : "all";
+      const allowedTypes = ["all", "broadcast", "listing", "update", "evergreen", "ask", "offer"];
+      activeType = allowedTypes.includes(preferences.type) ? preferences.type : "all";
+      return true;
+    } catch (error) {
+      console.error("Could not load newcomer preferences.", error);
+      return false;
+    }
+  }
+
+  function setupOnboarding() {
+    if (!onboardingDialog) return;
+    const form = document.getElementById("newcomerOnboardingForm");
+    const hubSelect = document.getElementById("onboardingHub");
+    const interestSelect = document.getElementById("onboardingInterest");
+    const status = onboardingDialog.querySelector("[data-onboarding-status]");
+    hubSelect.innerHTML = `<option value="all">All communities</option>${hubs.map((hub) =>
+      `<option value="${escapeHtml(hub.id)}">${escapeHtml(hub.name)}</option>`
+    ).join("")}`;
+    hubSelect.value = activeHub;
+    interestSelect.value = activeType;
+
+    const markOnboardingSeen = () => {
+      try {
+        localStorage.setItem(ONBOARDING_KEY, JSON.stringify({
+          seen: true,
+          hubId: activeHub,
+          type: activeType,
+        }));
+        return true;
+      } catch (error) {
+        console.error("Could not save newcomer preferences.", error);
+        status.textContent = "Could not save these preferences on this device.";
+        return false;
+      }
+    };
+
+    form.addEventListener("submit", (event) => {
+      event.preventDefault();
+      activeHub = hubSelect.value;
+      activeType = interestSelect.value;
+      markOnboardingSeen();
+      updateHubBanner();
+      render();
+      onboardingDialog.close();
+    });
+
+    onboardingDialog.querySelectorAll("[data-onboarding-skip]").forEach((button) => {
+      button.addEventListener("click", () => {
+        markOnboardingSeen();
+        onboardingDialog.close();
+      });
+    });
+
+    let seen = false;
+    try {
+      seen = JSON.parse(localStorage.getItem(ONBOARDING_KEY) || "null")?.seen === true;
+    } catch (error) {
+      console.error("Could not read newcomer onboarding status.", error);
+    }
+    if (!seen && typeof onboardingDialog.showModal === "function") {
+      onboardingDialog.showModal();
+    }
+  }
+
   load();
+  restoreOnboardingPreferences();
   setupActions();
   updateHubBanner();
   render();
+  setupOnboarding();
   openLinkedPost();
   selectComposerType("broadcast");
   communitySyncPromise = syncCommunityPosts();

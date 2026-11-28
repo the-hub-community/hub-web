@@ -37,6 +37,7 @@
     search: baseUrl + "/api/search",
     autoFormat: baseUrl + "/api/ai/auto-format",
     communityPosts: baseUrl + "/api/community-posts",
+    communityDigests: baseUrl + "/api/community-digests",
   };
 
   function getSiteBaseUrl() {

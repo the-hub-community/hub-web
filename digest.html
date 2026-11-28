@@ -1,0 +1,64 @@
+---
+layout: default
+title: Weekly Digest
+robots: noindex, nofollow
+sitemap: false
+---
+
+<main class="main-content">
+  <section class="form-shell" aria-labelledby="digestPageTitle">
+    <h1 id="digestPageTitle">Weekly community digest</h1>
+    <p id="digestActionStatus" role="status" aria-live="polite">Checking your request…</p>
+    <button id="digestActionButton" class="btn btn--primary" type="button" hidden></button>
+    <a class="btn btn--secondary" href="{{ '/settings.html' | relative_url }}">Digest settings</a>
+  </section>
+</main>
+
+<script>
+(function handleDigestAction() {
+  "use strict";
+
+  document.addEventListener("DOMContentLoaded", () => {
+    const status = document.getElementById("digestActionStatus");
+    const params = new URLSearchParams(location.hash.slice(1));
+    const confirmationToken = params.get("confirm");
+    const unsubscribeToken = params.get("unsubscribe");
+    history.replaceState(null, "", location.pathname + location.search);
+
+    const action = confirmationToken ? "confirm" : unsubscribeToken ? "unsubscribe" : "";
+    const token = confirmationToken || unsubscribeToken;
+    if (!action || !token) {
+      status.textContent = "This link is missing or invalid. Manage digest preferences in Settings.";
+      return;
+    }
+
+    const button = document.getElementById("digestActionButton");
+    button.textContent = action === "confirm" ? "Confirm subscription" : "Unsubscribe";
+    button.hidden = false;
+    status.textContent = action === "confirm"
+      ? "Confirm your weekly community digest subscription."
+      : "Confirm that you want to stop receiving the weekly digest.";
+
+    button.addEventListener("click", async () => {
+      button.disabled = true;
+      status.textContent = "Processing your request…";
+      try {
+        const endpoint = window.ResiHubApi?.ENDPOINTS?.communityDigests;
+        if (!endpoint) throw new Error("Digest service is unavailable.");
+        const response = await fetch(endpoint, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ action, token }),
+        });
+        const result = await response.json();
+        if (!response.ok || !result.success) throw new Error(result.error || "Could not process this link.");
+        status.textContent = result.message;
+        button.hidden = true;
+      } catch (error) {
+        status.textContent = error.message || "Could not process this link.";
+        button.disabled = false;
+      }
+    });
+  });
+})();
+</script>

@@ -38,6 +38,7 @@
 {% assign page_community_key = '' %}
 {% endif %}
 {% endif %}
+{% assign community_home_path = page.path | split: '/' | slice: 0, 2 | join: '/' | prepend: '/' | append: '/' %}
 
 {% assign favorite_page_title = page.title | default: page.name | replace: '.md', '' | replace: '.html', '' | replace: '-', ' ' %}
 {% assign favorite_page_type = 'page' %}
@@ -159,7 +160,24 @@
                             </div>
                         </div>
                         <button type="button" class="community-hub-header__follow" data-community-follow="{{ page.community_key | default: page.condo | slugify }}" aria-pressed="false"></button>
+                        <button type="button" class="civic-btn civic-btn--secondary" data-community-share-open data-community-share-url="{{ community_home_path | relative_url }}" data-community-name="{{ current_condo | escape }}" data-qrcode-script="{{ '/assets/js/vendor/qrcode.js' | relative_url }}" data-qrcode-utf8-script="{{ '/assets/js/vendor/qrcode-utf8.js' | relative_url }}">Invite neighbors</button>
                     </div>
+                    <dialog class="civic-composer" id="communityInviteDialog" aria-labelledby="communityInviteTitle">
+                        <div class="civic-composer__header">
+                            <div><p>Grow your community</p><h2 id="communityInviteTitle">Invite neighbors</h2></div>
+                            <button type="button" class="civic-drawer-close" data-community-invite-close aria-label="Close invite dialog"><i class="fa-solid fa-xmark" aria-hidden="true"></i></button>
+                        </div>
+                        <div class="civic-composer__body">
+                            <p>Share {{ current_condo | escape }}’s hub with neighbors. Scanning the QR code opens this public community page.</p>
+                            <label><span>Community link</span><input type="url" readonly data-community-invite-link></label>
+                            <div class="civic-hero-actions">
+                                <button type="button" class="civic-btn civic-btn--primary" data-community-invite-share>Share invite</button>
+                                <button type="button" class="civic-btn civic-btn--secondary" data-community-invite-copy>Copy link</button>
+                            </div>
+                            <div data-community-qr role="img" aria-label="QR code for community invite" hidden></div>
+                            <p data-community-invite-status role="status" aria-live="polite"></p>
+                        </div>
+                    </dialog>
                 </section>
                 <div class="community-pinned-strip">
                     <i class="fa-solid fa-thumbtack" aria-hidden="true"></i>

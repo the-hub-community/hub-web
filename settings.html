@@ -1,6 +1,8 @@
 ---
 layout: default
 title: Settings
+custom_stylesheets:
+  - custom/settings
 robots: noindex, nofollow
 sitemap: false
 ---
@@ -14,7 +16,7 @@ sitemap: false
       </div>
       <h1 class="page-hero__title">Settings</h1>
       <p class="page-hero__subtitle">
-        Control how The Hub Community works on this device.
+        Manage this device and optional email updates.
       </p>
     </div>
 
@@ -74,6 +76,32 @@ sitemap: false
         </button>
       </div>
     </div>
+
+    <section class="digest-panel" aria-labelledby="digestTitle">
+      <h2 id="digestTitle">Weekly community digest</h2>
+      <p class="settings-item__desc">Get recent posts from communities you choose. Confirm by email; unsubscribe anytime. We use your email only to send this digest.</p>
+      <form id="digestSubscribeForm" class="digest-form">
+        <label for="digestEmail">Email address</label>
+        <input class="modern-input" id="digestEmail" name="email" type="email" autocomplete="email" maxlength="254" required>
+        <fieldset class="digest-hub-list">
+          <legend>Choose communities</legend>
+          {% assign digest_hubs = site.pages | where_exp: "p", "p.path contains 'content/'" | where_exp: "p", "p.name == 'index.md' or p.name == 'index.html'" | sort: "title" %}
+          {% for hub in digest_hubs %}
+          {% assign hub_id = hub.community_key | default: hub.title | slugify | prepend: 'comm-' | replace: 'comm-comm-', 'comm-' %}
+          <label class="digest-hub-option">
+            <input type="checkbox" name="hubIds" value="{{ hub_id | escape }}">
+            <span>{{ hub.condo | default: hub.title | escape }}</span>
+          </label>
+          {% endfor %}
+        </fieldset>
+        <label class="digest-consent">
+          <input type="checkbox" name="consent" required>
+          <span>I agree to receive one weekly email digest for the selected communities.</span>
+        </label>
+        <button type="submit" class="btn btn--primary">Email me a confirmation link</button>
+        <p id="digestSubscribeStatus" role="status" aria-live="polite"></p>
+      </form>
+    </section>
   </div>
 </main>
 
@@ -89,6 +117,44 @@ sitemap: false
     localStorage.removeItem("editor-draft");
     alert("Saved submission data cleared.");
     location.reload();
+  });
+
+  const digestForm = document.getElementById("digestSubscribeForm");
+  digestForm?.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    const status = document.getElementById("digestSubscribeStatus");
+    const submit = digestForm.querySelector('button[type="submit"]');
+    const formData = new FormData(digestForm);
+    const hubIds = formData.getAll("hubIds").map((value) => String(value));
+    if (!hubIds.length) {
+      status.textContent = "Choose at least one community.";
+      return;
+    }
+
+    submit.disabled = true;
+    status.textContent = "Sending confirmation email…";
+    try {
+      const endpoint = window.ResiHubApi?.ENDPOINTS?.communityDigests;
+      if (!endpoint) throw new Error("Digest service is unavailable.");
+      const response = await fetch(endpoint, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          action: "subscribe",
+          email: formData.get("email"),
+          hubIds,
+          consent: formData.get("consent") === "on",
+        }),
+      });
+      const result = await response.json();
+      if (!response.ok || !result.success) throw new Error(result.error || "Could not request confirmation.");
+      status.textContent = result.message;
+      digestForm.reset();
+    } catch (error) {
+      status.textContent = error.message || "Could not request confirmation.";
+    } finally {
+      submit.disabled = false;
+    }
   });
 })();
 </script>

@@ -10,13 +10,13 @@ saved_view: false
   <section class="civic-stream">
     <header class="civic-hub-banner" id="hubBanner">
       <div class="civic-hub-banner__copy">
-        <p class="civic-hub-banner__location" id="hubLocation">Global Civic Network · North America · APAC · Special Interest</p>
+        <p class="civic-hub-banner__location" id="hubLocation">Global Civic Network · One community, worldwide</p>
         <h1 id="hubTitle">All Community Hubs</h1>
         <p id="hubPurpose">A fast, edge-cached community broadsheet uniting regional neighborhoods with global knowledge and local exchange.</p>
         <div class="civic-hero-actions">
           <a class="civic-btn civic-btn--primary" href="{{ '/communities.html' | relative_url }}">Explore Living Wikis</a>
           <a class="civic-btn civic-btn--secondary" href="{{ '/marketplace.html' | relative_url }}">Browse Verified Marketplace</a>
-          <a class="civic-hero-alert-link" href="{{ '/settings.html' | relative_url }}">Configure Alert Tiers</a>
+          <a class="civic-hero-alert-link" href="{{ '/settings.html' | relative_url }}">Set up Weekly Digest</a>
         </div>
       </div>
       <div class="civic-hub-banner__cover" id="hubCover" role="img" aria-label="Community neighborhood"></div>
@@ -38,6 +38,8 @@ saved_view: false
         <button type="button" data-type="listing">Listings</button>
         <button type="button" data-type="update">Updates</button>
         <button type="button" data-type="evergreen">Evergreen Info</button>
+        <button type="button" data-type="ask">Asks</button>
+        <button type="button" data-type="offer">Offers</button>
       </div>
       <div class="civic-toolbar__meta">
         <span id="resultCount" class="civic-result-count">0 posts</span>
@@ -66,6 +68,35 @@ saved_view: false
   <div id="postPageContent"></div>
 </section>
 
+<dialog class="civic-composer" id="newcomerOnboarding" aria-labelledby="newcomerOnboardingTitle">
+  <form id="newcomerOnboardingForm">
+    <header class="civic-composer__header">
+      <div><p>Make The Hub yours</p><h2 id="newcomerOnboardingTitle">Find your community</h2></div>
+      <button type="button" class="civic-drawer-close" data-onboarding-skip aria-label="Skip onboarding"><i class="fa-solid fa-xmark" aria-hidden="true"></i></button>
+    </header>
+    <div class="civic-composer__body">
+      <p>Choose a hub and topics to see useful local information first. Change these filters anytime.</p>
+      <label><span>Community or area</span><select name="hub" id="onboardingHub" required></select></label>
+      <label><span>What interests you?</span>
+        <select name="interest" id="onboardingInterest">
+          <option value="all">Everything</option>
+          <option value="broadcast">Events and alerts</option>
+          <option value="listing">Local marketplace</option>
+          <option value="update">Community updates</option>
+          <option value="evergreen">Guides and local knowledge</option>
+          <option value="ask">Questions from neighbors</option>
+          <option value="offer">Offers from neighbors</option>
+        </select>
+      </label>
+      <p data-onboarding-status role="status" aria-live="polite"></p>
+    </div>
+    <footer class="civic-composer__footer">
+      <button type="button" class="civic-btn civic-btn--secondary" data-onboarding-skip>Skip for now</button>
+      <button type="submit" class="civic-btn civic-btn--primary">Show my feed</button>
+    </footer>
+  </form>
+</dialog>
+
 <dialog class="civic-composer" id="shareComposer" aria-labelledby="shareComposerTitle">
   <form id="sharePostForm">
     <header class="civic-composer__header">
@@ -79,6 +110,8 @@ saved_view: false
         <button type="button" data-compose-type="listing"><strong>Marketplace Listing</strong><span>Sell, give, rent, or request</span></button>
         <button type="button" data-compose-type="update"><strong>Community Update</strong><span>Recommendation or observation</span></button>
         <button type="button" data-compose-type="evergreen"><strong>Evergreen Info</strong><span>Long-term community resource</span></button>
+        <button type="button" data-compose-type="ask"><strong>Ask</strong><span>Get local help or recommendations</span></button>
+        <button type="button" data-compose-type="offer"><strong>Offer</strong><span>Share help, a skill, or an item</span></button>
       </fieldset>
 
       <div class="civic-form-grid">
