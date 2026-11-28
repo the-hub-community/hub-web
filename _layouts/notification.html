@@ -3,7 +3,15 @@
 <head>
     {% include head.html %}
 </head>
-<body>
+{% assign notice_page_key = page.page_key | default: page.submission_id | default: page.url | slugify %}
+{% assign notice_community_key = page.community_key | default: page.condo | slugify %}
+<body
+    data-page-condo="{{ page.condo | default: '' | escape }}"
+    data-page-path="{{ page.path | default: '' | escape }}"
+    data-page-key="{{ notice_page_key | escape }}"
+    data-submission-id="{{ page.submission_id | default: page.page_key | default: notice_page_key | escape }}"
+    data-community-key="{{ notice_community_key | escape }}"
+    data-valid-until="{{ page.valid_until | default: '' | escape }}">
     {% include header.html %}
     
     <div class="notification-container">
@@ -45,6 +53,13 @@
                     <i class="fa-solid fa-circle-check"></i>
                     This is a community-shared notice. Verify directly with official sources.
                 </p>
+                {% if page.condo %}
+                <button type="button" id="pageEditBtn" class="btn-edit-action" aria-haspopup="dialog"
+                    aria-expanded="false" onclick="prepareEdit()">
+                    <i class="fa-regular fa-pen-to-square" aria-hidden="true"></i>
+                    <span>Update Notice</span>
+                </button>
+                {% endif %}
             </div>
         </article>
     </div>
@@ -202,6 +217,11 @@
         }
     </style>
 
+    {% if page.condo %}
+    {% include editor.html %}
+    {% endif %}
+    {% include editor-shell.html %}
     {% include footer.html %}
+    <script type="module" src="{{ '/assets/js/default-layout.js?v=' | append: css_version | relative_url }}"></script>
 </body>
 </html>

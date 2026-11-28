@@ -468,7 +468,9 @@ export function restoreDraft() {
 }
 
 export function prepareEdit() {
-  const wikiContainer = document.querySelector(".wiki-render");
+  const wikiContainer = document.querySelector(
+    ".wiki-render, .notification-card",
+  );
   const titleInput = document.getElementById("title");
   const typeInput = document.getElementById("type");
   const sectionsContainer = document.getElementById(
@@ -478,18 +480,28 @@ export function prepareEdit() {
   if (!wikiContainer || !titleInput || !sectionsContainer) return;
 
   if (typeInput) typeInput.value = "update";
-  titleInput.value = wikiContainer.querySelector("h1")?.innerText || "";
+  titleInput.value =
+    wikiContainer.querySelector(
+      ".broadcast-page__title, .notification-title, h1",
+    )?.innerText || "";
   sectionsContainer.innerHTML = "";
 
+  const alertBody = wikiContainer.querySelector(
+    ".broadcast-page__body, .notification-screenshot-section",
+  );
   const contentBody = wikiContainer.querySelector(".lh-content-body");
-  const sections = contentBody
-    ? Array.from(contentBody.children).filter((element) =>
-        element.matches(".lh-section, .lh-image-gallery"),
-      )
-    : Array.from(wikiContainer.querySelectorAll(".lh-section"));
+  const sections = alertBody
+    ? [alertBody]
+    : contentBody
+      ? Array.from(contentBody.children).filter((element) =>
+          element.matches(".lh-section, .lh-image-gallery"),
+        )
+      : Array.from(wikiContainer.querySelectorAll(".lh-section"));
   if (sections.length > 0) {
     sections.forEach((sec) => {
-      const editableText = sec.querySelector(".lh-text")?.cloneNode(true);
+      const editableText = alertBody
+        ? sec.cloneNode(true)
+        : sec.querySelector(".lh-text")?.cloneNode(true);
       editableText
         ?.querySelectorAll(".lh-directions-link")
         .forEach((link) => link.remove());
